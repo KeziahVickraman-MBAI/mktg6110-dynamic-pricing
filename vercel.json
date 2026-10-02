@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/coffee_pricing_lab.html" }
+  ]
+}
