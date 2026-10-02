@@ -1,0 +1,1631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roast &amp; Reward · Dynamic Pricing Lab · AI-Powered Marketing Session 6</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f6f3ee; --surface:#ffffff; --surface-2:#fcfcfb; --soft:#f0ece5; --line:#e4ded4; --grid:#ebe7e0;
+  --ink:#1f1a17; --body:#3d3631; --muted:#6f665e;
+  --roast:#5b3a29; --roast-2:#7a5038; --crema:#c8925a; --crema-soft:#f5e7d6;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
+  --seq-100:#cde2fb; --seq-250:#86b6ef; --seq-450:#2a78d6; --seq-700:#0d366b;
+  --good:#1f7a3a; --bad:#b3312f; --warn:#9a6400;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--body);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif}
+button,input,select,textarea{font:inherit}
+h1,h2,h3,h4{color:var(--ink);margin:0}
+a{color:var(--s1)}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+
+/* header & tabs */
+header{background:var(--roast);color:#fff}
+header .wrap{display:flex;align-items:center;gap:24px;min-height:68px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .cup{font-size:28px}
+.brand h1{color:#fff;font-size:20px;line-height:1.1}
+.brand p{margin:0;font-size:12.5px;color:#e7d3bf;letter-spacing:.03em}
+.tabs{display:flex;gap:4px;margin-left:auto}
+.tabs button{background:transparent;border:0;color:#e7d3bf;padding:10px 18px;border-radius:999px;cursor:pointer;font-weight:600}
+.tabs button[aria-selected=true]{background:#fff;color:var(--roast)}
+.tabs button:hover:not([aria-selected=true]){background:rgba(255,255,255,.12);color:#fff}
+main{padding:24px 0 60px}
+.tabpanel[hidden]{display:none}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+
+/* generic */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.card h3{font-size:16px;margin-bottom:8px}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--crema)}
+.lede{font-size:16px;color:var(--body);max-width:880px;margin:6px 0 16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--roast);background:#fff;color:var(--roast);padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
+.btn:hover{background:var(--crema-soft)}
+.btn.primary{background:var(--roast);color:#fff}
+.btn.primary:hover{background:var(--roast-2)}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--roast);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;color:var(--roast);padding:6px 12px;cursor:pointer;font-weight:600;font-size:13.5px}
+.seg button+button{border-left:1px solid var(--roast)}
+.seg button[aria-pressed=true]{background:var(--roast);color:#fff}
+.takeaway{border-left:4px solid var(--crema);background:var(--crema-soft);padding:12px 16px;border-radius:0 8px 8px 0;margin-top:16px;color:var(--ink)}
+.takeaway b{color:var(--roast)}
+.src{font-size:12.5px;color:var(--muted);margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--soft);font-size:13px;color:var(--ink);border:1px solid var(--line)}
+.ctrl{display:grid;grid-template-columns:150px 1fr 64px;gap:4px 10px;align-items:center;font-size:14px;margin:6px 0}
+.ctrl label{font-weight:600;color:var(--ink)}
+.ctrl input[type=range]{width:100%;accent-color:var(--roast)}
+.ctrl output{font-family:var(--mono);font-size:13px;text-align:right;color:var(--ink)}
+.ctrl .hint{grid-column:1/-1;font-size:12.5px;color:var(--muted);margin:-2px 0 4px}
+select{padding:5px 8px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.stat .k{font-size:12px;color:var(--muted);font-weight:600}
+.stat .v{font:600 20px var(--mono);color:var(--ink);margin-top:2px}
+.stat .d{font-size:12px;color:var(--muted)}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+table.t{border-collapse:collapse;width:100%;font-size:13.5px}
+table.t th,table.t td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{font-size:12px;color:var(--muted);font-weight:700;background:var(--surface-2);position:sticky;top:0}
+table.t td.num{font-family:var(--mono)}
+
+/* charts */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart .ax text{font-size:11.5px;fill:var(--muted);font-family:var(--mono)}
+.chart .axl{font-size:12px;fill:var(--muted);font-family:inherit}
+.chart .gridl{stroke:var(--grid);stroke-width:1}
+.chart .base{stroke:#c9c2b7;stroke-width:1}
+.chart .dl{font-size:12px;fill:var(--ink);font-weight:600}
+.chart .reflab{font-size:11.5px;fill:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink);margin:2px 0 6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:16px;height:3px;border-radius:2px}
+.legend i.dash{background:repeating-linear-gradient(90deg,currentColor 0 4px,transparent 4px 7px)!important;height:2px}
+.legend i.dot{width:10px;height:10px;border-radius:50%}
+.legend i.sq{width:11px;height:11px;border-radius:3px}
+.chart-title{font-size:14px;font-weight:700;color:var(--ink)}
+.chart-sub{font-size:12.5px;color:var(--muted);margin-bottom:4px}
+#tip{position:fixed;pointer-events:none;z-index:50;background:#fff;border:1px solid var(--line);box-shadow:0 6px 24px rgba(40,25,10,.16);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--ink);max-width:280px;display:none;line-height:1.4}
+#tip .tt{font-weight:700;margin-bottom:3px}
+#tip .tr{display:flex;align-items:center;gap:6px;justify-content:space-between}
+#tip .tr span:first-child{display:inline-flex;align-items:center;gap:6px;color:var(--body)}
+#tip i{display:inline-block;width:10px;height:10px;border-radius:50%}
+#tip b{font-family:var(--mono);font-weight:600}
+
+/* concepts layout */
+.concepts{display:grid;grid-template-columns:250px 1fr;gap:24px;align-items:start}
+.cnav{position:sticky;top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:8px}
+.cnav button{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:7px;cursor:pointer;color:var(--body);font-size:14px}
+.cnav button .n{font:700 12px var(--mono);color:var(--crema);min-width:18px}
+.cnav button[aria-current=true]{background:var(--crema-soft);color:var(--roast);font-weight:700}
+.cnav button:hover:not([aria-current=true]){background:var(--soft)}
+.cnav .go-lab{margin:8px 4px 4px;width:calc(100% - 8px);justify-content:center}
+.csec[hidden]{display:none}
+.csec h2{font-size:28px;line-height:1.15;margin:4px 0 2px}
+.pager{display:flex;justify-content:space-between;margin-top:22px}
+.pcards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pcard{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:14px;cursor:pointer;text-align:left;color:var(--body)}
+.pcard .big{font-size:26px}
+.pcard h4{font-size:16px;margin:4px 0}
+.pcard[aria-pressed=true]{border-color:var(--roast);box-shadow:inset 0 0 0 1px var(--roast);background:var(--crema-soft)}
+.detail{margin-top:12px}
+.terms{display:flex;gap:8px;flex-wrap:wrap}
+.terms button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--ink);font-size:13.5px}
+.terms button[aria-pressed=true]{background:var(--roast);color:#fff;border-color:var(--roast)}
+.case{border-top:3px solid var(--roast);}
+.case h4{font-size:15px;margin-bottom:4px}
+.case p{margin:0;font-size:13.5px}
+ul.tight{margin:6px 0;padding-left:18px} ul.tight li{margin:3px 0}
+
+/* RL loop diagram */
+.loop svg text{font-family:inherit}
+.loop .box{fill:var(--surface);stroke:var(--roast);stroke-width:2}
+.loop .box.hl{fill:var(--crema-soft)}
+.loop .arr{stroke:var(--muted);stroke-width:2.5;fill:none}
+.loop .arr.hl{stroke:var(--s2);stroke-width:4}
+.loop .lab{font-size:14px;font-weight:700;fill:var(--ink)}
+.loop .sub{font-size:12.5px;fill:var(--muted)}
+.vocab{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.vocab button{text-align:left;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:10px 12px;cursor:pointer;color:var(--body)}
+.vocab button b{display:block;color:var(--ink);font-size:15px}
+.vocab button[aria-pressed=true]{border-color:var(--roast);background:var(--crema-soft);box-shadow:inset 0 0 0 1px var(--roast)}
+
+/* bandit */
+.arms{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.arm{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:10px;text-align:center}
+.arm button{width:100%}
+.arm .est{font:600 18px var(--mono);color:var(--ink);margin:6px 0 0}
+.arm .n{font-size:12px;color:var(--muted)}
+.arm .bar{height:70px;display:flex;align-items:flex-end;justify-content:center;gap:6px;margin:8px 0 4px;border-bottom:1px solid #c9c2b7;position:relative}
+.arm .bar .b{width:26px;background:var(--s1);border-radius:4px 4px 0 0}
+.arm .bar .truth{position:absolute;left:12%;right:12%;border-top:2px dashed var(--ink)}
+.arm.last{border-color:var(--s2);box-shadow:inset 0 0 0 1px var(--s2)}
+
+/* framing */
+.receipt{font-family:var(--mono);background:#fffdf8;border:1px dashed #cdbfa9;border-radius:6px;padding:14px 16px;font-size:14px;color:var(--ink)}
+.receipt .r{display:flex;justify-content:space-between}
+.receipt .tot{border-top:1px dashed #cdbfa9;margin-top:6px;padding-top:6px;font-weight:700}
+.disclosure{margin-top:8px;font:700 11.5px var(--mono);letter-spacing:.03em;color:#fff;background:#222;padding:6px 8px;border-radius:4px}
+.checklist label{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:14px}
+
+/* lab */
+.subtabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.subtabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:700;cursor:pointer;color:var(--body)}
+.subtabs button[aria-selected=true]{background:var(--roast);border-color:var(--roast);color:#fff}
+.labgrid{display:grid;grid-template-columns:400px 1fr;gap:16px;align-items:start}
+.today .dayhead{display:flex;justify-content:space-between;align-items:baseline}
+.today .dayhead h3{font-size:22px}
+.progress{height:6px;background:var(--soft);border-radius:4px;overflow:hidden;margin:8px 0 12px}
+.progress > div{height:100%;background:var(--crema)}
+.conds{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cond{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.cond .k{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.cond .v{font-size:15px;color:var(--ink);font-weight:600}
+.cond .s{font-size:12px;color:var(--muted)}
+.rlview{margin-top:10px;font-size:13px;background:#f3f6fb;border:1px solid #d9e4f3;border-radius:8px;padding:8px 10px}
+.pricebox{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.pricebig{display:flex;align-items:center;gap:10px}
+.pricebig output{font:700 34px var(--mono);color:var(--ink);min-width:120px}
+.pricebig input[type=range]{flex:1;accent-color:var(--roast)}
+.mlhint{margin-top:8px;font-size:13.5px;background:#eefaf4;border:1px solid #c8ecd9;border-radius:8px;padding:7px 10px}
+.mlhint b{font-family:var(--mono)}
+.result{margin-top:12px;border-radius:8px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--line);font-size:13.5px}
+.result .rv{font:700 22px var(--mono)}
+.result .rl{display:flex;justify-content:space-between;gap:8px}
+.toggles{display:flex;flex-direction:column;gap:6px;font-size:13.5px;margin-top:10px}
+.toggles label{display:flex;gap:8px;align-items:center}
+.scoreboard .srow{display:grid;grid-template-columns:230px 1fr 90px;gap:10px;align-items:center;margin:7px 0;font-size:14px}
+.scoreboard .track{height:18px;background:var(--soft);border-radius:4px;position:relative}
+.scoreboard .fill{height:100%;border-radius:0 4px 4px 0}
+.scoreboard .val{font:600 14px var(--mono);text-align:right;color:var(--ink)}
+.debrief[hidden]{display:none}
+textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--ink);resize:vertical}
+.logwrap{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+
+/* trainer */
+.traingrid{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+.formula{font-family:var(--mono);font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;line-height:1.7;color:var(--ink);overflow-x:auto}
+.formula .e{color:var(--s2);font-weight:700} .formula .x{color:var(--s1);font-weight:700}
+.heat .rowlab{font-size:11px;fill:var(--body);font-family:var(--mono)}
+.heat .collab{font-size:11px;fill:var(--muted);font-family:var(--mono)}
+.heat rect.cell{stroke:var(--surface);stroke-width:1.5;cursor:pointer}
+.heat rect.rowhit{fill:transparent;cursor:pointer}
+.heat .sel{fill:none;stroke:var(--s2);stroke-width:2}
+.exp li{margin:6px 0}
+.badge{display:inline-block;font:700 11px var(--mono);padding:2px 7px;border-radius:5px;color:#fff}
+.badge.explore{background:var(--s2)} .badge.exploit{background:var(--s1)}
+.kbd{font:12px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:#fff}
+
+@media (max-width:1050px){
+  .concepts,.labgrid,.traingrid{grid-template-columns:1fr}
+  .cnav{position:static;display:flex;flex-wrap:wrap}
+  .cnav button{width:auto}
+  .pcards{grid-template-columns:1fr 1fr}
+  .grid3,.vocab{grid-template-columns:1fr 1fr}
+}
+@media (max-width:680px){ .grid2,.grid3,.vocab,.arms{grid-template-columns:1fr} .ctrl{grid-template-columns:120px 1fr 56px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand"><span class="cup" aria-hidden="true">☕</span>
+      <div><h1>Roast &amp; Reward · Dynamic Pricing</h1><p>AI-POWERED MARKETING · SESSION 6 · INTERACTIVE COMPANION</p></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Main sections">
+      <button role="tab" id="tab-concepts" aria-selected="true" aria-controls="panel-concepts">① Concepts</button>
+      <button role="tab" id="tab-lab" aria-selected="false" aria-controls="panel-lab">② Lab: run the coffee shop</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+<!-- ============================== CONCEPTS ============================== -->
+<section id="panel-concepts" class="tabpanel" role="tabpanel" aria-labelledby="tab-concepts">
+  <div class="concepts">
+    <nav class="cnav" aria-label="Concepts">
+      <button data-c="0"><span class="n">01</span>What is dynamic pricing?</button>
+      <button data-c="1"><span class="n">02</span>Price, demand &amp; profit</button>
+      <button data-c="2"><span class="n">03</span>Uniform vs personalised</button>
+      <button data-c="3"><span class="n">04</span>Heuristics → ML → RL</button>
+      <button data-c="4"><span class="n">05</span>The RL vocabulary</button>
+      <button data-c="5"><span class="n">06</span>Explore vs exploit</button>
+      <button data-c="6"><span class="n">07</span>Sequential decisions</button>
+      <button data-c="7"><span class="n">08</span>Fairness, framing &amp; the law</button>
+      <button class="btn primary go-lab" data-golab>Go to the Lab →</button>
+    </nav>
+
+    <div>
+      <!-- 01 -->
+      <article class="csec" data-sec="0">
+        <div class="eyebrow">Concept 01</div>
+        <h2>What is dynamic pricing?</h2>
+        <p class="lede">Prices that change along four dimensions, the <b>“4 Ps” of dynamic pricing</b> (Kopalle et al. 2023). These are not the marketing-mix 4 Ps! Click a P to see what it looks like in a coffee shop.</p>
+        <div class="pcards" id="pcards"></div>
+        <div class="card detail" id="pdetail"></div>
+        <h3 style="margin:22px 0 8px;font-size:17px">Dynamic pricing is an umbrella term</h3>
+        <div class="terms" id="terms"></div>
+        <div class="card detail" id="termdetail"></div>
+        <div class="grid2" style="margin-top:18px">
+          <div class="card"><h3>Why firms adopt it</h3>
+            <ul class="tight"><li>Capture more of each customer’s willingness-to-pay (WTP)</li><li>Allocate scarce inventory efficiently (e.g., the last 40 cups on a Saturday)</li><li>Personalise the experience and boost engagement</li><li>Competitive necessity: rivals reprice instantly</li></ul></div>
+          <div class="card"><h3>Downsides</h3>
+            <ul class="tight"><li>Implementation complexity</li><li>Need for AI and data expertise</li><li>Consumer backlash risk</li><li>Potential legal exposure</li></ul>
+            <p class="muted" style="margin:6px 0 0;font-size:13.5px"><i>How much personalisation is optimal, and defensible?</i></p></div>
+        </div>
+        <div class="grid3" style="margin-top:16px">
+          <div class="card case"><h4>✈️ Delta</h4><p>Planned AI revenue management across 20% of its domestic network. After public and lawmaker backlash, it assured US lawmakers that it would not set personalised fares.</p></div>
+          <div class="card case"><h4>🚗 Uber</h4><p>Surge pricing reached 4× normal fares during the Sydney café siege. Uber later said: “We didn’t stop surge pricing immediately. This was the wrong decision.”</p></div>
+          <div class="card case"><h4>🏢 RealPage</h4><p>The DOJ alleged that its shared rent-pricing algorithm let landlords coordinate rent increases. The 2024 suit was followed by a settlement.</p></div>
+        </div>
+        <div class="takeaway"><b>Takeaway.</b> “One price for everyone” was itself an innovation that built trust. Data and algorithms are now moving pricing back toward the individual, which is powerful and risky in equal measure.</div>
+        <p class="src">Slides 7–17 · Kopalle et al. (2023), <i>Journal of Retailing</i></p>
+      </article>
+
+      <!-- 02 -->
+      <article class="csec" data-sec="1" hidden>
+        <div class="eyebrow">Concept 02 · Periods &amp; places</div>
+        <h2>The best price moves with the conditions</h2>
+        <p class="lede">This is the <b>same demand model the Lab uses</b>. Each walk-in buys if the coffee is worth more to them than the price, compared against the café across the street. Change the conditions and watch the profit-maximising price move.</p>
+        <div class="card">
+          <div class="grid2">
+            <div>
+              <div class="ctrl"><label for="c2day">Day</label><select id="c2day"></select><span></span></div>
+              <div class="ctrl"><label for="c2weather">Weather</label><select id="c2weather"></select><span></span></div>
+              <div class="ctrl"><label for="c2event">Local event</label><select id="c2event"><option value="0">None</option><option value="1">Farmers’ market nearby</option></select><span></span></div>
+              <div class="ctrl"><label for="c2comp">Competitor open?</label><select id="c2comp"><option value="0">No</option><option value="1" selected>Yes</option></select><span></span></div>
+              <div class="ctrl" id="c2cprow"><label for="c2cprice">Competitor price</label><input type="range" id="c2cprice" min="2" max="7" step="0.25" value="4"><output id="c2cpriceo"></output></div>
+              <div class="ctrl"><label for="c2price">Your price</label><input type="range" id="c2price" min="1" max="10" step="0.25" value="4"><output id="c2priceo"></output></div>
+            </div>
+            <div class="stats" id="c2stats"></div>
+          </div>
+          <div class="grid2" style="margin-top:14px">
+            <div><div class="chart-title">Expected profit today vs. your price</div><div class="chart-sub">(price − $1.20 cost) × cups sold</div><div class="chart" id="c2profit"></div></div>
+            <div><div class="chart-title">Cups sold today vs. your price (the demand curve)</div><div class="chart-sub">Higher price → fewer buyers</div><div class="chart" id="c2demand"></div></div>
+          </div>
+        </div>
+        <div class="takeaway"><b>Takeaway.</b> A fixed menu price is right on, at most, one kind of day. Rain, weekends and events raise willingness-to-pay, and a cheaper competitor lowers it. Dynamic pricing means re-solving this curve every day, or every hour.</div>
+        <p class="src">Slides 8–12 · Demand model: multinomial logit with an outside option (walk away) and a competitor.</p>
+      </article>
+
+      <!-- 03 -->
+      <article class="csec" data-sec="2" hidden>
+        <div class="eyebrow">Concept 03 · People</div>
+        <h2>Uniform price vs. personalised prices: who wins?</h2>
+        <p class="lede">1,000 simulated morning customers: <b>students</b> (lower WTP) and <b>professionals</b> (higher WTP). Compare one price for all, a price per segment, and an AI that estimates each person’s WTP. The baseline is always the <b>best possible uniform price</b>.</p>
+        <div class="card">
+          <div class="row" style="margin-bottom:10px"><span class="seg" id="c3mode"><button data-m="uniform" aria-pressed="true">Uniform price</button><button data-m="segment" aria-pressed="false">Segment prices</button><button data-m="personal" aria-pressed="false">Personalised (AI)</button></span>
+            <button class="btn small" id="c3opt">Set to profit-maximising</button></div>
+          <div class="grid2">
+            <div id="c3ctrls"></div>
+            <div><table class="t" id="c3table"></table></div>
+          </div>
+          <div style="margin-top:12px"><div class="chart-title">Willingness-to-pay of the 1,000 customers</div>
+            <div class="legend" id="c3legend"></div><div class="chart" id="c3hist"></div></div>
+        </div>
+        <div class="takeaway"><b>Compare with Dubé &amp; Misra (2023, ZipRecruiter).</b> Optimising the <i>uniform</i> price gave the biggest gain (+55% profit). Personalisation added another +19%. Total consumer surplus fell, yet <b>more than 60% of individual consumers were better off</b>: low-WTP customers paid less and high-WTP customers paid more. Try “Personalised” and look at the better-off and worse-off rows.</div>
+        <p class="src">Slides 37–38 · Dubé &amp; Misra (2023), <i>Journal of Political Economy</i></p>
+      </article>
+
+      <!-- 04 -->
+      <article class="csec" data-sec="3" hidden>
+        <div class="eyebrow">Concept 04 · Data &amp; algorithms</div>
+        <h2>From heuristics to machine learning to reinforcement learning</h2>
+        <p class="lede">How do we turn all those data points (weather, events, competitor prices, inventory) into a price? Here are three generations of pricing logic. Build your own rule and race it against the other two over <b>100 simulated three-week periods</b>.</p>
+        <div class="grid3">
+          <div class="card"><div class="eyebrow">Naïve</div><h3>Heuristic rule</h3><p style="margin:0;font-size:14px">“If inventory &lt; X, raise the price by Y%.” Simple and transparent, but blind to the patterns it was never told about.</p></div>
+          <div class="card"><div class="eyebrow">Machine learning</div><h3>Predict, then optimise</h3><p style="margin:0;font-size:14px">Forecast today’s demand from the features, then pick the price that maximises <i>today’s</i> profit. Each prediction is independent.</p></div>
+          <div class="card"><div class="eyebrow">Reinforcement learning</div><h3>Learn a policy</h3><p style="margin:0;font-size:14px">Learn by trial and error which price works in each <i>state</i>, including how today’s sales change tomorrow’s inventory.</p></div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>Build your heuristic</h3>
+          <div class="grid2">
+            <div>
+              <div class="ctrl"><label for="c4base">Base price</label><input type="range" id="c4base" min="2" max="7" step="0.25" value="4"><output id="c4baseo"></output></div>
+              <div class="ctrl"><label for="c4wk">Weekend surcharge</label><input type="range" id="c4wk" min="0" max="3" step="0.25" value="0"><output id="c4wko"></output></div>
+              <div class="ctrl"><label for="c4thr">If cups left &lt;</label><input type="range" id="c4thr" min="0" max="450" step="10" value="150"><output id="c4thro"></output></div>
+              <div class="ctrl"><label for="c4up">…raise price by</label><input type="range" id="c4up" min="0" max="100" step="5" value="25"><output id="c4upo"></output></div>
+              <p class="muted" style="font-size:13px;margin:6px 0 0">Each shop restocks 450 cups every Monday. Unsold beans are discarded on Sunday night, and turning a customer away costs $0.50 in goodwill.</p>
+            </div>
+            <div><div class="chart-title">Average 3-week profit (100 scenarios)</div><div class="chart" id="c4bars"></div></div>
+          </div>
+        </div>
+        <div class="takeaway"><b>Takeaway.</b> A good hand-tuned rule can beat a myopic ML price, because the rule “knows” about inventory and ML does not. RL learns that structure from experience instead of being told.</div>
+        <p class="src">Slides 19–22, 27</p>
+      </article>
+
+      <!-- 05 -->
+      <article class="csec" data-sec="4" hidden>
+        <div class="eyebrow">Concept 05 · Reinforcement learning</div>
+        <h2>The RL vocabulary, in a coffee shop</h2>
+        <p class="lede">RL is machine learning where an <b>agent</b> learns by interacting with an <b>environment</b> and receiving rewards or penalties. The objective is to maximise <b>long-term cumulative reward</b>. Click a term, or simulate a day to watch the loop run.</p>
+        <div class="grid2">
+          <div class="card loop"><svg id="loopsvg" viewBox="0 0 520 315" role="img" aria-label="Reinforcement learning loop: agent sends action to environment; environment returns state and reward"></svg>
+            <div class="row" style="margin-top:6px"><button class="btn primary" id="c5run">▶ Simulate one day</button><span class="muted" id="c5msg" style="font-size:13.5px"></span></div></div>
+          <div>
+            <div class="vocab" id="vocab"></div>
+            <div class="card" id="vocabdetail" style="margin-top:12px"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px"><h3>The learning process</h3>
+          <div class="row" style="gap:6px;font-size:14px"><span class="chip">1 · Observe the environment</span>→<span class="chip">2 · Take an action</span>→<span class="chip">3 · Receive feedback</span>→<span class="chip">4 · Improve future decisions</span>↺</div></div>
+        <div class="takeaway"><b>Takeaway.</b> Nobody tells the agent the demand curve. It sees a state, tries a price, collects a reward and nudges its estimate of how good that price is in that state. The Lab’s <i>Train the agent</i> tab lets you watch every one of those nudges.</div>
+        <p class="src">Slides 23–25</p>
+      </article>
+
+      <!-- 06 -->
+      <article class="csec" data-sec="5" hidden>
+        <div class="eyebrow">Concept 06 · The fundamental trade-off</div>
+        <h2>Explore vs. exploit</h2>
+        <p class="lede">Imagine an ordinary Tuesday: you don’t know which price earns the most, and each day’s profit is noisy. <b>Exploring</b> tries new prices to gather information. <b>Exploiting</b> uses the best price found so far. Run your own experiment, or let an ε-greedy agent do it.</p>
+        <div class="card">
+          <div class="row" style="margin-bottom:12px;justify-content:space-between">
+            <div class="row"><b>Day <span id="c6day">0</span> / 30</b><span class="chip">Total profit <b class="mono" id="c6tot">$0</b></span><span class="chip">Regret vs. always-best <b class="mono" id="c6reg">$0</b></span></div>
+            <div class="row"><label style="font-size:14px"><input type="checkbox" id="c6truth"> Reveal true averages</label><button class="btn small" id="c6reset">Reset</button></div>
+          </div>
+          <div class="arms" id="arms"></div>
+          <div class="row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+            <b style="font-size:14px">Auto-pilot:</b>
+            <div class="ctrl" style="grid-template-columns:110px 200px 50px;margin:0"><label for="c6eps">ε (explore %)</label><input type="range" id="c6eps" min="0" max="1" step="0.05" value="0.2"><output id="c6epso"></output></div>
+            <button class="btn primary small" id="c6auto">▶ Run remaining days with ε-greedy</button>
+          </div>
+          <p class="muted" style="font-size:13px;margin:8px 0 0" id="c6log">Click a price to open the shop for one day at that price.</p>
+        </div>
+        <div class="takeaway"><b>Real-world example.</b> A business tests new pricing strategies while continuing proven ones. With ε = 0 the agent can lock onto the first price that looked good. With ε = 1 it never benefits from what it learned. Most good learners explore early and exploit later, which is what the Lab agent does by decaying ε.</div>
+        <p class="src">Slide 26</p>
+      </article>
+
+      <!-- 07 -->
+      <article class="csec" data-sec="6" hidden>
+        <div class="eyebrow">Concept 07 · How RL is different</div>
+        <h2>Sequential decisions: today’s price changes tomorrow’s options</h2>
+        <p class="lede">In traditional ML each prediction is independent. In RL, current decisions affect <b>future opportunities, rewards and states</b>. Here you have one delivery of beans for <b>Friday and Saturday</b>, and a farmers’ market comes to town on Saturday.</p>
+        <div class="card">
+          <div class="grid2">
+            <div>
+              <div class="ctrl"><label for="c7stock">Cups for Fri + Sat</label><input type="range" id="c7stock" min="120" max="500" step="10" value="180"><output id="c7stocko"></output></div>
+              <div class="ctrl"><label for="c7fri">Friday price</label><input type="range" id="c7fri" min="2" max="8" step="0.25" value="4"><output id="c7frio"></output></div>
+              <p class="muted" style="font-size:13px;margin:4px 0 0">Saturday’s price is then set optimally for whatever stock is left. Unsold cups are discarded at the $1.20 cost.</p>
+            </div>
+            <div class="stats" id="c7stats"></div>
+          </div>
+          <div style="margin-top:12px"><div class="chart-title">Profit as a function of Friday’s price</div>
+            <div class="legend" id="c7legend"></div><div class="chart" id="c7chart"></div></div>
+        </div>
+        <div class="takeaway"><b>Takeaway.</b> A myopic optimiser (the ML suggestion) maximises Friday alone and sells cups that would have earned more on Saturday. A sequential planner gives up a little Friday profit for a larger total. Slide the stock up: once inventory is plentiful the gap nearly disappears, because the future no longer constrains today.</div>
+        <p class="src">Slide 27 · same idea as “allocating all delivery drivers to one busy area now may leave other regions understaffed later.”</p>
+      </article>
+
+      <!-- 08 -->
+      <article class="csec" data-sec="7" hidden>
+        <div class="eyebrow">Concept 08 · Legality &amp; acceptance</div>
+        <h2>Fairness, framing and the law</h2>
+        <p class="lede">Firms’ profit is only half the story. Customers judge fairness against a <b>reference price</b>, regulators are writing disclosure rules, and shared pricing algorithms can slide into collusion.</p>
+        <div class="grid2">
+          <div class="card"><h3>1 · Framing: same money, different feeling</h3>
+            <p style="margin:0 0 10px;font-size:14px">Two customers buy the same oat latte. You pay $5.40 and the other customer pays $4.50. Identical outcome, two framings:</p>
+            <div class="row" style="margin-bottom:10px"><span class="seg" id="c8frame"><button data-f="A" aria-pressed="true">Frame A: a different price</button><button data-f="B" aria-pressed="false">Frame B: a different discount</button></span></div>
+            <div class="receipt" id="receipt"></div>
+            <div class="row" style="margin-top:10px"><span style="font-size:14px">How does this feel?</span><button class="btn small" data-vote="fair">😊 Fair</button><button class="btn small" data-vote="unfair">😠 Unfair</button></div>
+            <p id="c8vote" style="font-size:13.5px;margin:8px 0 0"></p>
+          </div>
+          <div class="card"><h3>2 · Algorithmic pricing disclosure</h3>
+            <div class="ctrl" style="grid-template-columns:190px 1fr"><label for="c8state">Café located in</label><select id="c8state"><option value="NY">New York</option><option value="CT">Connecticut</option><option value="SG">Singapore (no such law yet)</option></select></div>
+            <div class="ctrl" style="grid-template-columns:190px 1fr"><label for="c8data">Price set using personal data?</label><select id="c8data"><option value="up">Yes, and it raised the price</option><option value="down">Yes, it gave a discount</option><option value="no">No, only weather and time</option></select></div>
+            <div class="receipt" style="margin-top:10px"><div class="r"><span>Oat latte (12oz)</span><span>$5.40</span></div><div id="c8label"></div></div>
+            <p class="muted" style="font-size:13px;margin:8px 0 0" id="c8note"></p>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px"><h3>3 · Algorithmic collusion: two cafés, one vendor</h3>
+          <p style="margin:0 0 10px;font-size:14px">Two cafés on the same street. Each can price with its <b>own</b> algorithm, or both can subscribe to the <b>same vendor</b>, which pools their data and recommends prices. This is the pattern alleged in the RealPage case.</p>
+          <div class="row"><span class="seg" id="c8coll"><button data-k="indep" aria-pressed="true">Independent algorithms</button><button data-k="shared" aria-pressed="false">Shared vendor algorithm</button></span></div>
+          <div class="stats" id="c8stats" style="margin-top:12px"></div>
+          <p class="muted" style="font-size:13px;margin:8px 0 0">Computed from the Lab’s demand model: “independent” is the price where neither café gains by deviating (Nash equilibrium); “shared” maximises the two cafés’ combined profit.</p>
+        </div>
+        <div class="card checklist" style="margin-top:16px"><h3>4 · Responsible-pricing checklist for our café <span class="chip" id="c8score">0 / 7</span></h3>
+          <div id="c8checks"></div></div>
+        <div class="takeaway"><b>Takeaway.</b> Personalised <i>discounts</i> feel like a gift and personalised <i>price increases</i> feel like exploitation, even when the money is identical. Disclosure laws target exactly that second case.</div>
+        <p class="src">Slides 30–35 · “The Price Is Right” (Future of Privacy Forum)</p>
+      </article>
+
+      <div class="pager"><button class="btn" id="cprev">← Previous</button><button class="btn primary" id="cnext">Next →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== LAB ============================== -->
+<section id="panel-lab" class="tabpanel" role="tabpanel" aria-labelledby="tab-lab" hidden>
+  <div class="subtabs" role="tablist" aria-label="Lab sections">
+    <button role="tab" aria-selected="true" data-sub="play">🎮 1 · Play the shop (21 days)</button>
+    <button role="tab" aria-selected="false" data-sub="train">🧠 2 · Train the RL agent</button>
+    <button role="tab" aria-selected="false" data-sub="how">📐 How the simulator works</button>
+  </div>
+
+  <!-- PLAY -->
+  <div data-subpanel="play">
+    <p class="lede" style="margin-top:0">You own a coffee shop. Each morning you see the conditions and set <b>one price for the day ($1–$10)</b>. Goal: maximise <b>net reward</b> over 21 days, which is profit minus penalties for turning customers away and for wasting beans. A trained <b>RL agent runs an identical shop on the same 21 days</b>. Can you beat it? You learn the way the agent does, by trial and error.</p>
+    <div class="labgrid">
+      <div class="card today" id="today"></div>
+      <div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between">
+            <div><div class="chart-title">Cumulative net reward</div><div class="chart-sub" id="cumSub">Your running total. Tick “Reveal RL agent live” to race it day by day.</div></div>
+          </div>
+          <div class="legend" id="cumLegend"></div>
+          <div class="chart" id="cumChart"></div>
+        </div>
+        <div class="grid2" style="margin-top:16px">
+          <div class="card"><div class="chart-title">Your experiments: price vs. conversion</div><div class="chart-sub">Share of walk-ins who bought, one dot per day. Hover a dot for that day’s conditions.</div><div class="chart" id="convChart"></div></div>
+          <div class="card"><div class="chart-title">Price you set each day</div><div class="chart-sub">Week 1 → Week 3. Did you explore early and exploit later?</div><div class="legend" id="priceLegend"></div><div class="chart" id="priceChart"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card debrief" id="debrief" hidden style="margin-top:16px"></div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><h3 style="margin:0">Daily log</h3><span class="muted" style="font-size:13px">Restock: 450 cups every Monday · cost $1.20/cup · turned-away customer −$0.50 · beans unsold on Sunday are discarded (−$1.20/cup)</span></div>
+      <div class="logwrap"><table class="t" id="logTable"></table></div>
+    </div>
+  </div>
+
+  <!-- TRAIN -->
+  <div data-subpanel="train" hidden>
+    <p class="lede" style="margin-top:0">Here you are the data scientist. You start a <b>Q-learning agent</b> from zero and choose how it learns. Every simulated day it updates one cell of its <b>Q-table</b>: its running estimate of how good each price is in each state. Step through single days to see the arithmetic, or train thousands of episodes (each one a full 21-day game) and watch it improve.</p>
+    <div class="traingrid">
+      <div class="card">
+        <h3>Hyperparameters</h3>
+        <div class="ctrl" style="grid-template-columns:120px 1fr 52px"><label for="hpA">α learning rate</label><input type="range" id="hpA" min="0.01" max="1" step="0.01" value="0.05"><output id="hpAo"></output><div class="hint">How far each new experience moves the estimate.</div></div>
+        <div class="ctrl" style="grid-template-columns:120px 1fr 52px"><label for="hpG">γ discount</label><input type="range" id="hpG" min="0" max="0.99" step="0.01" value="0.5"><output id="hpGo"></output><div class="hint">How much tomorrow counts. 0 = short-sighted.</div></div>
+        <div class="ctrl" style="grid-template-columns:120px 1fr 52px"><label for="hpE">ε start</label><input type="range" id="hpE" min="0" max="1" step="0.05" value="1"><output id="hpEo"></output><div class="hint">Probability of a random (exploratory) price.</div></div>
+        <div class="ctrl" style="grid-template-columns:120px 1fr 52px"><label for="hpEm">ε floor</label><input type="range" id="hpEm" min="0" max="0.5" step="0.01" value="0.02"><output id="hpEmo"></output></div>
+        <div class="ctrl" style="grid-template-columns:120px 1fr 52px"><label for="hpD">ε decays over</label><input type="range" id="hpD" min="100" max="20000" step="100" value="10000"><output id="hpDo"></output><div class="hint">Episodes to go linearly from ε start to ε floor.</div></div>
+        <div class="stats" style="grid-template-columns:1fr 1fr 1fr;margin:10px 0">
+          <div class="stat"><div class="k">Episodes</div><div class="v" id="trEp">0</div></div>
+          <div class="stat"><div class="k">Current ε</div><div class="v" id="trEps">1.00</div></div>
+          <div class="stat"><div class="k">Greedy score</div><div class="v" id="trScore">—</div></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="trStep" title="Shortcut: S">Step 1 day</button>
+          <button class="btn" id="trEp1">Run 1 episode</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn primary" data-train="500">Train +500</button>
+          <button class="btn primary" data-train="5000">+5,000</button>
+          <button class="btn primary" data-train="20000">+20,000</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="trStop" disabled>■ Stop</button>
+          <button class="btn" id="trReset">Reset agent</button>
+          <button class="btn" id="trSend" title="Use this agent as the opponent in the 21-day game">Use as game opponent</button>
+        </div>
+        <p class="muted" id="trMsg" style="font-size:13px;margin:8px 0 0"></p>
+      </div>
+      <div class="card">
+        <div class="chart-title">Learning curve</div>
+        <div class="chart-sub">Net reward per 21-day episode. “Training” includes exploration noise. “Greedy test” plays the current best policy on 40 fixed test scenarios with no exploration.</div>
+        <div class="legend" id="lcLegend"></div>
+        <div class="chart" id="lcChart"></div>
+      </div>
+    </div>
+
+    <div class="traingrid" style="margin-top:16px">
+      <div class="card">
+        <h3>Last update, step by step</h3>
+        <div id="stepBox"><p class="muted" style="font-size:14px">Click <b>Step 1 day</b> to watch a single Q-learning update.</p></div>
+      </div>
+      <div class="card heat">
+        <div class="row" style="justify-content:space-between"><div><div class="chart-title">Q-table: 27 states × 19 prices</div>
+          <div class="chart-sub">Each row is a state. Darker = higher estimated value <i>within that row</i>. Outlined = the price the agent would pick now. Empty = never tried. Click a row to inspect it.</div></div></div>
+        <div class="chart" id="heat"></div>
+        <div style="margin-top:10px"><div class="chart-title" id="inspTitle">State inspector</div><div class="chart-sub" id="inspSub">Click a row in the Q-table.</div><div class="chart" id="inspChart"></div></div>
+      </div>
+    </div>
+    <div class="card exp" style="margin-top:16px"><h3>Experiments to try (good material for your 2-slide presentation)</h3>
+      <ol>
+        <li><b>No exploration:</b> Reset, set ε start = 0 and ε floor = 0, then train +5,000. The agent locks onto the first price that ever paid off. Compare its greedy score with the default.</li>
+        <li><b>Short-sighted agent:</b> Reset, set γ = 0, then train +20,000. Does it still raise prices when stock is <i>Tight</i> before the weekend? Look at the “Normal · None · Tight” row.</li>
+        <li><b>Jumpy learner:</b> Set α = 1. Every noisy day completely overwrites the estimate. Watch the curve wobble.</li>
+        <li><b>Little experience:</b> Train only +500 and send it to the game as your opponent. Is it easier to beat?</li>
+        <li><b>Read the policy:</b> After training, find the states where the agent charges the most. Do they match your intuition from Concept 02?</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- HOW -->
+  <div data-subpanel="how" hidden>
+    <div class="grid2">
+      <div class="card"><h3>Environment: the coffee market</h3>
+        <ul class="tight">
+          <li><b>21 days</b> = 3 weeks, starting on a Monday. Base walk-in traffic: Mon 110 · Tue 100 · Wed 105 · Thu 115 · Fri 140 · Sat 185 · Sun 165.</li>
+          <li><b>Weather:</b> sunny (45%), cloudy (25%), rainy (20%: fewer walk-ins, but they want coffee more), cold snap (10%: WTP up most).</li>
+          <li><b>Events</b> (10% on weekdays, 30% Fri–Sun): +50% traffic and higher WTP.</li>
+          <li><b>Weekend</b> customers are less price-sensitive (leisure, not commuters).</li>
+          <li><b>Competitor</b> “Bean There” opens on 50% of days, priced at $3.00–$5.50.</li>
+          <li>Each walk-in chooses <i>our café</i>, <i>the competitor</i> or <i>nothing</i> (logit choice):<br>
+            <span class="formula" style="display:block;margin-top:6px">P(buy here) = e<sup>u − 0.9·p</sup> / (1 + e<sup>u − 0.9·p</sup> + e<sup>u − 0.3 − 0.9·p<sub>comp</sub></sup>)</span>
+            where u rises with weekend, weather and events. Daily demand also has ±10% random noise.</li>
+        </ul></div>
+      <div class="card"><h3>Reward &amp; inventory</h3>
+        <ul class="tight">
+          <li>Every Monday you receive <b>450 cups</b> of beans. Variable cost: <b>$1.20 / cup</b> sold.</li>
+          <li>If demand exceeds stock you sell what you have, and each turned-away customer costs <b>$0.50</b> in goodwill.</li>
+          <li>Beans left on Sunday night are discarded: <b>−$1.20 / cup</b>.</li>
+          <li><b>Net reward</b> = revenue − cost of cups sold − stockout penalty − waste.</li>
+        </ul>
+        <h3 style="margin-top:14px">The competitors you face</h3>
+        <ul class="tight">
+          <li><b>RL agent:</b> tabular Q-learning, pre-trained on 20,000 random 21-day episodes (α = 0.05, γ = 0.5, ε 1 → 0.02). It plays greedily.</li>
+          <li><b>ML suggestion:</b> perfect demand forecast for today, maximises today’s profit, and ignores inventory and the future.</li>
+          <li><b>Static menu:</b> $4.50 every day.</li>
+          <li><b>Hindsight optimum:</b> a planner that knew every day’s demand in advance (dynamic programming). A ceiling, not a real competitor.</li>
+        </ul></div>
+      <div class="card"><h3>How the RL agent sees the world (state)</h3>
+        <p style="margin:0 0 6px;font-size:14px">The agent does not see raw numbers. It sees 3 × 3 × 3 = <b>27 states</b>:</p>
+        <ul class="tight">
+          <li><b>Demand:</b> Low / Normal / High, from day of week × weather × event.</li>
+          <li><b>Competitor:</b> None / Cheaper (&lt; $4) / Pricier (≥ $4).</li>
+          <li><b>Stock:</b> Tight / OK / Plenty, cups left compared with the share of the week still to come.</li>
+        </ul>
+        <p style="margin:6px 0 0;font-size:14px"><b>Actions:</b> 19 prices, $1.00 to $10.00 in $0.50 steps. You can fine-tune to $0.25, which is one small edge you have over it.</p></div>
+      <div class="card"><h3>Q-learning in one line</h3>
+        <div class="formula">Q(s,a) ← Q(s,a) + α · [ r + γ · max<sub>a′</sub> Q(s′,a′) − Q(s,a) ]</div>
+        <ul class="tight" style="margin-top:10px">
+          <li><b>r + γ·max Q(s′,·)</b> is the “target”: today’s reward plus the discounted value of the best move tomorrow.</li>
+          <li>The bracket is the <b>surprise</b>, or temporal-difference error. α sets how much of the surprise is absorbed.</li>
+          <li><b>Policy</b> = in each state, pick the price with the highest Q (exploit), except with probability ε pick at random (explore).</li>
+        </ul></div>
+    </div>
+  </div>
+</section>
+</main>
+<div id="tip" role="tooltip"></div>
+
+<script>
+// ===== MODEL START =====
+const M = (() => {
+  const COST = 1.2, RESTOCK = 450, STOCKOUT_PEN = 0.5, A0 = 4.0, B = 0.9, COMP_EDGE = 0.3, WEEKEND_WTP = 0.8;
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const TRAFFIC = [110, 100, 105, 115, 140, 185, 165];
+  const WEATHER = {
+    sunny: { label: 'Sunny', icon: '☀️', traffic: 1.0, a: 0.0 },
+    cloudy: { label: 'Cloudy', icon: '⛅', traffic: 0.95, a: 0.1 },
+    rainy: { label: 'Rainy', icon: '🌧️', traffic: 0.8, a: 0.35 },
+    cold: { label: 'Cold snap', icon: '🥶', traffic: 0.9, a: 0.5 },
+  };
+  const WKEYS = Object.keys(WEATHER);
+  const EVENTS = ['Farmers’ market', 'Office fair', 'Concert nearby', 'University open day', 'Marathon'];
+  const PRICES = []; for (let p = 1; p <= 10.0001; p += 0.5) PRICES.push(+p.toFixed(2));
+
+  function rng(seed) { // mulberry32
+    let t = seed >>> 0;
+    return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ t >>> 15, 1 | t); r ^= r + Math.imul(r ^ r >>> 7, 61 | r); return ((r ^ r >>> 14) >>> 0) / 4294967296; };
+  }
+  function gauss(r) { let u = 0, v = 0; while (!u) u = r(); v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+  // 21 days of exogenous conditions + demand noise (shared by every player of the same scenario)
+  function scenario(seed, nDays = 21) {
+    const r = rng(seed), days = [];
+    for (let d = 0; d < nDays; d++) {
+      const dow = d % 7, wr = r();
+      const weather = wr < 0.45 ? 'sunny' : wr < 0.7 ? 'cloudy' : wr < 0.9 ? 'rainy' : 'cold';
+      const ev = r() < (dow >= 4 ? 0.3 : 0.1);
+      const comp = r() < 0.5;
+      const cprice = comp ? Math.round((3 + r() * 2.5) * 4) / 4 : null;
+      days.push({ d, dow, weather, event: ev ? EVENTS[Math.floor(r() * EVENTS.length)] : null, comp, cprice, noise: Math.exp(0.1 * gauss(r) - 0.005) });
+    }
+    return days;
+  }
+  function traffic(day) { return TRAFFIC[day.dow] * WEATHER[day.weather].traffic * (day.event ? 1.5 : 1); }
+  function utility(day) { return A0 + (day.dow >= 5 ? WEEKEND_WTP : 0) + WEATHER[day.weather].a + (day.event ? 0.5 : 0); }
+  // probability a walk-in buys from us at price p
+  function buyProb(day, p) {
+    const u = Math.exp(utility(day) - B * p);
+    const c = day.comp ? Math.exp(utility(day) - COMP_EDGE - B * day.cprice) : 0;
+    return u / (1 + u + c);
+  }
+  function expDemand(day, p) { return traffic(day) * buyProb(day, p); }
+  // ML-style suggestion: forecast today's demand, maximise today's profit, ignore inventory & future
+  function mlPrice(day) {
+    let best = 1, bv = -1e9;
+    for (let p = 1; p <= 10.0001; p += 0.05) { const v = (p - COST) * expDemand(day, p); if (v > bv) { bv = v; best = p; } }
+    return Math.round(best * 4) / 4;
+  }
+
+  function newShop() { return { inv: RESTOCK, t: 0, total: 0, log: [] }; }
+  // advance one day; returns record
+  function step(shop, day, p) {
+    if (day.dow === 0 && shop.t > 0) shop.inv = RESTOCK;
+    const invStart = shop.inv;
+    const walkins = Math.round(traffic(day) * day.noise);
+    const demand = Math.round(expDemand(day, p) * day.noise);
+    const sold = Math.min(demand, shop.inv);
+    const lost = demand - sold;
+    shop.inv -= sold;
+    const revenue = p * sold, cogs = COST * sold, stockPen = STOCKOUT_PEN * lost;
+    const waste = day.dow === 6 ? COST * shop.inv : 0;
+    const reward = revenue - cogs - stockPen - waste;
+    shop.total += reward; shop.t++;
+    const rec = { d: day.d, price: p, invStart, walkins, demand, sold, lost, revenue, cogs, stockPen, waste, reward, cum: shop.total, invEnd: shop.inv };
+    shop.log.push(rec);
+    return rec;
+  }
+
+  // ---- RL state encoding ----
+  const DEM = ['Low', 'Normal', 'High'], COMP = ['None', 'Cheaper', 'Pricier'], INV = ['Tight', 'OK', 'Plenty'];
+  function demandLevel(day) { const x = traffic(day) * Math.exp(utility(day) - A0); return x < 120 ? 0 : x < 165 ? 1 : 2; }
+  function compLevel(day) { return !day.comp ? 0 : day.cprice < 4 ? 1 : 2; }
+  function invLevel(inv, day) {
+    // compare stock left with the share of this week's traffic still to come ("on pace" = 1)
+    let left = 0, all = 0; for (let k = 0; k < 7; k++) { all += TRAFFIC[k]; if (k >= day.dow) left += TRAFFIC[k]; }
+    const r = inv / (RESTOCK * left / all); return r < 0.85 ? 0 : r < 1.05 ? 1 : 2;
+  }
+  function stateOf(shop, day) {
+    const inv = (day.dow === 0 && shop.t > 0) ? RESTOCK : shop.inv;
+    return demandLevel(day) * 9 + compLevel(day) * 3 + invLevel(inv, day);
+  }
+  function stateName(s) { return { dem: DEM[Math.floor(s / 9)], comp: COMP[Math.floor(s / 3) % 3], inv: INV[s % 3] }; }
+  const NS = 27, NA = PRICES.length;
+
+  function newAgent() { return { Q: Array.from({ length: NS }, () => new Float64Array(NA)), N: Array.from({ length: NS }, () => new Uint32Array(NA)), episodes: 0 }; }
+  function greedy(agent, s) { const q = agent.Q[s]; let b = 0; for (let a = 1; a < NA; a++) if (q[a] > q[b]) b = a; return b; }
+  function choose(agent, s, eps, r) { const roll = r(); if (roll < eps) return { a: Math.floor(r() * NA), explore: true, roll }; return { a: greedy(agent, s), explore: false, roll }; }
+
+  // one Q-learning transition; returns details for the step explainer
+  function qStep(agent, ctx, hp, r) {
+    const { shop, days } = ctx, day = days[shop.t];
+    const s = stateOf(shop, day);
+    const { a, explore, roll } = choose(agent, s, hp.eps, r);
+    const rec = step(shop, day, PRICES[a]);
+    const done = shop.t >= days.length;
+    const s2 = done ? null : stateOf(shop, days[shop.t]);
+    const maxNext = done ? 0 : Math.max(...agent.Q[s2]);
+    const old = agent.Q[s][a];
+    const target = rec.reward + (done ? 0 : hp.gamma * maxNext);
+    agent.Q[s][a] = old + hp.alpha * (target - old);
+    agent.N[s][a]++;
+    return { s, a, explore, roll, eps: hp.eps, rec, s2, maxNext, old, target, nw: agent.Q[s][a], done, day };
+  }
+  function runEpisode(agent, seed, hp, r) {
+    const ctx = { shop: newShop(), days: scenario(seed) };
+    while (ctx.shop.t < ctx.days.length) qStep(agent, ctx, hp, r);
+    agent.episodes++;
+    return ctx.shop.total;
+  }
+  // policy evaluation (no learning) on a scenario
+  function playPolicy(days, pick) {
+    const shop = newShop();
+    for (const day of days) step(shop, day, pick(shop, day));
+    return shop;
+  }
+  const policies = {
+    rl: agent => (shop, day) => PRICES[greedy(agent, stateOf(shop, day))],
+    ml: () => (shop, day) => mlPrice(day),
+    fixed: p => () => p,
+  };
+  function train(agent, n, hp, seedBase, r, onEp) {
+    for (let i = 0; i < n; i++) {
+      const tot = runEpisode(agent, seedBase + agent.episodes * 7919, hp, r);
+      if (onEp) onEp(tot, agent.episodes);
+      hp.eps = Math.max(hp.epsMin, hp.eps * hp.decay);
+    }
+  }
+
+  // perfect-hindsight planner: knows every day's demand in advance, solves each week by dynamic programming
+  function oracle(days) {
+    const prices = []; for (let p = 1; p <= 10.0001; p += 0.25) prices.push(p);
+    const plan = [];
+    for (let w = 0; w < days.length / 7; w++) {
+      const wk = days.slice(w * 7, w * 7 + 7), V = [], pick = [];
+      V[7] = Float64Array.from({ length: RESTOCK + 1 }, (_, i) => -COST * i);
+      for (let k = 6; k >= 0; k--) {
+        const day = wk[k], opts = prices.map(p => [p, Math.round(expDemand(day, p) * day.noise)]);
+        V[k] = new Float64Array(RESTOCK + 1).fill(-1e9); pick[k] = new Float64Array(RESTOCK + 1);
+        for (let i = 0; i <= RESTOCK; i++) for (const [p, d] of opts) {
+          const sold = Math.min(d, i), v = (p - COST) * sold - STOCKOUT_PEN * (d - sold) + V[k + 1][i - sold];
+          if (v > V[k][i]) { V[k][i] = v; pick[k][i] = p; }
+        }
+      }
+      let inv = RESTOCK;
+      for (let k = 0; k < 7; k++) { const p = pick[k][inv]; plan.push(p); inv -= Math.min(inv, Math.round(expDemand(wk[k], p) * wk[k].noise)); }
+    }
+    return playPolicy(days, (shop) => plan[shop.t]);
+  }
+
+  return { oracle, COST, RESTOCK, STOCKOUT_PEN, DAYS, TRAFFIC, WEATHER, WKEYS, PRICES, DEM, COMP, INV, NS, NA, rng, scenario, traffic, utility, buyProb, expDemand, mlPrice, newShop, step, stateOf, stateName, newAgent, greedy, qStep, runEpisode, playPolicy, policies, train, demandLevel, compLevel, invLevel, A0, B, COMP_EDGE };
+})();
+// ===== MODEL END =====
+
+</script>
+<script>
+// ============================== utilities ==============================
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const money0 = v => (v < 0 ? '−$' : '$') + Math.abs(Math.round(v)).toLocaleString('en-US');
+const money2 = v => (v < 0 ? '−$' : '$') + Math.abs(v).toFixed(2);
+const smoney0 = v => (v >= 0 ? '+$' : '−$') + Math.abs(Math.round(v)).toLocaleString('en-US');
+const pct = v => Math.round(v * 100) + '%';
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const C = { s1: '#2a78d6', s2: '#eb6834', s3: '#1baf7a', s4: '#eda100', s5: '#e87ba4', ink: '#1f1a17', muted: '#6f665e', gray: '#9a948c' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const SVGNS = 'http://www.w3.org/2000/svg';
+function S(tag, attrs = {}, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function T(parent, x, y, txt, attrs = {}) { const t = S('text', { x, y, ...attrs }, parent); t.textContent = txt; return t; }
+
+const tip = $('#tip');
+function showTip(html, ev) {
+  tip.innerHTML = html; tip.style.display = 'block';
+  const pad = 14, r = tip.getBoundingClientRect();
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - pad;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - pad;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+function hideTip() { tip.style.display = 'none'; }
+const tipRow = (color, label, val) => `<div class="tr"><span>${color ? `<i style="background:${color}"></i>` : ''}${label}</span><b>${val}</b></div>`;
+
+function niceTicks(lo, hi, n = 5) {
+  if (lo === hi) { hi = lo + 1; }
+  const step0 = (hi - lo) / n, mag = Math.pow(10, Math.floor(Math.log10(step0))), e = step0 / mag;
+  const step = (e >= 7.5 ? 10 : e >= 3.5 ? 5 : e >= 1.5 ? 2 : 1) * mag;
+  const out = [];
+  for (let v = Math.floor(lo / step) * step; v <= Math.ceil(hi / step) * step + step / 2; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+function legend(el, items) {
+  el.innerHTML = items.map(it => `<span><i class="${it.kind || ''}" style="background:${it.color};color:${it.color}"></i>${it.name}</span>`).join('');
+}
+
+// Generic line / scatter chart with crosshair (hover:'x') or per-point (hover:'point') tooltips
+function lineChart(el, o) {
+  const W = Math.max(280, el.clientWidth || 600), H = o.height || 240;
+  const m = { l: o.ml || 58, r: o.mr || 18, t: o.mt || 14, b: o.xLabel ? 44 : 28 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const pts = o.series.flatMap(s => s.pts.filter(p => p[1] != null));
+  const [x0, x1] = o.xDomain || [Math.min(...pts.map(p => p[0])), Math.max(...pts.map(p => p[0]))];
+  let ylo, yhi, yt;
+  if (o.yDomain) { [ylo, yhi] = o.yDomain; yt = o.yTicks || niceTicks(ylo, yhi, 4).filter(v => v >= ylo - 1e-9 && v <= yhi + 1e-9); }
+  else {
+    const ys = pts.map(p => p[1]).concat((o.refs || []).map(r => r.y)).concat((o.marks || []).map(r => r.y));
+    ylo = ys.length ? Math.min(...ys) : 0; yhi = ys.length ? Math.max(...ys) : 1;
+    if (o.zero !== false) { ylo = Math.min(0, ylo); yhi = Math.max(0, yhi); }
+    if (ylo === yhi) yhi = ylo + 1;
+    yt = niceTicks(ylo, yhi, o.yTickCount || 5); ylo = yt[0]; yhi = yt[yt.length - 1];
+  }
+  const X = v => m.l + (v - x0) / ((x1 - x0) || 1) * iw, Y = v => m.t + ih - (v - ylo) / ((yhi - ylo) || 1) * ih;
+  const svg = S('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': o.aria || '' });
+  const ax = S('g', { class: 'ax' }, svg);
+  const yFmt = o.yFmt || (v => v), xFmt = o.xFmt || (v => v);
+  yt.forEach(v => { S('line', { class: Math.abs(v) < 1e-9 ? 'base' : 'gridl', x1: m.l, x2: m.l + iw, y1: Y(v), y2: Y(v) }, ax); T(ax, m.l - 8, Y(v) + 4, yFmt(v), { 'text-anchor': 'end' }); });
+  if (ylo > 0 || yhi < 0) S('line', { class: 'base', x1: m.l, x2: m.l + iw, y1: m.t + ih, y2: m.t + ih }, ax);
+  const xt = o.xTicks || niceTicks(x0, x1, 6).filter(v => v >= x0 && v <= x1);
+  xt.forEach(v => T(ax, X(v), m.t + ih + 17, xFmt(v), { 'text-anchor': 'middle' }));
+  if (o.xLabel) T(svg, m.l + iw / 2, H - 6, o.xLabel, { class: 'axl', 'text-anchor': 'middle' });
+  if (o.yLabel) T(svg, 12, m.t + ih / 2, o.yLabel, { class: 'axl', 'text-anchor': 'middle', transform: `rotate(-90 12 ${m.t + ih / 2})` });
+  (o.refs || []).forEach(r => {
+    S('line', { x1: m.l, x2: m.l + iw, y1: Y(r.y), y2: Y(r.y), stroke: r.color || C.gray, 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }, svg);
+    T(svg, m.l + iw - 4, Y(r.y) - 5, r.label, { class: 'reflab', 'text-anchor': 'end' });
+  });
+  (o.vlines || []).forEach(v => {
+    S('line', { x1: X(v.x), x2: X(v.x), y1: m.t, y2: m.t + ih, stroke: v.color || C.ink, 'stroke-width': 1.5, 'stroke-dasharray': v.dash || '' }, svg);
+    if (v.label) T(svg, X(v.x) + (v.anchor === 'end' ? -5 : 5), v.bottom ? m.t + ih - 8 : m.t + 12 + (v.dy || 0), v.label, { class: 'dl', 'text-anchor': v.anchor || 'start' });
+  });
+  const hitDots = [];
+  o.series.forEach(s => {
+    const P = s.pts.filter(p => p[1] != null);
+    if (!P.length) return;
+    if (s.dots) {
+      P.forEach((p, i) => {
+        S('circle', { cx: X(p[0]), cy: Y(p[1]), r: s.r || 5, fill: s.color, stroke: '#fff', 'stroke-width': 2 }, svg);
+        hitDots.push({ s, p, i, x: X(p[0]), y: Y(p[1]) });
+      });
+      return;
+    }
+    const d = P.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join('');
+    S('path', { d, fill: 'none', stroke: s.color, 'stroke-width': s.width || 2, 'stroke-dasharray': s.dash ? '6 4' : null, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: s.opacity || 1 }, svg);
+    if (s.markers) P.forEach(p => S('circle', { cx: X(p[0]), cy: Y(p[1]), r: 4, fill: s.color, stroke: '#fff', 'stroke-width': 2 }, svg));
+    if (s.endLabel) { const p = P[P.length - 1]; T(svg, X(p[0]) + 7, Y(p[1]) + 4, s.endLabel, { class: 'dl' }); }
+  });
+  (o.marks || []).forEach(k => {
+    S('circle', { cx: X(k.x), cy: Y(k.y), r: k.r || 7, fill: k.color, stroke: '#fff', 'stroke-width': 2.5 }, svg);
+    if (k.label) T(svg, X(k.x) + (k.dx ?? 10), Y(k.y) + (k.dy ?? -10), k.label, { class: 'dl', 'text-anchor': k.anchor || 'start' });
+  });
+  el.innerHTML = ''; el.appendChild(svg);
+
+  if (o.hover === 'x') {
+    const g = S('g', { style: 'display:none', 'pointer-events': 'none' }, svg);
+    const vl = S('line', { y1: m.t, y2: m.t + ih, stroke: C.muted, 'stroke-width': 1 }, g);
+    const dots = o.series.map(s => S('circle', { r: 5, fill: s.color, stroke: '#fff', 'stroke-width': 2 }, g));
+    const rect = S('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent' }, svg);
+    const snap = o.snap || [...new Set(o.series.flatMap(s => s.pts.filter(p => p[1] != null).map(p => p[0])))].sort((a, b) => a - b);
+    rect.addEventListener('mousemove', ev => {
+      const bb = svg.getBoundingClientRect(), px = (ev.clientX - bb.left) * (W / bb.width);
+      const xv = x0 + (px - m.l) / iw * (x1 - x0);
+      let best = snap[0]; for (const v of snap) if (Math.abs(v - xv) < Math.abs(best - xv)) best = v;
+      if (best == null) return;
+      g.style.display = ''; vl.setAttribute('x1', X(best)); vl.setAttribute('x2', X(best));
+      const hits = o.series.map((s, i) => {
+        let h = null; for (const p of s.pts) if (p[1] != null && (h == null || Math.abs(p[0] - best) < Math.abs(h[0] - best))) h = p;
+        if (h && Math.abs(h[0] - best) > (o.snapTol ?? 1e-6) && !s.continuous) h = null;
+        if (h) { dots[i].setAttribute('cx', X(h[0])); dots[i].setAttribute('cy', Y(h[1])); dots[i].style.display = ''; } else dots[i].style.display = 'none';
+        return h;
+      });
+      const html = o.tip ? o.tip(best, hits) : `<div class="tt">${xFmt(best)}</div>` + o.series.map((s, i) => hits[i] ? tipRow(s.color, s.name, yFmt(hits[i][1])) : '').join('');
+      showTip(html, ev);
+    });
+    rect.addEventListener('mouseleave', () => { g.style.display = 'none'; hideTip(); });
+  }
+  if (o.hover === 'point') {
+    hitDots.forEach(h => {
+      const c = S('circle', { cx: h.x, cy: h.y, r: 12, fill: 'transparent', style: 'cursor:default' }, svg);
+      c.addEventListener('mousemove', ev => showTip(o.tip(h.s, h.p, h.i), ev));
+      c.addEventListener('mouseleave', hideTip);
+    });
+  }
+  return { X, Y };
+}
+
+// HTML horizontal bar list (zero-based) — used for scoreboards
+function hbars(el, rows, opts = {}) {
+  const max = Math.max(...rows.map(r => Math.abs(r.v)), 1);
+  el.innerHTML = rows.map(r => `<div class="srow"><span>${r.label}</span><div class="track"><div class="fill" style="width:${Math.max(0, r.v) / max * 100}%;background:${r.color};${r.style || ''}"></div></div><span class="val">${(opts.fmt || money0)(r.v)}</span></div>`).join('');
+  el.classList.add('scoreboard');
+}
+
+// ============================== shared simulation bits ==============================
+const PRETRAIN = { n: 20000, alpha: 0.05, gamma: 0.5, epsMin: 0.02 };
+function trainAgent(n, alpha, gamma, epsMin, seed) {
+  const ag = M.newAgent(), r = M.rng(seed), hp = { alpha, gamma, eps: 1, epsMin, decay: 1 };
+  for (let i = 0; i < n; i++) {
+    hp.eps = Math.max(epsMin, 1 - (1 - epsMin) * i / (n * 0.7));
+    M.runEpisode(ag, 1e6 + seed * 1e5 + i * 7919, hp, r);
+  }
+  return ag;
+}
+const GAME_AGENT = trainAgent(PRETRAIN.n, PRETRAIN.alpha, PRETRAIN.gamma, PRETRAIN.epsMin, 7);
+const STATIC_PRICE = 4.5;
+const dayName = d => M.DAYS[d.dow];
+const condText = d => `${M.WEATHER[d.weather].icon} ${M.WEATHER[d.weather].label}${d.event ? ' · 🎪 ' + d.event : ''} · ${d.comp ? 'Rival $' + d.cprice.toFixed(2) : 'No rival'}`;
+const stateText = s => { const n = M.stateName(s); return `${n.dem} demand · ${n.comp === 'None' ? 'No competitor' : 'Competitor ' + n.comp.toLowerCase()} · ${n.inv} stock`; };
+const stateShort = s => { const n = M.stateName(s); return `${n.dem} · ${n.comp} · ${n.inv}`; };
+function invAtOpen(shop, day) { return (day.dow === 0 && shop.t > 0) ? M.RESTOCK : shop.inv; }
+function avgOver(scens, pick) { let s = 0; for (const d of scens) s += M.playPolicy(d, pick).total; return s / scens.length; }
+
+// ============================== tabs ==============================
+const redraw = {}; // per visible view
+let currentTab = 'concepts', currentConcept = 0, currentSub = 'play';
+function showTab(name) {
+  currentTab = name;
+  $$('.tabs [role=tab]').forEach(b => b.setAttribute('aria-selected', b.id === 'tab-' + name));
+  $('#panel-concepts').hidden = name !== 'concepts';
+  $('#panel-lab').hidden = name !== 'lab';
+  hideTip(); redrawVisible();
+  window.scrollTo({ top: 0 });
+}
+$('#tab-concepts').onclick = () => showTab('concepts');
+$('#tab-lab').onclick = () => showTab('lab');
+$$('[data-golab]').forEach(b => b.onclick = () => showTab('lab'));
+
+function showConcept(i) {
+  currentConcept = clamp(i, 0, 7);
+  $$('.csec').forEach(s => s.hidden = +s.dataset.sec !== currentConcept);
+  $$('.cnav [data-c]').forEach(b => b.setAttribute('aria-current', +b.dataset.c === currentConcept));
+  $('#cprev').disabled = currentConcept === 0;
+  $('#cnext').textContent = currentConcept === 7 ? 'Go to the Lab →' : 'Next →';
+  hideTip(); redrawVisible();
+}
+$$('.cnav [data-c]').forEach(b => b.onclick = () => { showConcept(+b.dataset.c); window.scrollTo({ top: 0 }); });
+$('#cprev').onclick = () => { showConcept(currentConcept - 1); window.scrollTo({ top: 0 }); };
+$('#cnext').onclick = () => { if (currentConcept === 7) showTab('lab'); else { showConcept(currentConcept + 1); window.scrollTo({ top: 0 }); } };
+
+function showSub(name) {
+  currentSub = name;
+  $$('.subtabs [data-sub]').forEach(b => b.setAttribute('aria-selected', b.dataset.sub === name));
+  $$('[data-subpanel]').forEach(p => p.hidden = p.dataset.subpanel !== name);
+  if (name === 'train') TR.ensureBench();
+  hideTip(); redrawVisible();
+}
+$$('.subtabs [data-sub]').forEach(b => b.onclick = () => showSub(b.dataset.sub));
+
+function redrawVisible() {
+  if (currentTab === 'concepts') redraw['c' + currentConcept] && redraw['c' + currentConcept]();
+  else redraw[currentSub] && redraw[currentSub]();
+}
+let rsz; addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(redrawVisible, 120); });
+
+function bindRange(id, fmt, cb) {
+  const el = $('#' + id), out = $('#' + id + 'o');
+  const upd = () => { if (out) out.textContent = fmt(+el.value); cb && cb(+el.value); };
+  el.addEventListener('input', upd);
+  if (out) out.textContent = fmt(+el.value);
+  return el;
+}
+
+// ============================== Concept 01 ==============================
+(() => {
+  const PS = [
+    { k: 'People', icon: '🧑‍🤝‍🧑', q: 'Does this customer have higher willingness-to-pay?', gen: 'Loyalty-tier pricing, offers based on browsing history', cafe: ['App members get a personalised “happy hour” coupon when their visits drop off', 'Student ID discount at 8 a.m.', 'A frequent big spender never sees the discount banner (surveillance pricing territory!)'] },
+    { k: 'Products', icon: '🥐', q: 'Does this configuration change value?', gen: 'Bundled vs. à la carte airline fares', cafe: ['Latte + croissant bundle for $6.50 vs. $7.40 separately', 'Oat milk / extra shot premiums', 'Size ladders: small $3.80, large $4.60 (the decoy effect)'] },
+    { k: 'Periods', icon: '⏰', q: 'Is demand higher right now?', gen: 'Surge pricing, hotel weekend rates', cafe: ['Morning-rush price vs. 3–5 p.m. markdown', 'Weekend and rainy-day prices (exactly what the Lab simulates)', 'Clearing pastries at 30% off one hour before closing'] },
+    { k: 'Places', icon: '📍', q: 'Does location shift cost or value?', gen: 'Regional grocery pricing, geo-based delivery fees', cafe: ['Airport kiosk vs. suburban branch', 'Delivery-app price vs. in-store price', 'Higher prices for the café next to the concert venue'] },
+  ];
+  const TERMS = [
+    { k: 'Surge pricing', d: 'Prices rise automatically when demand outstrips supply.', cafe: 'A concert lets out next door and a flat white goes from $4.50 to $6.00 for an hour.' },
+    { k: 'Personalised pricing', d: 'Different customers see different prices based on their data.', cafe: 'The app shows you $4.20 and your colleague $4.80, based on purchase history.' },
+    { k: 'Markdown pricing', d: 'Prices fall over time to clear perishable inventory.', cafe: 'Unsold sandwiches drop 50% after 6 p.m.' },
+    { k: 'Geographic pricing', d: 'Prices vary by location or channel.', cafe: 'Downtown branch $5.20, suburban branch $4.40.' },
+    { k: 'Surveillance pricing', d: 'A critical term for personalised pricing based on tracked behavioural or personal data.', cafe: 'Your loyalty app infers your income from your location history and sets your price accordingly. The FTC opened a 6(b) inquiry into this in 2024.' },
+  ];
+  const pc = $('#pcards'), pd = $('#pdetail');
+  pc.innerHTML = PS.map((p, i) => `<button class="pcard" data-i="${i}" aria-pressed="${i === 2}"><div class="big">${p.icon}</div><h4>${p.k}</h4><div style="font-size:13px">${p.q}</div></button>`).join('');
+  const showP = i => {
+    $$('.pcard', pc).forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === i));
+    const p = PS[i];
+    pd.innerHTML = `<div class="grid2"><div><div class="eyebrow">${p.k} · question the algorithm asks</div><h3 style="margin-top:4px">${p.q}</h3><p style="margin:0;font-size:14px"><b>Classic example:</b> ${p.gen}</p></div><div><div class="eyebrow">In our coffee shop</div><ul class="tight">${p.cafe.map(c => `<li>${c}</li>`).join('')}</ul></div></div>`;
+  };
+  pc.onclick = e => { const b = e.target.closest('.pcard'); if (b) showP(+b.dataset.i); };
+  showP(2);
+  const tm = $('#terms'), td = $('#termdetail');
+  tm.innerHTML = TERMS.map((t, i) => `<button data-i="${i}" aria-pressed="${i === 0}">${t.k}</button>`).join('');
+  const showT = i => {
+    $$('button', tm).forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === i));
+    td.innerHTML = `<b>${TERMS[i].k}:</b> ${TERMS[i].d}<br><span class="muted">☕ ${TERMS[i].cafe}</span>`;
+  };
+  tm.onclick = e => { const b = e.target.closest('button'); if (b) showT(+b.dataset.i); };
+  showT(0);
+})();
+
+// ============================== Concept 02 ==============================
+(() => {
+  const day = $('#c2day'), wea = $('#c2weather');
+  day.innerHTML = M.DAYS.map((d, i) => `<option value="${i}" ${i === 1 ? 'selected' : ''}>${d}</option>`).join('');
+  wea.innerHTML = M.WKEYS.map(k => `<option value="${k}">${M.WEATHER[k].icon} ${M.WEATHER[k].label}</option>`).join('');
+  const mk = () => ({ dow: +day.value, weather: wea.value, event: $('#c2event').value === '1' ? 'Farmers’ market' : null, comp: $('#c2comp').value === '1', cprice: +$('#c2cprice').value, noise: 1 });
+  function draw() {
+    const d = mk(), p = +$('#c2price').value;
+    $('#c2cprow').style.opacity = d.comp ? 1 : 0.4; $('#c2cprice').disabled = !d.comp;
+    const curve = [], dem = [];
+    for (let x = 1; x <= 10.0001; x += 0.05) { const q = M.expDemand(d, x); curve.push([+x.toFixed(2), (x - M.COST) * q]); dem.push([+x.toFixed(2), q]); }
+    const best = M.mlPrice(d), bestProfit = (best - M.COST) * M.expDemand(d, best);
+    const q = M.expDemand(d, p), prof = (p - M.COST) * q, tr = M.traffic(d);
+    $('#c2stats').innerHTML = [
+      ['Walk-ins expected', Math.round(tr), ''],
+      ['Buy from us', pct(M.buyProb(d, p)), d.comp ? `rival takes ${pct(trRival(d, p))}` : 'no rival today'],
+      ['Cups sold', Math.round(q), ''],
+      ['Profit today', money0(prof), ''],
+      ['Best price today', money2(best), ''],
+      ['Left on the table', money0(bestProfit - prof), prof >= bestProfit - 0.5 ? 'you found it!' : 'vs. best price'],
+    ].map(([k, v, s]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${s}</div></div>`).join('');
+    const tipFn = (unit, f) => (x, h) => `<div class="tt">Price ${money2(x)}</div>` + tipRow(C.s1, unit, f(h[0][1]));
+    lineChart($('#c2profit'), { series: [{ name: 'Profit', color: C.s1, pts: curve, width: 2.5 }], xDomain: [1, 10], xFmt: v => '$' + v, yFmt: money0, height: 230, hover: 'x', tip: tipFn('Expected profit', money0),
+      marks: [{ x: best, y: bestProfit, color: C.s2, label: 'Best ' + money2(best) }, { x: p, y: prof, color: C.ink, r: 6, label: 'You', dy: 22, dx: 8 }], aria: 'Profit versus price curve' });
+    lineChart($('#c2demand'), { series: [{ name: 'Cups', color: C.s1, pts: dem, width: 2.5 }], xDomain: [1, 10], xFmt: v => '$' + v, yFmt: v => Math.round(v), height: 230, hover: 'x', tip: tipFn('Cups sold', v => Math.round(v)),
+      marks: [{ x: p, y: q, color: C.ink, r: 6, label: Math.round(q) + ' cups' }], aria: 'Demand curve' });
+  }
+  function trRival(d, p) { const u = Math.exp(M.utility(d) - M.B * p), c = Math.exp(M.utility(d) - M.COMP_EDGE - M.B * d.cprice); return c / (1 + u + c); }
+  ['c2day', 'c2weather', 'c2event', 'c2comp'].forEach(id => $('#' + id).addEventListener('change', draw));
+  bindRange('c2cprice', money2, draw); bindRange('c2price', money2, draw);
+  redraw.c1 = draw;
+})();
+
+// ============================== Concept 03 ==============================
+(() => {
+  const r = M.rng(42), g = () => { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+  const cust = [];
+  for (let i = 0; i < 1000; i++) { const stu = i < 400; cust.push({ stu, wtp: (stu ? 3.0 : 5.2) * Math.exp(0.3 * g()), z: g() }); }
+  const st = { mode: 'uniform', p: 4, ps: 3, pp: 5.2, noise: 0.15, cap: 0.9 };
+  const evalPrices = f => {
+    let profit = 0, cs = 0, n = 0, rev = 0; const surplus = new Float64Array(cust.length);
+    cust.forEach((c, i) => { const p = f(c); if (c.wtp >= p) { profit += p - M.COST; cs += c.wtp - p; n++; rev += p; surplus[i] = c.wtp - p; } else surplus[i] = -1; });
+    return { profit, cs, n, avg: n ? rev / n : 0, surplus };
+  };
+  const argmax = (lo, hi, step, f) => { let b = lo, bv = -Infinity; for (let x = lo; x <= hi + 1e-9; x += step) { const v = f(x); if (v > bv) { bv = v; b = x; } } return +b.toFixed(2); };
+  const optU = argmax(1.2, 10, 0.05, p => evalPrices(() => p).profit);
+  const base = evalPrices(() => optU);
+  const personalPrice = c => Math.max(M.COST, c.wtp * Math.exp(st.noise * c.z) * st.cap);
+  function priceFn() {
+    if (st.mode === 'uniform') return () => st.p;
+    if (st.mode === 'segment') return c => c.stu ? st.ps : st.pp;
+    return personalPrice;
+  }
+  function ctrls() {
+    const box = $('#c3ctrls');
+    if (st.mode === 'uniform') box.innerHTML = `<div class="ctrl"><label for="c3p">Price for everyone</label><input type="range" id="c3p" min="1.5" max="9" step="0.05" value="${st.p}"><output id="c3po"></output></div><p class="muted" style="font-size:13px">The profit-maximising uniform price is <b>${money2(optU)}</b>. The baseline column uses it.</p>`;
+    else if (st.mode === 'segment') box.innerHTML = `<div class="ctrl"><label for="c3ps">Student price</label><input type="range" id="c3ps" min="1.5" max="9" step="0.05" value="${st.ps}"><output id="c3pso"></output></div><div class="ctrl"><label for="c3pp">Professional price</label><input type="range" id="c3pp" min="1.5" max="9" step="0.05" value="${st.pp}"><output id="c3ppo"></output></div><p class="muted" style="font-size:13px">Like a student-ID discount: the café only needs to know which group you belong to.</p>`;
+    else box.innerHTML = `<div class="ctrl"><label for="c3n">AI estimate error</label><input type="range" id="c3n" min="0" max="0.6" step="0.01" value="${st.noise}"><output id="c3no"></output><div class="hint">0% = the algorithm knows each person’s exact WTP.</div></div><div class="ctrl"><label for="c3c">Charge % of estimate</label><input type="range" id="c3c" min="0.5" max="1" step="0.01" value="${st.cap}"><output id="c3co"></output><div class="hint">Lower = leave customers more surplus (safety margin for errors).</div></div>`;
+    const bind = (id, key, fmt) => { const el = $('#' + id); if (el) bindRange(id, fmt, v => { st[key] = v; draw(); }); };
+    bind('c3p', 'p', money2); bind('c3ps', 'ps', money2); bind('c3pp', 'pp', money2); bind('c3n', 'noise', v => Math.round(v * 100) + '%'); bind('c3c', 'cap', pct);
+  }
+  $('#c3mode').onclick = e => { const b = e.target.closest('button'); if (!b) return; st.mode = b.dataset.m; $$('#c3mode button').forEach(x => x.setAttribute('aria-pressed', x === b)); ctrls(); draw(); };
+  $('#c3opt').onclick = () => {
+    if (st.mode === 'uniform') st.p = optU;
+    else if (st.mode === 'segment') { st.ps = argmax(1.2, 10, 0.05, p => evalPrices(c => c.stu ? p : 99).profit); st.pp = argmax(1.2, 10, 0.05, p => evalPrices(c => c.stu ? 99 : p).profit); }
+    else st.cap = argmax(0.5, 1, 0.01, k => { const old = st.cap; st.cap = k; const v = evalPrices(personalPrice).profit; st.cap = old; return v; });
+    ctrls(); draw();
+  };
+  function draw() {
+    const cur = evalPrices(priceFn());
+    let better = 0, worse = 0;
+    cur.surplus.forEach((s, i) => { const b = base.surplus[i]; if (s > b + 1e-9) better++; else if (s < b - 1e-9) worse++; });
+    const row = (k, b, c, f, good = 1) => { const d = c - b, cls = Math.abs(d) < 1e-6 ? '' : (d * good > 0 ? 'pos' : 'neg'); return `<tr><td>${k}</td><td class="num">${f(b)}</td><td class="num">${f(c)}</td><td class="num ${cls}">${Math.abs(d) < 1e-6 ? '—' : (d > 0 ? '+' : '−') + String(f(Math.abs(d))).replace('−', '')}</td></tr>`; };
+    $('#c3table').innerHTML = `<tr><th>Metric</th><th>Best uniform (${money2(optU)})</th><th>Your setting</th><th>Change</th></tr>` +
+      row('Café profit', base.profit, cur.profit, money0) + row('Consumer surplus', base.cs, cur.cs, money0) +
+      row('Customers served', base.n, cur.n, v => Math.round(v)) + row('Avg. price paid', base.avg, cur.avg, money2, -1) +
+      `<tr><td>Customers better off</td><td class="num">—</td><td class="num">${pct(better / 1000)}</td><td></td></tr><tr><td>Customers worse off</td><td class="num">—</td><td class="num">${pct(worse / 1000)}</td><td></td></tr>`;
+    // histogram
+    const bw = 0.5, bins = []; for (let x = 0; x < 12; x += bw) bins.push({ x, stu: 0, pro: 0 });
+    cust.forEach(c => { const i = Math.min(bins.length - 1, Math.floor(c.wtp / bw)); c.stu ? bins[i].stu++ : bins[i].pro++; });
+    const el = $('#c3hist'), W = Math.max(300, el.clientWidth), H = 200, m = { l: 44, r: 12, t: 22, b: 26 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const maxc = Math.max(...bins.map(b => b.stu + b.pro)), yt = niceTicks(0, maxc, 4), ymax = yt[yt.length - 1];
+    const X = v => m.l + v / 12 * iw, Y = v => m.t + ih - v / ymax * ih;
+    const svg = S('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Histogram of willingness to pay by segment' });
+    const ax = S('g', { class: 'ax' }, svg);
+    yt.forEach(v => { S('line', { class: v === 0 ? 'base' : 'gridl', x1: m.l, x2: m.l + iw, y1: Y(v), y2: Y(v) }, ax); T(ax, m.l - 6, Y(v) + 4, v, { 'text-anchor': 'end' }); });
+    for (let v = 0; v <= 12; v += 2) T(ax, X(v), H - 8, '$' + v, { 'text-anchor': 'middle' });
+    bins.forEach(b => {
+      const x = X(b.x) + 1, w = Math.max(1, X(bw) - X(0) - 2);
+      if (b.stu) S('rect', { x, y: Y(b.stu), width: w, height: Y(0) - Y(b.stu), fill: C.s1, rx: b.pro ? 0 : 3 }, svg);
+      if (b.pro) S('rect', { x, y: Y(b.stu + b.pro), width: w, height: Math.max(0, Y(b.stu) - Y(b.stu + b.pro) - (b.stu ? 2 : 0)), fill: C.s2, rx: 3 }, svg);
+      const hit = S('rect', { x: X(b.x), y: m.t, width: X(bw) - X(0), height: ih, fill: 'transparent' }, svg);
+      hit.addEventListener('mousemove', ev => showTip(`<div class="tt">WTP ${money2(b.x)}–${money2(b.x + bw)}</div>` + tipRow(C.s2, 'Professionals', b.pro) + tipRow(C.s1, 'Students', b.stu), ev));
+      hit.addEventListener('mouseleave', hideTip);
+    });
+    const vline = (p, label, dy) => { S('line', { x1: X(p), x2: X(p), y1: m.t - 4, y2: m.t + ih, stroke: C.ink, 'stroke-width': 2, 'stroke-dasharray': '5 3', 'pointer-events': 'none' }, svg); T(svg, X(p) + 5, m.t + 6 + dy, label, { class: 'dl' }); };
+    if (st.mode === 'uniform') vline(st.p, 'Price ' + money2(st.p) + ': everyone to the right buys', 0);
+    else if (st.mode === 'segment') { vline(st.ps, 'Student ' + money2(st.ps), 0); vline(st.pp, 'Professional ' + money2(st.pp), 16); }
+    else T(svg, m.l + iw - 4, m.t + 4, 'Each customer sees their own price ≈ ' + pct(st.cap) + ' of their estimated WTP', { class: 'dl', 'text-anchor': 'end' });
+    el.innerHTML = ''; el.appendChild(svg);
+  }
+  legend($('#c3legend'), [{ name: 'Professionals (60%)', color: C.s2, kind: 'sq' }, { name: 'Students (40%)', color: C.s1, kind: 'sq' }]);
+  ctrls(); redraw.c2 = draw;
+})();
+
+// ============================== Concept 04 ==============================
+(() => {
+  const scens = Array.from({ length: 100 }, (_, i) => M.scenario(300000 + i));
+  const ml = avgOver(scens, M.policies.ml()), rl = avgOver(scens, M.policies.rl(GAME_AGENT)), st = avgOver(scens, M.policies.fixed(STATIC_PRICE));
+  function draw() {
+    const base = +$('#c4base').value, wk = +$('#c4wk').value, thr = +$('#c4thr').value, up = +$('#c4up').value / 100;
+    const mine = avgOver(scens, (shop, day) => { let p = base + (day.dow >= 5 ? wk : 0); if (invAtOpen(shop, day) < thr) p *= 1 + up; return clamp(Math.round(p * 4) / 4, 1, 10); });
+    hbars($('#c4bars'), [
+      { label: '<b>Your heuristic</b>', v: mine, color: C.s1 },
+      { label: 'ML (predict → optimise today)', v: ml, color: C.s3 },
+      { label: 'RL agent (learned policy)', v: rl, color: C.s2 },
+      { label: `Static $${STATIC_PRICE.toFixed(2)} menu`, v: st, color: C.s4 },
+    ]);
+    const best = Math.max(ml, rl, st);
+    $('#c4bars').insertAdjacentHTML('beforeend', `<p style="font-size:13.5px;margin:8px 0 0">${mine > best ? '🏆 Your rule beats every benchmark. Which ingredient made the difference?' : mine > ml ? '👍 Your rule beats the myopic ML price. Can you also beat the RL agent?' : 'Tip: try a weekend surcharge, and raise prices when stock runs low before the weekend.'}</p>`);
+  }
+  bindRange('c4base', money2, draw); bindRange('c4wk', v => '+' + money2(v), draw); bindRange('c4thr', v => v + ' cups', draw); bindRange('c4up', v => v + '%', draw);
+  redraw.c3 = draw;
+})();
+
+// ============================== Concept 05 ==============================
+(() => {
+  const svg = $('#loopsvg');
+  const defs = S('defs', {}, svg);
+  const mk = S('marker', { id: 'ah', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs); S('path', { d: 'M0,0 L10,5 L0,10 z', fill: C.muted }, mk);
+  const mk2 = S('marker', { id: 'ah2', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, defs); S('path', { d: 'M0,0 L10,5 L0,10 z', fill: C.s2 }, mk2);
+  const agent = S('rect', { class: 'box', x: 10, y: 100, width: 170, height: 120, rx: 14 }, svg);
+  const env = S('rect', { class: 'box', x: 340, y: 100, width: 170, height: 120, rx: 14 }, svg);
+  T(svg, 95, 135, '🤖 Agent', { class: 'lab', 'text-anchor': 'middle' }); T(svg, 95, 155, 'the pricing algorithm', { class: 'sub', 'text-anchor': 'middle' });
+  const polT = T(svg, 95, 190, 'Policy: state → price', { class: 'sub', 'text-anchor': 'middle' });
+  T(svg, 425, 135, '🏙️ Environment', { class: 'lab', 'text-anchor': 'middle' }); T(svg, 425, 155, 'customers · weather · rival', { class: 'sub', 'text-anchor': 'middle' });
+  const envT = T(svg, 425, 190, '', { class: 'sub', 'text-anchor': 'middle' });
+  const aArr = S('path', { class: 'arr', d: 'M95,95 C95,25 425,25 425,95', 'marker-end': 'url(#ah)' }, svg);
+  const rArr = S('path', { class: 'arr', d: 'M336,178 L186,178', 'marker-end': 'url(#ah)' }, svg);
+  const sArr = S('path', { class: 'arr', d: 'M425,225 C425,295 95,295 95,225', 'marker-end': 'url(#ah)' }, svg);
+  const aT = T(svg, 260, 36, 'Action: set today’s price', { class: 'lab', 'text-anchor': 'middle' });
+  T(svg, 260, 166, 'Reward', { class: 'lab', 'text-anchor': 'middle' });
+  const rT = T(svg, 260, 198, 'the day’s net profit', { class: 'sub', 'text-anchor': 'middle' });
+  const sT = T(svg, 260, 300, 'State: tomorrow’s conditions', { class: 'lab', 'text-anchor': 'middle' });
+  const parts = { agent, env, action: aArr, state: sArr, reward: rArr };
+  function hl(keys) {
+    Object.entries(parts).forEach(([k, el]) => { el.classList.toggle('hl', keys.includes(k)); if (el.tagName === 'path') el.setAttribute('marker-end', keys.includes(k) ? 'url(#ah2)' : 'url(#ah)'); });
+  }
+  const V = [
+    { k: 'Agent', parts: ['agent'], m: 'Decision-maker', cafe: 'The pricing algorithm, or you when you play the Lab.' },
+    { k: 'Environment', parts: ['env'], m: 'The world the agent interacts with', cafe: 'Customers, weather, local events and the rival café “Bean There”. The agent cannot control them, only respond.' },
+    { k: 'State', parts: ['state'], m: 'The current situation', cafe: 'Demand level (day × weather × event), the competitor’s price and cups left in stock. 27 possible states in the Lab.' },
+    { k: 'Action', parts: ['action'], m: 'The choice made by the agent', cafe: 'Today’s coffee price: one of 19 options from $1.00 to $10.00.' },
+    { k: 'Reward', parts: ['reward'], m: 'The feedback signal', cafe: 'Net profit for the day: revenue − cost − $0.50 per turned-away customer − discarded beans.' },
+    { k: 'Policy', parts: ['agent'], m: 'The strategy for selecting actions', cafe: 'A lookup table: “in state s, charge price a.” Learning = improving this table. The Lab shows it as the Q-table.' },
+  ];
+  const vb = $('#vocab'), vd = $('#vocabdetail');
+  vb.innerHTML = V.map((v, i) => `<button data-i="${i}" aria-pressed="false"><b>${v.k}</b><span style="font-size:13px">${v.m}</span></button>`).join('');
+  const show = i => { $$('button', vb).forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === i)); vd.innerHTML = `<div class="eyebrow">${V[i].k} · ${V[i].m}</div><p style="margin:4px 0 0">☕ ${V[i].cafe}</p>`; hl(V[i].parts); };
+  vb.onclick = e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); };
+  show(0);
+  let busy = false, seedC = 1;
+  $('#c5run').onclick = () => {
+    if (busy) return; busy = true;
+    const days = M.scenario(5000 + seedC++), day = days[Math.floor(Math.random() * 21)];
+    const shop = M.newShop(); shop.inv = Math.round(M.RESTOCK * (0.3 + Math.random() * 0.8)); shop.t = day.d; if (day.dow === 0) shop.t = 0;
+    const s = M.stateOf(shop, day), price = M.PRICES[M.greedy(GAME_AGENT, s)];
+    const rec = M.step(shop, day, price);
+    const steps = [
+      () => { hl(['state']); sT.textContent = `State: ${stateShort(s)}`; envT.textContent = `${dayName(day)} · ${M.WEATHER[day.weather].label}${day.event ? ' · event' : ''}`; $('#c5msg').textContent = `1 · Observe: ${dayName(day)}, ${condText(day)}, ${rec.invStart} cups in stock.`; },
+      () => { hl(['agent']); polT.textContent = `Policy picks ${money2(price)}`; $('#c5msg').textContent = `2 · The policy looks up the best-known price for “${stateShort(s)}”.`; },
+      () => { hl(['action']); aT.textContent = `Action: price = ${money2(price)}`; $('#c5msg').textContent = '3 · Act: the price goes up on the board.'; },
+      () => { hl(['env']); envT.textContent = `${rec.sold} of ${rec.walkins} walk-ins bought`; $('#c5msg').textContent = '4 · The environment responds: customers decide.'; },
+      () => { hl(['reward']); rT.textContent = money2(rec.reward); $('#c5msg').textContent = `5 · Feedback: ${money2(rec.reward)} net. A learning agent would now nudge Q(state, ${money2(price)}) toward it.`; busy = false; },
+    ];
+    steps.forEach((f, i) => setTimeout(f, i * 900));
+  };
+})();
+
+// ============================== Concept 06 ==============================
+(() => {
+  const ARMS = [3, 4, 5, 6, 7], DAYS = 30, SD = 35;
+  const tue = { dow: 1, weather: 'sunny', event: null, comp: false, cprice: null, noise: 1 };
+  const truth = ARMS.map(p => (p - M.COST) * M.expDemand(tue, p)), best = Math.max(...truth), maxT = Math.max(...truth) * 1.25;
+  const r = M.rng(99), gauss = () => { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+  let st, timer = null;
+  const reset = () => { clearInterval(timer); timer = null; st = { n: ARMS.map(() => 0), sum: ARMS.map(() => 0), day: 0, tot: 0, reg: 0, last: -1 }; $('#c6log').textContent = 'Click a price to open the shop for one day at that price.'; render(); };
+  const est = i => st.n[i] ? st.sum[i] / st.n[i] : null;
+  function pull(i, how) {
+    if (st.day >= DAYS) return;
+    const rew = truth[i] + SD * gauss();
+    st.n[i]++; st.sum[i] += rew; st.day++; st.tot += rew; st.reg += best - truth[i]; st.last = i;
+    $('#c6log').innerHTML = `Day ${st.day}: ${how ? `<span class="badge ${how}">${how.toUpperCase()}</span> ` : ''}charged <b>$${ARMS[i]}</b> and earned <b>${money0(rew)}</b>.` + (st.day === DAYS ? ` <b>Done!</b> Regret ${money0(st.reg)}: profit lost by not always charging the truly best price.` : '');
+    render();
+  }
+  function render() {
+    const showT = $('#c6truth').checked;
+    $('#arms').innerHTML = ARMS.map((p, i) => {
+      const e = est(i), h = e == null ? 0 : clamp(e / maxT, 0, 1) * 66;
+      return `<div class="arm ${st.last === i ? 'last' : ''}"><button class="btn primary small" data-arm="${i}" ${st.day >= DAYS ? 'disabled' : ''}>Charge $${p}</button>
+        <div class="bar" title="Estimated average profit">${e == null ? '<span class="muted" style="font-size:12px;align-self:center">not tried</span>' : `<div class="b" style="height:${h}px"></div>`}${showT ? `<div class="truth" style="bottom:${truth[i] / maxT * 66}px" title="True average"></div>` : ''}</div>
+        <div class="est">${e == null ? '—' : money0(e)}</div><div class="n">avg of ${st.n[i]} day${st.n[i] === 1 ? '' : 's'}${showT ? ` · true ${money0(truth[i])}` : ''}</div></div>`;
+    }).join('');
+    $('#c6day').textContent = st.day; $('#c6tot').textContent = money0(st.tot); $('#c6reg').textContent = money0(st.reg);
+    $('#c6auto').disabled = st.day >= DAYS || !!timer;
+  }
+  $('#arms').onclick = e => { const b = e.target.closest('[data-arm]'); if (b && !timer) pull(+b.dataset.arm); };
+  $('#c6truth').onchange = render; $('#c6reset').onclick = reset;
+  bindRange('c6eps', v => v.toFixed(2));
+  $('#c6auto').onclick = () => {
+    timer = setInterval(() => {
+      if (st.day >= DAYS) { clearInterval(timer); timer = null; render(); return; }
+      const eps = +$('#c6eps').value;
+      if (r() < eps) pull(Math.floor(r() * ARMS.length), 'explore');
+      else {
+        let bi = [], bv = -Infinity; ARMS.forEach((_, i) => { const v = est(i) ?? 0; if (v > bv + 1e-9) { bv = v; bi = [i]; } else if (Math.abs(v - bv) < 1e-9) bi.push(i); });
+        pull(bi[Math.floor(r() * bi.length)], 'exploit');
+      }
+    }, 160);
+    render();
+  };
+  reset();
+})();
+
+// ============================== Concept 07 ==============================
+(() => {
+  const fri = { dow: 4, weather: 'sunny', event: null, comp: false, cprice: null, noise: 1 };
+  const sat = { dow: 5, weather: 'sunny', event: 'Farmers’ market', comp: false, cprice: null, noise: 1 };
+  const dayProfit = (d, p, stock) => { const q = M.expDemand(d, p), sold = Math.min(q, stock); return { sold, v: (p - M.COST) * sold - M.STOCKOUT_PEN * (q - sold) }; };
+  const satBest = left => { let b = null; for (let p = 1; p <= 10.0001; p += 0.05) { const r = dayProfit(sat, p, left), v = r.v - M.COST * (left - r.sold); if (!b || v > b.v) b = { p, v, sold: r.sold }; } return b; };
+  const outcome = (pf, stock) => { const f = dayProfit(fri, pf, stock), s = satBest(stock - f.sold); return { f, s, total: f.v + s.v, left: stock - f.sold }; };
+  legend($('#c7legend'), [{ name: 'Friday profit only (what the ML suggestion maximises)', color: C.s3, kind: 'dash' }, { name: 'Friday + Saturday total', color: C.s1 }]);
+  function draw() {
+    const stock = +$('#c7stock').value, pf = +$('#c7fri').value;
+    const friOnly = [], tot = [];
+    for (let p = 2; p <= 8.0001; p += 0.05) { const o = outcome(p, stock); friOnly.push([+p.toFixed(2), o.f.v]); tot.push([+p.toFixed(2), o.total]); }
+    const mlP = M.mlPrice(fri), planner = tot.reduce((a, b) => b[1] > a[1] ? b : a);
+    const cur = outcome(pf, stock), mlO = outcome(mlP, stock);
+    $('#c7stats').innerHTML = [
+      ['Friday cups sold', Math.round(cur.f.sold), 'at ' + money2(pf)],
+      ['Left for Saturday', Math.round(cur.left), 'cups'],
+      ['Saturday best price', money2(cur.s.p), `sells ${Math.round(cur.s.sold)} cups`],
+      ['Fri + Sat profit', money0(cur.total), ''],
+      ['ML’s Friday price', money2(mlP), `total ${money0(mlO.total)}`],
+      ['Planner’s Friday price', money2(planner[0]), `total ${money0(planner[1])}`],
+    ].map(([k, v, s]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${s}</div></div>`).join('');
+    lineChart($('#c7chart'), {
+      series: [{ name: 'Friday only', color: C.s3, pts: friOnly, dash: true }, { name: 'Fri + Sat total', color: C.s1, pts: tot, width: 2.5 }],
+      xDomain: [2, 8], xFmt: v => '$' + v, yFmt: money0, height: 260, hover: 'x', xLabel: 'Friday price',
+      vlines: [{ x: pf, color: C.ink, label: 'Your Friday price', dash: '3 3', bottom: true }],
+      marks: [{ x: mlP, y: mlO.total, color: C.s3, label: 'ML pick → ' + money0(mlO.total), dy: 22, anchor: mlP > 5 ? 'end' : 'start', dx: mlP > 5 ? -10 : 10 }, { x: planner[0], y: planner[1], color: C.s1, label: 'Planner → ' + money0(planner[1]), dy: -12 }],
+      aria: 'Profit versus Friday price',
+    });
+  }
+  bindRange('c7stock', v => v, draw); bindRange('c7fri', money2, draw);
+  redraw.c6 = draw;
+})();
+
+// ============================== Concept 08 ==============================
+(() => {
+  const frames = {
+    A: `<div class="r"><span>Oat latte (12oz)</span><span>$5.40</span></div><div class="r tot"><span>YOU PAY</span><span>$5.40</span></div><div class="muted" style="font-size:12.5px;margin-top:6px">The customer before you was charged <b>$4.50</b> for the same latte.</div>`,
+    B: `<div class="r"><span>Oat latte (12oz), list price</span><span>$6.00</span></div><div class="r"><span>Your personal discount</span><span>−$0.60</span></div><div class="r tot"><span>YOU PAY</span><span>$5.40</span></div><div class="muted" style="font-size:12.5px;margin-top:6px">The customer before you got a <b>$1.50</b> discount.</div>`,
+  };
+  const votes = {}; let fr = 'A';
+  const showF = () => { $('#receipt').innerHTML = frames[fr]; $$('#c8frame button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === fr)); };
+  $('#c8frame').onclick = e => { const b = e.target.closest('button'); if (b) { fr = b.dataset.f; showF(); } };
+  $$('[data-vote]').forEach(b => b.onclick = () => {
+    votes[fr] = b.dataset.vote;
+    const msg = votes.A && votes.B ? (votes.A !== votes.B ? `You rated Frame A <b>${votes.A}</b> and Frame B <b>${votes.B}</b>, though you pay $5.40 in both. That is the framing effect.` : `You rated both <b>${votes.A}</b>. Consistent! Most people rate the discount frame as fairer.`) + ' Customers assume a fair <b>reference price</b> exists: a discount respects it, a different price violates it.' : `Recorded: Frame ${fr} feels <b>${votes[fr]}</b>. Now switch to Frame ${fr === 'A' ? 'B' : 'A'} and vote again.`;
+    $('#c8vote').innerHTML = msg;
+  });
+  showF();
+  function disc() {
+    const s = $('#c8state').value, d = $('#c8data').value; let lab = '', note = '';
+    if (s === 'NY' && d !== 'no') { lab = 'THIS PRICE WAS SET BY AN ALGORITHM USING YOUR PERSONAL DATA'; note = 'New York’s Algorithmic Pricing Disclosure Act requires this label whenever personal data feeds the algorithm, whether the price goes up or down.'; }
+    else if (s === 'CT' && d === 'up') { lab = 'THIS PRICE WAS INCREASED USING YOUR PERSONAL DATA'; note = 'Connecticut requires a “readily visible” disclosure whenever personal data raises a price.'; }
+    else if (s === 'CT') note = d === 'down' ? 'Per the slides, Connecticut’s rule targets price increases, so a data-driven discount needs no label. That is framing written into law.' : 'No personal data, no label: pricing on weather and time of day is not covered.';
+    else if (s === 'NY') note = 'No personal data, no label: pricing on weather and time of day is not covered.';
+    else note = 'No algorithmic-pricing disclosure law applies here (yet). Voluntary disclosure is still one of the recommendations on slide 35.';
+    $('#c8label').innerHTML = lab ? `<div class="disclosure">${lab}</div>` : '<div class="muted" style="font-size:12.5px;margin-top:6px">(no disclosure label required)</div>';
+    $('#c8note').textContent = note;
+  }
+  $('#c8state').onchange = disc; $('#c8data').onchange = disc; disc();
+  // duopoly
+  const Tr = 240, U = 4.3, B = M.B, c = M.COST;
+  const share = (p1, p2) => { const a = Math.exp(U - B * p1), b = Math.exp(U - B * p2); return a / (1 + a + b); };
+  const prof = (p1, p2) => (p1 - c) * Tr * share(p1, p2);
+  let pn = 3; for (let it = 0; it < 60; it++) { let bp = pn, bv = -1; for (let p = 1.2; p <= 10; p += 0.01) { const v = prof(p, pn); if (v > bv) { bv = v; bp = p; } } pn = bp; }
+  let pj = 3, bj = -1; for (let p = 1.2; p <= 10; p += 0.01) { const v = prof(p, p); if (v > bj) { bj = v; pj = p; } }
+  const res = p => ({ p, profit: prof(p, p), cups: 2 * Tr * share(p, p), cs: Tr / B * Math.log(1 + 2 * Math.exp(U - B * p)) });
+  const R = { indep: res(pn), shared: res(pj) };
+  function coll(k) {
+    $$('#c8coll button').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k));
+    const v = R[k], b = R.indep, d = (x, y, f) => k === 'shared' ? `<div class="d ${x > y ? 'neg' : 'pos'}">${x > y ? '+' : '−'}${f(Math.abs(x - y))} vs. independent</div>` : '<div class="d">&nbsp;</div>';
+    $('#c8stats').innerHTML = `<div class="stat"><div class="k">Latte price (each café)</div><div class="v">${money2(v.p)}</div>${d(v.p, b.p, money2)}</div>
+      <div class="stat"><div class="k">Profit per café / day</div><div class="v">${money0(v.profit)}</div>${k === 'shared' ? `<div class="d">+${money0(v.profit - b.profit)} for each café</div>` : '<div class="d">&nbsp;</div>'}</div>
+      <div class="stat"><div class="k">Cups sold (street)</div><div class="v">${Math.round(v.cups)}</div>${k === 'shared' ? `<div class="d neg">−${Math.round(b.cups - v.cups)} customers priced out</div>` : '<div class="d">&nbsp;</div>'}</div>
+      <div class="stat"><div class="k">Consumer surplus / day</div><div class="v">${money0(v.cs)}</div>${k === 'shared' ? `<div class="d neg">−${money0(b.cs - v.cs)}</div>` : '<div class="d">&nbsp;</div>'}</div>`;
+  }
+  $('#c8coll').onclick = e => { const b = e.target.closest('button'); if (b) coll(b.dataset.k); };
+  coll('indep');
+  const recs = ['Map and track what data is collected and used for pricing', 'Set a policy on which data is permitted for pricing (e.g., no health or location data)', 'Test the algorithm for unintended biases (e.g., student neighbourhoods paying more)', 'Disclose clearly to customers how data informs prices', 'Make sure personalised discounts are off a real baseline price', 'Add safeguards for essentials and emergencies (remember Uber’s surge during the siege)', 'Align pricing policies with vendors (no shared competitor data, as in RealPage)'];
+  $('#c8checks').innerHTML = recs.map((r, i) => `<label><input type="checkbox" data-i="${i}"> ${r}</label>`).join('');
+  $('#c8checks').onchange = () => { const n = $$('#c8checks input:checked').length; $('#c8score').textContent = `${n} / 7${n === 7 ? ' ✅ responsible pricer' : ''}`; };
+})();
+
+// ============================== LAB · PLAY ==============================
+const GAMEUI = (() => {
+  let OPP = GAME_AGENT, oppLabel = 'RL agent', pendingOpp = null;
+  const G = { price: 4.5, showML: true, reveal: false };
+  const LS = { you: C.s1, rl: C.s2, ml: C.s3, st: C.s4, or: C.s5 };
+  function newGame(seed) {
+    if (pendingOpp) { OPP = pendingOpp.agent; oppLabel = pendingOpp.label; pendingOpp = null; }
+    G.seed = seed ?? Math.floor(Math.random() * 90000) + 10000;
+    G.days = M.scenario(G.seed);
+    G.you = M.newShop(); G.rl = M.newShop(); G.ml = M.newShop(); G.st = M.newShop();
+    G.mlHints = []; G.rlPrices = []; G.last = null; G.oracle = null; G.reflect = G.reflect || {};
+    render();
+  }
+  const t = () => G.you.t, done = () => G.you.t >= G.days.length;
+  function submit() {
+    if (done()) return;
+    const day = G.days[t()], p = clamp(Math.round(G.price * 4) / 4, 1, 10);
+    G.mlHints.push(M.mlPrice(day));
+    const rp = M.PRICES[M.greedy(OPP, M.stateOf(G.rl, day))]; G.rlPrices.push(rp);
+    const rec = M.step(G.you, day, p);
+    const rrec = M.step(G.rl, day, rp);
+    M.step(G.ml, day, M.mlPrice(day)); M.step(G.st, day, STATIC_PRICE);
+    G.last = { rec, rrec, day };
+    if (done()) G.oracle = M.oracle(G.days);
+    render();
+    if (done()) setTimeout(() => $('#debrief').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  }
+  function renderToday() {
+    const el = $('#today');
+    const ctrlRow = `<div class="row" style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px;font-size:13.5px">
+      <span class="muted">Scenario #${G.seed}</span><button class="btn small" id="gNew">New 21 days</button><button class="btn small" id="gRestart">Restart same days</button></div>
+      <div class="muted" style="font-size:12.5px;margin-top:6px">Opponent: <b>${esc(oppLabel)}</b>${pendingOpp ? ` · next game: <b>${esc(pendingOpp.label)}</b>` : ''}</div>`;
+    const toggles = `<div class="toggles"><label><input type="checkbox" id="gML" ${G.showML ? 'checked' : ''}> Show the ML price suggestion</label><label><input type="checkbox" id="gRev" ${G.reveal ? 'checked' : ''}> Reveal RL agent live (spoiler!)</label></div>`;
+    let lastBox = '';
+    if (G.last) {
+      const { rec, rrec, day } = G.last;
+      lastBox = `<div class="result"><div class="rl"><span><b>Day ${rec.d + 1} (${dayName(day)}) result</b> at ${money2(rec.price)}</span><span class="rv ${rec.reward >= 0 ? 'pos' : 'neg'}">${smoney0(rec.reward)}</span></div>
+        <div>${rec.demand} of ${rec.walkins} walk-ins wanted a coffee (${pct(rec.demand / Math.max(1, rec.walkins))}). Sold <b>${rec.sold}</b>${rec.lost ? `, <span class="neg">turned away ${rec.lost}</span> (−${money0(rec.stockPen)})` : ''}.</div>
+        <div class="muted">Revenue ${money0(rec.revenue)} − cups ${money0(rec.cogs)}${rec.waste ? ` − <span class="neg">discarded ${Math.round(rec.waste / M.COST)} cups (${money0(rec.waste)})</span>` : ''}</div>
+        ${G.reveal ? `<div style="margin-top:4px">🤖 RL agent charged <b>${money2(rrec.price)}</b> → ${smoney0(rrec.reward)}</div>` : ''}</div>`;
+    }
+    if (done()) {
+      const diff = G.you.total - G.rl.total;
+      el.innerHTML = `<div class="dayhead"><h3>Game over ☕</h3><span class="muted">21 / 21</span></div><div class="progress"><div style="width:100%"></div></div>
+        <p style="font-size:15px">You earned <b>${money0(G.you.total)}</b>. The RL agent earned <b>${money0(G.rl.total)}</b>.<br>${diff >= 0 ? `🏆 <b>You beat the algorithm by ${money0(diff)}!</b>` : `🤖 The RL agent won by <b>${money0(-diff)}</b>.`}</p>
+        <div class="row"><button class="btn primary" id="gAgain">Play new 21 days</button><button class="btn" id="gSame">Replay same days</button></div>
+        ${lastBox}${toggles}${ctrlRow}`;
+    } else {
+      const day = G.days[t()], w = M.WEATHER[day.weather], inv = invAtOpen(G.you, day), s = M.stateOf(G.you, day), daysLeft = 7 - day.dow;
+      const ml = M.mlPrice(day);
+      el.innerHTML = `<div class="dayhead"><h3>Day ${t() + 1} · ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][day.dow]}</h3><span class="muted">Week ${Math.floor(t() / 7) + 1} of 3</span></div>
+        <div class="progress"><div style="width:${t() / 21 * 100}%"></div></div>
+        <div class="conds">
+          <div class="cond"><div class="k">Weather</div><div class="v">${w.icon} ${w.label}</div><div class="s">${{ sunny: 'normal traffic', cloudy: 'slightly fewer walk-ins', rainy: 'fewer walk-ins, but they want coffee more', cold: 'people really want a hot drink' }[day.weather]}</div></div>
+          <div class="cond"><div class="k">Local event</div><div class="v">${day.event ? '🎪 ' + day.event : '—'}</div><div class="s">${day.event ? 'extra foot traffic today' : 'nothing special'}</div></div>
+          <div class="cond"><div class="k">Competitor</div><div class="v">${day.comp ? '☕ Bean There: ' + money2(day.cprice) : 'Closed today'}</div><div class="s">${day.comp ? 'open across the street' : 'you have the street to yourself'}</div></div>
+          <div class="cond"><div class="k">Stock</div><div class="v">${inv} cups</div><div class="s">${day.dow === 0 ? 'fresh 450-cup delivery this morning' : `${daysLeft} day${daysLeft > 1 ? 's' : ''} until Monday’s restock`}</div></div>
+        </div>
+        <div class="muted" style="font-size:12.5px;margin-top:6px">Typical ${M.DAYS[day.dow]} walk-ins: ~${M.TRAFFIC[day.dow]}${day.dow >= 5 ? ' · weekend crowds are less price-sensitive' : ''}</div>
+        <div class="rlview">🧠 <b>How the RL agent would see your shop today:</b><br>${stateText(s)}</div>
+        <div class="pricebox"><label for="gPrice" style="font-weight:700;color:var(--ink)">Your price today</label>
+          <div class="pricebig"><button class="btn small" id="gMinus" aria-label="Lower price by 25 cents">−</button><input type="range" id="gPrice" min="1" max="10" step="0.25" value="${G.price}"><button class="btn small" id="gPlus" aria-label="Raise price by 25 cents">+</button><output id="gPriceO">${money2(G.price)}</output></div>
+          ${G.showML ? `<div class="mlhint">🤖 <b>ML suggests ${money2(ml)}</b>: the best price for <i>today’s</i> profit given the demand forecast. It ignores your stock and the rest of the week. <button class="btn small" id="gUseML" style="margin-left:4px">Use it</button></div>` : ''}
+          <button class="btn primary" id="gGo" style="width:100%;margin-top:10px;padding:10px">☕ Open the shop at ${money2(G.price)} <span class="kbd" style="color:var(--ink)">Enter</span></button>
+        </div>
+        ${lastBox}${toggles}${ctrlRow}`;
+      const pr = $('#gPrice'), setP = v => { G.price = clamp(v, 1, 10); pr.value = G.price; $('#gPriceO').textContent = money2(G.price); $('#gGo').firstChild.textContent = `☕ Open the shop at ${money2(G.price)} `; };
+      pr.oninput = () => setP(+pr.value);
+      $('#gMinus').onclick = () => setP(G.price - 0.25); $('#gPlus').onclick = () => setP(G.price + 0.25);
+      if ($('#gUseML')) $('#gUseML').onclick = () => setP(ml);
+      $('#gGo').onclick = submit;
+    }
+    $('#gML').onchange = e => { G.showML = e.target.checked; render(); };
+    $('#gRev').onchange = e => { G.reveal = e.target.checked; render(); };
+    $('#gNew').onclick = () => newGame(); $('#gRestart').onclick = () => newGame(G.seed);
+    if ($('#gAgain')) { $('#gAgain').onclick = () => newGame(); $('#gSame').onclick = () => newGame(G.seed); }
+  }
+  function charts() {
+    const fin = done(), showRL = G.reveal || fin;
+    const cum = sh => sh.log.map(r => [r.d + 1, r.cum]);
+    const series = [{ name: 'You', color: LS.you, pts: cum(G.you), width: 2.5, markers: G.you.log.length < 22 }];
+    if (showRL) series.push({ name: oppLabel, color: LS.rl, pts: cum(G.rl) });
+    if (fin) series.push({ name: 'ML suggestion', color: LS.ml, pts: cum(G.ml) }, { name: `Static $${STATIC_PRICE.toFixed(2)}`, color: LS.st, pts: cum(G.st) }, { name: 'Hindsight optimum', color: LS.or, pts: cum(G.oracle), dash: true });
+    legend($('#cumLegend'), series.map(s => ({ name: s.name, color: s.color, kind: s.dash ? 'dash' : '' })));
+    $('#cumSub').textContent = fin ? 'Final race. The hindsight optimum knew every day’s demand in advance: a ceiling, not a rival.' : (G.reveal ? 'You vs. the RL agent, day by day.' : 'Your running total. Tick “Reveal RL agent live” to race it day by day.');
+    lineChart($('#cumChart'), { series, xDomain: [1, 21], xTicks: [1, 7, 14, 21], xFmt: v => 'D' + v, yFmt: money0, height: 250, hover: 'x', snap: Array.from({ length: 21 }, (_, i) => i + 1), aria: 'Cumulative net reward by day',
+      vlines: [{ x: 7.5, color: '#d8d1c6', label: '' }, { x: 14.5, color: '#d8d1c6', label: '' }],
+      tip: (x, h) => `<div class="tt">Day ${x} · ${dayName(G.days[x - 1])}</div><div class="muted" style="font-size:12px;margin-bottom:3px">${condText(G.days[x - 1])}</div>` + series.map((s, i) => h[i] ? tipRow(s.color, s.name, money0(h[i][1])) : '').join('') });
+    // conversion scatter
+    const pts = G.you.log.map(r => [r.price, r.demand / Math.max(1, r.walkins)]);
+    lineChart($('#convChart'), { series: [{ name: 'Days', color: LS.you, pts, dots: true }], xDomain: [1, 10], yDomain: [0, 1], yTicks: [0, 0.25, 0.5, 0.75, 1], yFmt: pct, xFmt: v => '$' + v, height: 220, hover: 'point', xLabel: 'Your price', aria: 'Price versus conversion scatter',
+      tip: (s, p, i) => { const r = G.you.log[i], d = G.days[r.d]; return `<div class="tt">Day ${r.d + 1} · ${dayName(d)}</div><div style="font-size:12px">${condText(d)}</div>` + tipRow(null, 'Price', money2(r.price)) + tipRow(null, 'Would buy', `${r.demand} / ${r.walkins} (${pct(p[1])})`) + tipRow(null, 'Reward', money0(r.reward)); } });
+    // price path
+    const ps = [{ name: 'You', color: LS.you, pts: G.you.log.map(r => [r.d + 1, r.price]), markers: true, width: 2.5 }];
+    if (G.showML || fin) ps.push({ name: 'ML suggestion', color: LS.ml, pts: G.mlHints.map((p, i) => [i + 1, p]), dash: true });
+    if (showRL) ps.push({ name: oppLabel, color: LS.rl, pts: G.rlPrices.map((p, i) => [i + 1, p]) });
+    legend($('#priceLegend'), ps.map(s => ({ name: s.name, color: s.color, kind: s.dash ? 'dash' : '' })));
+    lineChart($('#priceChart'), { series: ps, xDomain: [1, 21], yDomain: [0, 10], yTicks: [0, 2, 4, 6, 8, 10], xTicks: [1, 7, 14, 21], xFmt: v => 'D' + v, yFmt: v => '$' + v, height: 220, hover: 'x', snap: Array.from({ length: 21 }, (_, i) => i + 1), aria: 'Price per day',
+      vlines: [{ x: 7.5, color: '#d8d1c6' }, { x: 14.5, color: '#d8d1c6' }],
+      tip: (x, h) => `<div class="tt">Day ${x} · ${dayName(G.days[x - 1])}</div>` + ps.map((s, i) => h[i] ? tipRow(s.color, s.name, money2(h[i][1])) : '').join('') });
+  }
+  function logTable() {
+    const showRL = G.reveal || done();
+    let h = `<tr><th>Day</th><th style="text-align:left">Conditions</th><th>Stock</th><th>ML hint</th><th>Your price</th><th>Sold / wanted</th><th>Turned away</th><th>Waste</th><th>Reward</th><th>Total</th>${showRL ? '<th>RL price</th><th>RL reward</th>' : ''}</tr>`;
+    G.you.log.forEach((r, i) => {
+      const d = G.days[r.d], rr = G.rl.log[i];
+      h += `<tr><td>${r.d + 1} ${dayName(d)}</td><td style="text-align:left">${condText(d)}</td><td class="num">${r.invStart}</td><td class="num">${money2(G.mlHints[i])}</td><td class="num"><b>${money2(r.price)}</b></td><td class="num">${r.sold} / ${r.demand}</td><td class="num ${r.lost ? 'neg' : ''}">${r.lost || '—'}</td><td class="num ${r.waste ? 'neg' : ''}">${r.waste ? Math.round(r.waste / M.COST) : '—'}</td><td class="num ${r.reward < 0 ? 'neg' : ''}">${money0(r.reward)}</td><td class="num">${money0(r.cum)}</td>${showRL ? `<td class="num">${money2(rr.price)}</td><td class="num">${money0(rr.reward)}</td>` : ''}</tr>`;
+    });
+    if (!G.you.log.length) h += `<tr><td colspan="10" class="muted" style="text-align:left">No days played yet. Set a price and open the shop.</td></tr>`;
+    $('#logTable').innerHTML = h;
+  }
+  const sd = a => { const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length); };
+  function debrief() {
+    const el = $('#debrief');
+    if (!done()) { el.hidden = true; return; }
+    el.hidden = false;
+    const you = G.you.total, rl = G.rl.total, or = G.oracle.total;
+    const wk = k => G.you.log.slice(k * 7, k * 7 + 7).map(r => r.price);
+    const s1 = sd(wk(0)), s3 = sd(wk(2)), dis1 = new Set(wk(0)).size, dis3 = new Set(wk(2)).size;
+    const pattern = s1 > s3 * 1.3 && s1 > 0.4 ? '🔍→🎯 <b>Explore, then exploit.</b> You varied prices a lot in week 1 and settled down by week 3, just like a decaying-ε agent.' : s3 > s1 * 1.3 && s3 > 0.4 ? '🎯→🔍 <b>Exploit, then explore.</b> You started steady and experimented more later. What made you change course?' : s1 < 0.3 && s3 < 0.3 ? '🎯 <b>Mostly exploit.</b> You barely changed your price. Low risk, but you never found out whether another price was better (ε ≈ 0).' : '🔄 <b>Steady explorer.</b> You kept varying prices all three weeks, partly responding to conditions and partly experimenting.';
+    const gaps = G.you.log.map((r, i) => ({ i, r, rr: G.rl.log[i], d: G.rl.log[i].reward - r.reward })).sort((a, b) => b.d - a.d).slice(0, 3).filter(g => g.d > 1);
+    const loss = { lost: G.you.log.reduce((a, r) => a + r.lost, 0), waste: G.you.log.reduce((a, r) => a + r.waste / M.COST, 0) };
+    const rlLoss = { lost: G.rl.log.reduce((a, r) => a + r.lost, 0), waste: G.rl.log.reduce((a, r) => a + r.waste / M.COST, 0) };
+    const Q = ['How did you learn during the game? What prompted your learning?', 'Did you explore or exploit? How did you transition?', 'Where did the RL agent beat you (or you beat it), and why?'];
+    el.innerHTML = `<div class="eyebrow">Debrief · scenario #${G.seed}</div><h2 style="font-size:24px;margin:4px 0 12px">${you >= rl ? '🏆 You beat the RL agent' : '🤖 The RL agent won this time'}, and captured ${pct(you / or)} of the hindsight optimum</h2>
+      <div class="grid2"><div><div class="chart-title">Final net reward</div><div id="score"></div>
+        <p class="muted" style="font-size:12.5px">The hindsight optimum is a planner that knew all 21 days of demand in advance. No real shop can reach it.</p></div>
+        <div><div class="chart-title">Explore vs. exploit: your pricing pattern</div>
+          <table class="t" style="margin:6px 0"><tr><th></th><th>Week 1</th><th>Week 2</th><th>Week 3</th></tr>
+          <tr><td>Distinct prices tried</td>${[0, 1, 2].map(k => `<td class="num">${new Set(wk(k)).size}</td>`).join('')}</tr>
+          <tr><td>Price spread (std. dev.)</td>${[0, 1, 2].map(k => `<td class="num">${money2(sd(wk(k)))}</td>`).join('')}</tr></table>
+          <p style="font-size:14px;margin:6px 0">${pattern}</p>
+          <p style="font-size:13.5px;margin:6px 0">Inventory discipline: you turned away <b>${loss.lost}</b> customers and discarded <b>${Math.round(loss.waste)}</b> cups. The RL agent: ${rlLoss.lost} and ${Math.round(rlLoss.waste)}.</p></div></div>
+      ${gaps.length ? `<h3 style="margin-top:14px">Days where the RL agent out-earned you most</h3><table class="t"><tr><th>Day</th><th style="text-align:left">Conditions</th><th>Stock</th><th>Your price</th><th>RL price</th><th>Your reward</th><th>RL reward</th></tr>${gaps.map(g => `<tr><td>${g.r.d + 1} ${dayName(G.days[g.i])}</td><td style="text-align:left">${condText(G.days[g.i])}</td><td class="num">${g.r.invStart} / ${g.rr.invStart}</td><td class="num">${money2(g.r.price)}</td><td class="num">${money2(g.rr.price)}</td><td class="num">${money0(g.r.reward)}</td><td class="num">${money0(g.rr.reward)}</td></tr>`).join('')}</table>` : ''}
+      <h3 style="margin-top:16px">Reflect (for your 2-slide presentation)</h3>
+      ${Q.map((q, i) => `<label style="display:block;font-weight:600;font-size:14px;margin:10px 0 4px">${q}</label><textarea data-q="${i}">${esc(G.reflect[i] || '')}</textarea>`).join('')}
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="gCopy">📋 Copy debrief summary</button><span class="muted" id="gCopied" style="font-size:13px"></span></div>`;
+    hbars($('#score'), [
+      { label: '<b>You</b>', v: you, color: LS.you }, { label: esc(oppLabel), v: rl, color: LS.rl },
+      { label: 'ML suggestion', v: G.ml.total, color: LS.ml }, { label: `Static $${STATIC_PRICE.toFixed(2)}`, v: G.st.total, color: LS.st },
+      { label: 'Hindsight optimum', v: or, color: LS.or, style: 'opacity:.75' },
+    ]);
+    $$('textarea[data-q]', el).forEach(ta => ta.oninput = () => { G.reflect[ta.dataset.q] = ta.value; });
+    $('#gCopy').onclick = () => {
+      const lines = [`Roast & Reward: scenario #${G.seed}`, `You: ${money0(you)} | ${oppLabel}: ${money0(rl)} | ML suggestion: ${money0(G.ml.total)} | Static $${STATIC_PRICE}: ${money0(G.st.total)} | Hindsight optimum: ${money0(or)}`,
+        `Captured ${pct(you / or)} of the optimum. Week 1 price spread ${money2(s1)} (${dis1} distinct) → week 3 ${money2(s3)} (${dis3} distinct).`,
+        `Turned away ${loss.lost} customers, discarded ${Math.round(loss.waste)} cups (RL: ${rlLoss.lost}, ${Math.round(rlLoss.waste)}).`, '',
+        ...Q.map((q, i) => `${q}\n${G.reflect[i] || '-'}`)];
+      const txt = lines.join('\n');
+      (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => $('#gCopied').textContent = 'Copied!', () => { $('#gCopied').textContent = 'Copy blocked by the browser. Select the text below.'; el.insertAdjacentHTML('beforeend', `<textarea style="margin-top:8px;min-height:160px">${esc(txt)}</textarea>`); });
+    };
+  }
+  function render() { renderToday(); charts(); logTable(); debrief(); }
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' || currentTab !== 'lab' || currentSub !== 'play') return;
+    const tg = e.target.tagName; if (tg === 'TEXTAREA' || tg === 'BUTTON' || tg === 'SELECT' || (tg === 'INPUT' && e.target.type !== 'range')) return;
+    e.preventDefault(); submit();
+  });
+  redraw.play = charts;
+  newGame();
+  return { setOpponent(agent, label) { pendingOpp = { agent, label }; render(); } };
+})();
+
+// ============================== LAB · TRAIN ==============================
+const TR = (() => {
+  const EVAL = Array.from({ length: 40 }, (_, i) => M.scenario(200000 + i));
+  const bench = { ready: false };
+  const st = { agent: M.newAgent(), ep: 0, hist: [], evals: [], ctx: null, last: null, sel: 15, running: false, stop: false, r: M.rng(2024), lastCell: null };
+  const hp = () => ({ alpha: +$('#hpA').value, gamma: +$('#hpG').value, e0: +$('#hpE').value, emin: +$('#hpEm').value, D: +$('#hpD').value });
+  const epsAt = (ep, h) => h.e0 <= h.emin ? h.e0 : Math.max(h.emin, h.e0 - (h.e0 - h.emin) * ep / h.D);
+  const evalGreedy = () => avgOver(EVAL, M.policies.rl(st.agent));
+  function ensureBench() {
+    if (bench.ready) return;
+    bench.ml = avgOver(EVAL, M.policies.ml()); bench.st = avgOver(EVAL, M.policies.fixed(STATIC_PRICE));
+    bench.or = EVAL.reduce((a, d) => a + M.oracle(d).total, 0) / EVAL.length; bench.ready = true;
+    drawCurve();
+  }
+  bindRange('hpA', v => v.toFixed(2)); bindRange('hpG', v => v.toFixed(2), () => updStats()); bindRange('hpE', v => v.toFixed(2), () => updStats()); bindRange('hpEm', v => v.toFixed(2), () => updStats()); bindRange('hpD', v => v.toLocaleString('en-US'), () => updStats());
+  function updStats() {
+    $('#trEp').textContent = st.ep.toLocaleString('en-US');
+    $('#trEps').textContent = epsAt(st.ep, hp()).toFixed(2);
+    const e = st.evals[st.evals.length - 1];
+    $('#trScore').textContent = e ? money0(e[1]) : '—';
+  }
+  function finishEpisode(total) {
+    st.hist.push(total); st.ep++; st.agent.episodes = st.ep;
+    if (st.ep % 250 === 0 || st.ep <= 5) st.evals.push([st.ep, evalGreedy()]);
+  }
+  function oneStep(record) {
+    const h = hp();
+    if (!st.ctx) st.ctx = { shop: M.newShop(), days: M.scenario(1e6 + st.ep * 7919 + 17), ep: st.ep };
+    const res = M.qStep(st.agent, st.ctx, { alpha: h.alpha, gamma: h.gamma, eps: epsAt(st.ep, h) }, st.r);
+    if (record) { st.last = { ...res, alpha: h.alpha, gamma: h.gamma, ep: st.ep }; st.lastCell = [res.s, res.a]; }
+    if (res.done) { finishEpisode(st.ctx.shop.total); st.ctx = null; }
+    return res;
+  }
+  function stepBox() {
+    const L = st.last, box = $('#stepBox');
+    if (!L) { box.innerHTML = '<p class="muted" style="font-size:14px">Click <b>Step 1 day</b> to watch a single Q-learning update.</p>'; return; }
+    const r = L.rec, f1 = v => v.toFixed(1);
+    box.innerHTML = `<div class="muted" style="font-size:13px">Episode ${L.ep + 1} · Day ${r.d + 1} (${dayName(L.day)}) · ${condText(L.day)}</div>
+      <div class="formula" style="margin-top:6px">
+      <b>1 · Observe state s</b><br>${stateText(L.s)}<br>
+      <b>2 · Choose action a</b><br>roll ${L.roll.toFixed(2)} ${L.explore ? '&lt;' : '≥'} ε ${L.eps.toFixed(2)} → <span class="badge ${L.explore ? 'explore' : 'exploit'}">${L.explore ? 'EXPLORE' : 'EXPLOIT'}</span> price <b>${money2(M.PRICES[L.a])}</b>${L.explore ? ' (random)' : ' (best known)'}<br>
+      <b>3 · Reward r</b><br>sold ${r.sold}/${r.demand} · rev ${money0(r.revenue)} − cups ${money0(r.cogs)}${r.stockPen ? ' − stockout ' + money0(r.stockPen) : ''}${r.waste ? ' − waste ' + money0(r.waste) : ''}<br>r = <span class="x">${f1(r.reward)}</span><br>
+      <b>4 · Next state s′</b><br>${L.done ? 'episode over (no future)' : stateText(L.s2) + `<br>max Q(s′,·) = ${f1(L.maxNext)}`}<br>
+      <b>5 · Update</b><br>target = r + γ·maxQ(s′) = ${f1(r.reward)} + ${L.gamma.toFixed(2)} × ${f1(L.maxNext)} = <span class="x">${f1(L.target)}</span><br>
+      surprise = target − Q = ${f1(L.target)} − ${f1(L.old)} = ${f1(L.target - L.old)}<br>
+      Q(s,a) ← ${f1(L.old)} + ${L.alpha.toFixed(2)} × ${f1(L.target - L.old)} = <span class="e">${f1(L.nw)}</span></div>
+      <p class="muted" style="font-size:12.5px;margin:6px 0 0">The orange outline in the Q-table marks the cell that just changed.</p>`;
+  }
+  function curveSeries() {
+    const n = st.hist.length, win = Math.min(100, Math.max(1, Math.floor(n / 5) || 1)), stepN = Math.max(1, Math.floor(n / 400));
+    const ma = []; let acc = 0;
+    for (let i = 0; i < n; i++) { acc += st.hist[i]; if (i >= win) acc -= st.hist[i - win]; if (i % stepN === 0 || i === n - 1) ma.push([i + 1, acc / Math.min(i + 1, win)]); }
+    return { ma, win };
+  }
+  function drawCurve() {
+    const { ma, win } = curveSeries();
+    const series = [{ name: `Training (avg of last ${win})`, color: C.s1, pts: ma, opacity: 0.9 }, { name: 'Greedy test (no exploration)', color: C.s2, pts: st.evals.map(e => [e[0], e[1]]), markers: st.evals.length < 60, width: 2.5 }];
+    legend($('#lcLegend'), [{ name: series[0].name, color: C.s1 }, { name: series[1].name, color: C.s2 }, { name: 'Benchmarks (same 40 test scenarios)', color: C.gray, kind: 'dash' }]);
+    const refs = bench.ready ? [{ y: bench.or, label: 'Hindsight optimum ' + money0(bench.or) }, { y: bench.st, label: `Static $${STATIC_PRICE.toFixed(2)} ` + money0(bench.st) }, { y: bench.ml, label: 'ML suggestion ' + money0(bench.ml) }] : [];
+    const xmax = Math.max(500, st.ep);
+    const allY = ma.map(p => p[1]).concat(st.evals.map(e => e[1])).concat(refs.map(r => r.y));
+    const lo = Math.min(...allY, 0);
+    lineChart($('#lcChart'), { series, refs, xDomain: [0, xmax], xFmt: v => v >= 1000 ? (v / 1000) + 'k' : v, yFmt: money0, height: 300, hover: st.hist.length ? 'x' : null, zero: lo < 0, xLabel: 'Episodes (each = one 21-day game)', snapTol: Math.max(1, xmax / 150),
+      tip: (x, h) => `<div class="tt">Episode ${Math.round(x).toLocaleString('en-US')}</div>` + series.map((s, i) => h[i] ? tipRow(s.color, s.name, money0(h[i][1])) : '').join(''), aria: 'Learning curve' });
+  }
+  const ramp = ['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95', '#0d366b'];
+  const rampAt = t => { const x = clamp(t, 0, 1) * (ramp.length - 1), i = Math.min(ramp.length - 2, Math.floor(x)), f = x - i; const a = ramp[i], b = ramp[i + 1]; const h = (s, k) => parseInt(s.slice(1 + 2 * k, 3 + 2 * k), 16); return '#' + [0, 1, 2].map(k => Math.round(h(a, k) + (h(b, k) - h(a, k)) * f).toString(16).padStart(2, '0')).join(''); };
+  function drawHeat() {
+    const el = $('#heat'), W = Math.max(440, el.clientWidth), lw = 180, rw = 64, top = 22, ch = 16, gapG = 8;
+    const cw = (W - lw - rw) / M.NA, H = top + M.NS * ch + 2 * gapG + 4;
+    const svg = S('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Q-table heatmap' });
+    M.PRICES.forEach((p, a) => { if (p % 1 === 0) T(svg, lw + a * cw + cw / 2, 14, '$' + p, { class: 'collab', 'text-anchor': 'middle' }); });
+    T(svg, W - rw / 2, 14, 'picks', { class: 'collab', 'text-anchor': 'middle' });
+    const rowY = s => top + s * ch + Math.floor(s / 9) * gapG;
+    for (let s = 0; s < M.NS; s++) {
+      const q = st.agent.Q[s], n = st.agent.N[s], y = rowY(s);
+      const vis = []; for (let a = 0; a < M.NA; a++) if (n[a]) vis.push(q[a]);
+      const lo = Math.min(...vis), hi = Math.max(...vis), g = M.greedy(st.agent, s);
+      T(svg, lw - 8, y + ch / 2 + 4, stateShort(s), { class: 'rowlab', 'text-anchor': 'end', 'font-weight': s === st.sel ? 700 : 400 });
+      for (let a = 0; a < M.NA; a++) {
+        const fill = n[a] ? rampAt(hi > lo ? (q[a] - lo) / (hi - lo) : 0.5) : '#f0ece5';
+        const c = S('rect', { class: 'cell', x: lw + a * cw, y, width: cw, height: ch, fill }, svg);
+        c.addEventListener('mousemove', ev => showTip(`<div class="tt">${stateShort(s)} · ${money2(M.PRICES[a])}</div>` + tipRow(null, 'Q value', n[a] ? q[a].toFixed(1) : 'never tried') + tipRow(null, 'Times tried', n[a]) + (a === g && vis.length ? '<div style="margin-top:3px">← current choice</div>' : ''), ev));
+        c.addEventListener('mouseleave', hideTip);
+        c.addEventListener('click', () => { st.sel = s; drawHeat(); drawInsp(); });
+      }
+      if (vis.length) S('rect', { x: lw + g * cw + 1, y: y + 1, width: cw - 2, height: ch - 2, fill: 'none', stroke: C.ink, 'stroke-width': 2, rx: 2, 'pointer-events': 'none' }, svg);
+      T(svg, W - rw / 2, y + ch / 2 + 4, vis.length ? money2(M.PRICES[g]) : '—', { class: 'rowlab', 'text-anchor': 'middle', 'font-weight': 700 });
+      const hit = S('rect', { class: 'rowhit', x: 0, y, width: lw, height: ch }, svg);
+      hit.addEventListener('click', () => { st.sel = s; drawHeat(); drawInsp(); });
+    }
+    if (st.lastCell) { const [s, a] = st.lastCell; S('rect', { x: lw + a * cw - 1, y: rowY(s) - 1, width: cw + 2, height: ch + 2, fill: 'none', stroke: C.s2, 'stroke-width': 2.5, rx: 2, 'pointer-events': 'none' }, svg); }
+    const ys = rowY(st.sel); S('rect', { class: 'sel', x: 2, y: ys, width: lw - 4, height: ch, rx: 3, 'pointer-events': 'none' }, svg);
+    el.innerHTML = ''; el.appendChild(svg);
+  }
+  function drawInsp() {
+    const s = st.sel, q = st.agent.Q[s], n = st.agent.N[s], g = M.greedy(st.agent, s), tried = n.reduce((a, b) => a + b, 0);
+    $('#inspTitle').textContent = 'State inspector: ' + stateText(s);
+    $('#inspSub').textContent = tried ? `Visited ${tried.toLocaleString('en-US')} times. Current choice: ${money2(M.PRICES[g])}. Bars = estimated long-run value Q(s, price).` : 'This state has never been visited yet.';
+    const el = $('#inspChart'), W = Math.max(320, el.clientWidth), H = 170, m = { l: 52, r: 8, t: 10, b: 24 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const vals = []; for (let a = 0; a < M.NA; a++) if (n[a]) vals.push(q[a]);
+    if (!vals.length) { el.innerHTML = ''; return; }
+    const yt = niceTicks(Math.min(0, ...vals), Math.max(1, ...vals), 4), lo = yt[0], hi = yt[yt.length - 1];
+    const Y = v => m.t + ih - (v - lo) / (hi - lo) * ih, bw = iw / M.NA;
+    const svg = S('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': 'Q values for selected state' });
+    const ax = S('g', { class: 'ax' }, svg);
+    yt.forEach(v => { S('line', { class: v === 0 ? 'base' : 'gridl', x1: m.l, x2: m.l + iw, y1: Y(v), y2: Y(v) }, ax); T(ax, m.l - 6, Y(v) + 4, Math.round(v), { 'text-anchor': 'end' }); });
+    M.PRICES.forEach((p, a) => {
+      if (p % 1 === 0) T(ax, m.l + a * bw + bw / 2, H - 6, '$' + p, { 'text-anchor': 'middle' });
+      if (n[a]) {
+        const y0 = Y(0), y1 = Y(q[a]), up = q[a] >= 0, hgt = Math.max(1, Math.abs(y1 - y0));
+        S('rect', { x: m.l + a * bw + 2, y: up ? y1 : y0, width: Math.max(2, bw - 4), height: hgt, rx: 3, fill: a === g ? '#0d366b' : C.s1 }, svg);
+      }
+      const hit = S('rect', { x: m.l + a * bw, y: m.t, width: bw, height: ih, fill: 'transparent' }, svg);
+      hit.addEventListener('mousemove', ev => showTip(`<div class="tt">${money2(p)}${a === g && tried ? ' · current choice' : ''}</div>` + tipRow(null, 'Q value', n[a] ? q[a].toFixed(1) : 'never tried') + tipRow(null, 'Times tried', n[a]), ev));
+      hit.addEventListener('mouseleave', hideTip);
+    });
+    el.innerHTML = ''; el.appendChild(svg);
+  }
+  function drawAll() { updStats(); drawCurve(); drawHeat(); drawInsp(); stepBox(); }
+  const setBusy = b => { st.running = b; $$('[data-train],#trStep,#trEp1,#trReset').forEach(x => x.disabled = b); $('#trStop').disabled = !b; };
+  function train(n) {
+    if (st.running) return;
+    ensureBench(); st.ctx = null; st.stop = false; setBusy(true);
+    const target = st.ep + n, h = hp(), t0 = performance.now();
+    const tick = () => {
+      const start = performance.now();
+      while (st.ep < target && performance.now() - start < 30 && !st.stop) {
+        const tot = M.runEpisode(st.agent, 1e6 + st.ep * 7919 + 17, { alpha: h.alpha, gamma: h.gamma, eps: epsAt(st.ep, h) }, st.r);
+        finishEpisode(tot);
+      }
+      st.lastCell = null; st.last = null;
+      updStats(); drawCurve(); drawHeat(); drawInsp(); stepBox();
+      $('#trMsg').textContent = `Training… ${(n - (target - st.ep)).toLocaleString('en-US')} / ${n.toLocaleString('en-US')} episodes`;
+      if (st.ep < target && !st.stop) requestAnimationFrame(tick);
+      else {
+        if (!st.evals.length || st.evals[st.evals.length - 1][0] !== st.ep) st.evals.push([st.ep, evalGreedy()]);
+        setBusy(false); drawAll();
+        const sc = st.evals[st.evals.length - 1][1];
+        $('#trMsg').innerHTML = `${st.stop ? 'Stopped' : 'Done'} in ${((performance.now() - t0) / 1000).toFixed(1)}s. Greedy test score <b>${money0(sc)}</b>${bench.ready ? `: ${sc > bench.ml ? 'beats' : 'below'} the ML suggestion (${money0(bench.ml)}), ${pct(sc / bench.or)} of the hindsight optimum.` : '.'}`;
+      }
+    };
+    requestAnimationFrame(tick);
+  }
+  $$('[data-train]').forEach(b => b.onclick = () => train(+b.dataset.train));
+  $('#trStop').onclick = () => { st.stop = true; };
+  $('#trStep').onclick = () => { ensureBench(); oneStep(true); drawAll(); $('#trMsg').textContent = st.ctx ? `Mid-episode: day ${st.ctx.shop.t} of 21.` : 'Episode finished. The next step starts a new 21-day game.'; };
+  $('#trEp1').onclick = () => { ensureBench(); let res; do { res = oneStep(false); } while (!res.done); st.last = { ...res, alpha: hp().alpha, gamma: hp().gamma, ep: st.ep - 1 }; st.lastCell = [res.s, res.a]; drawAll(); $('#trMsg').textContent = `Episode ${st.ep} reward: ${money0(st.hist[st.hist.length - 1])}. The step box shows its last day.`; };
+  $('#trReset').onclick = () => { Object.assign(st, { agent: M.newAgent(), ep: 0, hist: [], evals: [], ctx: null, last: null, lastCell: null }); $('#trMsg').textContent = 'Agent reset: an empty Q-table and no experience.'; drawAll(); };
+  $('#trSend').onclick = () => {
+    if (!st.ep) { $('#trMsg').textContent = 'Train the agent first. An untrained agent picks $1.00 every day!'; return; }
+    const copy = M.newAgent(); for (let s = 0; s < M.NS; s++) { copy.Q[s].set(st.agent.Q[s]); copy.N[s].set(st.agent.N[s]); }
+    GAMEUI.setOpponent(copy, `Your agent (${st.ep.toLocaleString('en-US')} ep, α=${hp().alpha}, γ=${hp().gamma})`);
+    $('#trMsg').innerHTML = 'Sent! It becomes your opponent when you start the next game in <b>Play the shop</b>.';
+  };
+  document.addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && currentTab === 'lab' && currentSub === 'train' && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) && !st.running) $('#trStep').click(); });
+  redraw.train = drawAll;
+  return { ensureBench };
+})();
+
+// ============================== boot ==============================
+showConcept(0);
+
+</script>
+</body>
+</html>
