@@ -299,6 +299,28 @@ dialog#gloss::backdrop{background:rgba(30,20,10,.35)}
 .gterm{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.gterm b{color:var(--ink)}.gterm .ex{color:var(--muted);font-size:13px}
 body.simple .src{display:none}
 .plain{background:#fff8ec;border:1px solid #f0dcb8;border-radius:8px;padding:8px 10px;font-size:14px;color:var(--ink);margin-bottom:8px}
+#deckSlides{display:flex;flex-direction:column;gap:18px;margin-top:16px;align-items:center}
+.dslide{width:100%;max-width:1000px;aspect-ratio:16/9;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 30px rgba(40,25,10,.12);position:relative;padding:3.2% 3.8% 0;display:flex;flex-direction:column;border-top:8px solid var(--roast);container-type:inline-size;overflow:hidden}
+.dslide h1{font-size:2.9cqw;margin:0;color:var(--ink);line-height:1.15}
+.dslide .dsub{font-size:1.45cqw;color:var(--muted);margin-top:.4cqw}
+.dslide h2{font-size:1.65cqw;color:var(--roast);margin:1.2cqw 0 .4cqw}
+.dslide p,.dslide li{font-size:1.35cqw;line-height:1.4;color:var(--ink);margin:0 0 .5cqw}
+.dslide .dl-list{margin:0;padding-left:1.6cqw}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:3cqw;flex:1;margin-top:1.4cqw;min-height:0}
+.dgrid > div + div{border-left:1px solid var(--crema);padding-left:2.5cqw}
+.dchart{width:100%;display:block}.dchart.small{margin-top:1cqw}
+.dstats{background:var(--crema-soft);font-size:1.25cqw;padding:.6cqw .9cqw;border-radius:4px;margin-top:.8cqw;color:var(--ink)}
+.dquiz{background:var(--crema-soft);padding:.5cqw .8cqw;border-radius:4px;font-weight:700}.dquiz:empty{display:none}
+.dfoot{position:absolute;left:3.8%;bottom:1.6%;font-size:1cqw;color:var(--muted)}
+.dslide [contenteditable]:hover{outline:1px dashed #cdbfa9;outline-offset:2px}
+.dslide [contenteditable]:focus{outline:2px solid var(--s1);outline-offset:2px}
+@media print{
+  body.print-deck *{visibility:hidden}
+  body.print-deck #deckSlides,body.print-deck #deckSlides *{visibility:visible}
+  body.print-deck #deckSlides{position:absolute;left:0;top:0;width:100%;margin:0;gap:0}
+  body.print-deck .dslide{max-width:none;box-shadow:none;border-radius:0;break-after:page;page-break-after:always}
+  @page{size:landscape;margin:0}
+}
 .trunc{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left!important}
 @media (max-width:900px){.cform,.cf4{grid-template-columns:1fr 1fr}}
 @media (max-width:1050px){
@@ -758,6 +780,7 @@ body.simple .src{display:none}
       <button role="tab" aria-selected="false" data-csub="policy">🧭 My policy</button>
       <button role="tab" aria-selected="false" data-csub="obs">📈 My observations</button>
       <button role="tab" aria-selected="false" data-csub="checks">✅ Scenario checks</button>
+      <button role="tab" aria-selected="false" data-csub="deck">🎤 2-slide deck</button>
       <button role="tab" aria-selected="false" data-csub="settings">⚙ Menus</button>
     </div>
     <div class="row">
@@ -773,6 +796,7 @@ body.simple .src{display:none}
   <div data-csubpanel="policy" hidden></div>
   <div data-csubpanel="obs" hidden></div>
   <div data-csubpanel="checks" hidden></div>
+  <div data-csubpanel="deck" hidden></div>
   <div data-csubpanel="settings" hidden></div>
 </section>
 </main>
@@ -2317,6 +2341,152 @@ annotateGlossary();
     el.onchange = e => { if (e.target.dataset.s) { S0[e.target.dataset.s] = e.target.value; save(); } };
   }
 
+  // ---------- 2-slide deck generator (from an exported journal or the current one) ----------
+  let deckSrc = null, deckName = '', deckText = null;
+  try { deckName = localStorage.getItem('rr-deck-name') || ''; } catch (e) { }
+  function analyse(J) {
+    const days = (J.days || []).filter(r => num(r.price) != null).sort((a, b) => (+a.n || 0) - (+b.n || 0));
+    const res = days.filter(r => num(r.sold) != null), N = days.length;
+    const nExp = days.filter(r => r.mode === 'explore').length, nExl = days.filter(r => r.mode === 'exploit').length;
+    let T = null;
+    for (let i = 0; i < N; i++) { const rest = days.slice(i).filter(r => r.mode); if (days[i].mode === 'exploit' && rest.length >= 2 && rest.filter(r => r.mode === 'exploit').length / rest.length >= 0.7) { T = +days[i].n; break; } }
+    const early = T == null ? days : days.filter(r => +r.n < T), expl = early.filter(r => r.mode === 'explore');
+    const pr = (expl.length ? expl : early).map(r => +r.price);
+    const pe = res.filter(r => num(r.expSold) != null).map(r => Math.abs(r.sold - r.expSold));
+    const e1 = mean(pe.slice(0, 5)), e2 = pe.length > 5 ? mean(pe.slice(-5)) : null;
+    const both = res.filter(r => num(r.reward) != null && num(r.rlReward) != null);
+    const pol = J.policy || [], act = pol.filter(p => !p.retired), ret = pol.filter(p => p.retired);
+    const sur = res.filter(r => num(r.expSold) != null && +r.expSold > 0).map(r => ({ r, s: Math.abs(r.sold - r.expSold) / r.expSold + (r.surprise === 'very' ? 0.5 : r.surprise === 'somewhat' ? 0.2 : 0) })).sort((a, b) => b.s - a.s).slice(0, 3).map(x => x.r);
+    let trigger = '';
+    if (T != null) {
+      const rule = pol.filter(p => +p.since <= T && +p.since >= T - 3).sort((a, b) => b.since - a.since)[0];
+      const surp = res.filter(r => +r.n < T && +r.n >= T - 3 && (r.surprise === 'very' || r.surprise === 'somewhat')).pop();
+      trigger = rule ? `after I wrote the rule “${rule.text}” (day ${rule.since})` : surp ? `after the surprise on day ${surp.n} showed me ${surp.learned ? '“' + surp.learned + '”' : 'how demand really reacted'}` : e2 != null && e2 < e1 ? 'once my predictions became reliable enough to trust' : 'once similar situations started to repeat';
+    }
+    const weeks = [0, 1, 2].map(w => { const d = days.filter(r => +r.n > w * 7 && +r.n <= w * 7 + 7); return [d.filter(r => r.mode === 'explore').length, d.length]; });
+    const chk = (J.checks || []).filter(c => num(c.answer) != null && num(c.lo) != null && num(c.hi) != null);
+    const inR = chk.filter(c => +c.answer >= +c.lo && +c.answer <= +c.hi).length;
+    const lateExp = T == null ? 0 : days.filter(r => +r.n >= T && r.mode === 'explore').length;
+    return { days, res, N, nExp, nExl, T, early, expl, pr, e1, e2, both, act, ret, pol, sur, trigger, weeks, chk, inR, lateExp };
+  }
+  const r0 = v => v == null ? '?' : Math.round(v);
+  function draft(A, name) {
+    const meT = A.both.reduce((s, r) => s + +r.reward, 0), rlT = A.both.reduce((s, r) => s + +r.rlReward, 0), wins = A.both.filter(r => +r.reward >= +r.rlReward).length;
+    const lo = A.pr.length ? Math.min(...A.pr) : null, hi = A.pr.length ? Math.max(...A.pr) : null;
+    const q2 = [
+      A.T != null ? `Explored first: ${A.expl.length} of my first ${A.early.length} days tested prices from ${money2(lo)} to ${money2(hi)} to map demand.` : `Explored on ${A.nExp} of ${A.N} days, testing prices from ${lo == null ? '?' : money2(lo)} to ${hi == null ? '?' : money2(hi)}.`,
+      'Logged every day: conditions → hypothesis → prediction → result → lesson.',
+      A.e1 == null ? '[Add predictions to show how your mental model improved]' : A.e2 != null ? `My predictions got sharper: average error fell from ${r0(A.e1)} to ${r0(A.e2)} cups.` : `Average prediction error so far: ${r0(A.e1)} cups.`,
+      A.pol.length ? `Turned lessons into ${A.pol.length} written rule${A.pol.length === 1 ? '' : 's'}${A.ret.length ? `, and retired ${A.ret.length} when the evidence broke ${A.ret.length === 1 ? 'it' : 'them'}` : ''}.` : '[Add the rules you formed in My policy]',
+    ];
+    const surprises = A.sur.length ? A.sur.map(r => `Day ${r.n} (${(r.dow || '').slice(0, 3)}, ${r.weather}${/event/i.test(r.traffic) && !/no event/i.test(r.traffic) ? ', event' : ''}): predicted ${r.expSold}, sold ${r.sold} → ${r.learned ? '“' + r.learned + '”' : `[add what you learned on day ${r.n}]`}`) : ['[Log predictions and results to surface your biggest surprises]'];
+    const ex = [
+      'Exploring by week: ' + A.weeks.map((w, i) => `W${i + 1} ${w[0]}/${w[1]}`).join(' · '),
+      A.T != null ? `Switched to mostly exploiting from day ${A.T}, ${A.trigger}.` : 'Still mostly exploring: not enough repeat situations yet to trust a rule.',
+      A.T != null ? (A.lateExp ? `After that I explored only ${A.lateExp} more time${A.lateExp === 1 ? '' : 's'}, when a genuinely new situation appeared.` : 'After that I stopped exploring and used what I had learned.') : 'Next step: repeat a situation with one change at a time.',
+    ];
+    const pol = A.act.slice(0, 3).map(p => p.text);
+    if (A.ret[0]) pol.push(`Retired: “${A.ret[0].text}” (day ${A.ret[0].retired})${A.ret[0].retiredWhy ? ': ' + A.ret[0].retiredWhy : ''}`);
+    return {
+      s1: {
+        title: 'How I learned to price like an RL agent',
+        sub: `${name || '[Your name]'} · Roast & Reward · ${A.N} days logged`,
+        q1h: 'Can I beat the RL algorithm?',
+        q1: A.both.length ? `Over ${A.both.length} days: me ${money0(meT)} vs. RL ${money0(rlT)} (${smoney0(meT - rlT)}), winning ${wins} of ${A.both.length} days. But the agent practised ~420,000 simulated days and one game is mostly noise, so I used it as a benchmark: its prices showed me where demand was.` : 'I didn’t treat it as a race. The agent practised ~420,000 simulated days and a single game is mostly noise, so I used its prices as a benchmark for where demand was.',
+        q2h: 'How did I learn during the game?', q2,
+        stats: `${A.nExp} explore / ${A.nExl} exploit days · prediction error ${r0(A.e1)}${A.e2 != null ? ' → ' + r0(A.e2) : ''} cups · ${A.act.length} rules active`,
+      },
+      s2: {
+        title: 'What prompted my learning, and how I moved from explore to exploit',
+        ph: 'What prompted my learning: surprises', p: surprises,
+        eh: 'Explore → exploit', e: ex,
+        polh: 'My policy now', pol: pol.length ? pol : ['[Add your rules in My policy]'],
+        quiz: A.chk.length ? `Quiz: ${A.inR} of ${A.chk.length} scenario answers fell inside the game’s recommended range.` : '',
+      },
+    };
+  }
+  // charts drawn with inline attributes only, so they render cleanly in the PDF
+  function svgPrice(A) {
+    const W = 640, H = 300, m = { l: 46, r: 30, t: 26, b: 34 }, iw = W - m.l - m.r, ih = H - m.t - m.b, nMax = Math.max(21, ...A.days.map(r => +r.n || 0));
+    const ps = A.days.map(r => +r.price), lo = Math.max(0, Math.floor(Math.min(...ps, 3)) - 1), hi = Math.ceil(Math.max(...ps, 6)) + 1;
+    const X = v => m.l + (v - 1) / (nMax - 1) * iw, Y = v => m.t + ih - (v - lo) / (hi - lo) * ih;
+    let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Calibri, Arial, sans-serif"><rect width="${W}" height="${H}" fill="#ffffff"/>`;
+    for (let v = lo; v <= hi; v++) s += `<line x1="${m.l}" x2="${m.l + iw}" y1="${Y(v)}" y2="${Y(v)}" stroke="#ebe7e0"/><text x="${m.l - 6}" y="${Y(v) + 4}" font-size="12" fill="#6f665e" text-anchor="end">$${v}</text>`;
+    [1, 7, 14, 21].filter(v => v <= nMax).forEach(v => s += `<text x="${X(v)}" y="${H - 12}" font-size="12" fill="#6f665e" text-anchor="middle">Day ${v}</text>`);
+    if (A.T != null) s += `<line x1="${X(A.T - 0.5)}" x2="${X(A.T - 0.5)}" y1="${m.t}" y2="${m.t + ih}" stroke="#1f1a17" stroke-dasharray="5 4" stroke-width="1.5"/><text x="${X(A.T - 0.5) + 5}" y="${m.t + 12}" font-size="12" font-weight="bold" fill="#1f1a17">switch to exploit</text>`;
+    s += `<polyline points="${A.days.map(r => X(+r.n) + ',' + Y(+r.price)).join(' ')}" fill="none" stroke="#c9c2b7" stroke-width="2"/>`;
+    A.days.forEach(r => s += `<circle cx="${X(+r.n)}" cy="${Y(+r.price)}" r="6" fill="${r.mode === 'explore' ? '#eb6834' : r.mode === 'exploit' ? '#2a78d6' : '#9a948c'}" stroke="#fff" stroke-width="2"/>`);
+    s += `<circle cx="${m.l + 8}" cy="12" r="5" fill="#eb6834"/><text x="${m.l + 17}" y="16" font-size="12" fill="#1f1a17">Exploring</text><circle cx="${m.l + 95}" cy="12" r="5" fill="#2a78d6"/><text x="${m.l + 104}" y="16" font-size="12" fill="#1f1a17">Exploiting</text><text x="${W - m.r}" y="16" font-size="12" fill="#6f665e" text-anchor="end">My price each day</text></svg>`;
+    return s;
+  }
+  function svgErr(A) {
+    const W = 640, H = 260, m = { l: 40, r: 30, t: 26, b: 34 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const pts = A.res.filter(r => num(r.expSold) != null).map(r => [+r.n, Math.abs(r.sold - r.expSold)]), nMax = Math.max(21, ...pts.map(p => p[0]));
+    const mx = Math.max(10, ...pts.map(p => p[1])), step = mx > 40 ? 20 : mx > 20 ? 10 : 5, top = Math.ceil(mx / step) * step;
+    const X = v => m.l + (v - 0.5) / nMax * iw, Y = v => m.t + ih - v / top * ih, bw = Math.max(4, iw / nMax - 6);
+    let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Calibri, Arial, sans-serif"><rect width="${W}" height="${H}" fill="#ffffff"/>`;
+    for (let v = 0; v <= top; v += step) s += `<line x1="${m.l}" x2="${m.l + iw}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v ? '#ebe7e0' : '#c9c2b7'}"/><text x="${m.l - 6}" y="${Y(v) + 4}" font-size="12" fill="#6f665e" text-anchor="end">${v}</text>`;
+    [1, 7, 14, 21].filter(v => v <= nMax).forEach(v => s += `<text x="${X(v)}" y="${H - 12}" font-size="12" fill="#6f665e" text-anchor="middle">Day ${v}</text>`);
+    pts.forEach(([d, e]) => s += `<rect x="${X(d) - bw / 2}" y="${Y(e)}" width="${bw}" height="${Math.max(1, Y(0) - Y(e))}" rx="3" fill="#2a78d6"/>`);
+    s += `<text x="${m.l}" y="16" font-size="12" fill="#1f1a17">Prediction error (cups off) per day: shorter bars = sharper mental model</text></svg>`;
+    return s;
+  }
+  const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  const ed = (path, html, tag = 'div', cls = '') => `<${tag} class="${cls}" contenteditable="true" spellcheck="true" data-f="${path}">${html}</${tag}>`;
+  const edList = (path, arr) => `<ul class="dl-list" contenteditable="true" data-f="${path}" data-list>${arr.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  function renderDeck() {
+    const el = $('[data-csubpanel="deck"]');
+    const src = deckSrc || D, A = analyse(src);
+    if (!deckText) deckText = draft(A, deckName);
+    const T1 = deckText.s1, T2 = deckText.s2;
+    el.innerHTML = `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-end">
+        <div><h3 style="margin:0">Generate your 2-slide presentation</h3><p class="muted" style="font-size:13.5px;margin:4px 0 0">Answers the exercise questions from your journal. <b>Click any text on the slides to edit it</b>, then download the PDF.</p></div>
+        <div class="row"><label class="btn small" style="cursor:pointer">⬆ Import exported JSON<input type="file" id="dkImport" accept="application/json,.json" hidden></label><button class="btn small" id="dkCurrent" ${deckSrc ? '' : 'disabled'}>Use my current journal</button></div></div>
+      <div class="row" style="margin-top:10px"><span class="chip">Source: <b>${deckSrc ? esc(deckSrc._file || 'imported file') : 'current journal'}</b> · ${A.N} days</span>
+        <div class="cf" style="width:220px"><input id="dkName" placeholder="Your name / group" value="${esc(deckName)}"></div>
+        <button class="btn small" id="dkRegen" title="Rebuild the text from the data (discards your edits)">↻ Regenerate text</button>
+        <button class="btn primary small" id="dkPdf">⬇ Download PDF</button><button class="btn small" id="dkPrint" title="Works offline: choose “Save as PDF” in the print dialog">🖨 Print</button><span class="muted" id="dkMsg" style="font-size:13px"></span></div>
+      ${A.N < 3 ? '<p class="neg" style="font-size:13.5px;margin:8px 0 0">Only a few days are logged, so the slides will have placeholders in [brackets]. Log more days or import a fuller export.</p>' : ''}</div>
+    <div id="deckSlides">
+      <div class="dslide"><div class="dhead">${ed('s1.title', esc(T1.title), 'h1')}${ed('s1.sub', esc(T1.sub), 'div', 'dsub')}</div>
+        <div class="dgrid"><div><img class="dchart" alt="My price each day, coloured by explore or exploit" src="${svgUrl(svgPrice(A))}">${ed('s1.stats', esc(T1.stats), 'div', 'dstats')}</div>
+          <div>${ed('s1.q1h', esc(T1.q1h), 'h2')}${ed('s1.q1', esc(T1.q1), 'p')}${ed('s1.q2h', esc(T1.q2h), 'h2')}${edList('s1.q2', T1.q2)}</div></div>
+        <div class="dfoot">Roast &amp; Reward · AI-Powered Marketing, Session 6</div></div>
+      <div class="dslide"><div class="dhead">${ed('s2.title', esc(T2.title), 'h1')}</div>
+        <div class="dgrid"><div>${ed('s2.ph', esc(T2.ph), 'h2')}${edList('s2.p', T2.p)}<img class="dchart small" alt="Prediction error per day" src="${svgUrl(svgErr(A))}"></div>
+          <div>${ed('s2.eh', esc(T2.eh), 'h2')}${edList('s2.e', T2.e)}${ed('s2.polh', esc(T2.polh), 'h2')}${edList('s2.pol', T2.pol)}${ed('s2.quiz', esc(T2.quiz), 'p', 'dquiz')}</div></div>
+        <div class="dfoot">Roast &amp; Reward · AI-Powered Marketing, Session 6</div></div>
+    </div>`;
+    const sync = () => { $$('[data-f]', el).forEach(n => { const [s, k] = n.dataset.f.split('.'); deckText[s][k] = n.hasAttribute('data-list') ? $$('li', n).map(li => li.textContent.trim()).filter(Boolean) : n.textContent.trim(); }); };
+    el.oninput = e => { if (e.target.closest('[data-f]')) sync(); };
+    $('#dkName').onchange = e => { deckName = e.target.value; try { localStorage.setItem('rr-deck-name', deckName); } catch (x) { } deckText.s1.sub = deckText.s1.sub.replace(/^[^·]*/, (deckName || '[Your name]') + ' '); renderDeck(); };
+    $('#dkRegen').onclick = () => { if (confirm('Rebuild all slide text from the data? Your edits will be lost.')) { deckText = null; renderDeck(); } };
+    $('#dkCurrent').onclick = () => { deckSrc = null; deckText = null; renderDeck(); };
+    $('#dkImport').onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      f.text().then(t => { const s = JSON.parse(t); if (!Array.isArray(s.days)) throw 0; s._file = f.name; deckSrc = s; deckText = null; renderDeck(); $('#dkMsg').textContent = `Loaded ${s.days.length} days from ${f.name}. Your journal was not changed.`; })
+        .catch(() => { $('#dkMsg').textContent = 'That file is not a companion export (use Export in the toolbar to create one).'; });
+    };
+    $('#dkPrint').onclick = () => { document.body.classList.add('print-deck'); setTimeout(() => { window.print(); document.body.classList.remove('print-deck'); }, 50); };
+    $('#dkPdf').onclick = () => exportPdf().catch(err => { $('#dkMsg').textContent = 'Could not build the PDF (the PDF tools load from the internet). Use 🖨 Print → “Save as PDF” instead.'; console.error(err); });
+  }
+  const loadScript = src => new Promise((res, rej) => { if ([...document.scripts].some(x => x.src === src)) return res(); const x = document.createElement('script'); x.src = src; x.onload = res; x.onerror = rej; document.head.appendChild(x); });
+  async function exportPdf() {
+    $('#dkMsg').textContent = 'Building PDF…';
+    if (document.activeElement) document.activeElement.blur();
+    await loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: [960, 540] });
+    const slides = $$('#deckSlides .dslide');
+    for (let i = 0; i < slides.length; i++) {
+      const c = await html2canvas(slides[i], { scale: 2, backgroundColor: '#ffffff', logging: false });
+      if (i) pdf.addPage([960, 540], 'landscape');
+      pdf.addImage(c.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 960, 540);
+    }
+    pdf.save('roast-reward-2-slides.pdf');
+    $('#dkMsg').textContent = 'Downloaded roast-reward-2-slides.pdf.';
+  }
+
   // ---------- toolbar ----------
   function summary() {
     const act = activePolicy();
@@ -2335,7 +2505,7 @@ annotateGlossary();
   };
   $('#cpReset').onclick = () => { if (confirm('Erase your whole journal, policy and scenario checks? Export first if you want a copy.')) { D = blank(); save(); renderCSub(); } };
 
-  function renderCSub() { ({ today: renderToday, log: renderLog, policy: renderPolicy, obs: renderObs, checks: renderChecks, settings: renderSettings })[sub](); }
+  function renderCSub() { ({ today: renderToday, log: renderLog, policy: renderPolicy, obs: renderObs, checks: renderChecks, deck: renderDeck, settings: renderSettings })[sub](); }
   function showCSub(name) {
     sub = name;
     $$('[data-csub]').forEach(b => b.setAttribute('aria-selected', b.dataset.csub === name));
