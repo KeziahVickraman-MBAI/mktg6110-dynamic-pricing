@@ -272,6 +272,33 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
 input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;color:var(--ink)}
 .mini-memo{font-size:13px;padding:5px 0;border-bottom:1px solid var(--line)}.mini-memo .q{color:var(--muted);font-style:italic;font-size:12.5px}
 @media (max-width:1050px){.today2{grid-template-columns:1fr}}
+details.fold{margin-top:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0}
+details.fold > summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--roast);list-style:none;display:flex;align-items:center;gap:8px}
+details.fold > summary::before{content:"▸";transition:transform .15s;display:inline-block}
+details.fold[open] > summary::before{transform:rotate(90deg)}
+details.fold > summary::-webkit-details-marker{display:none}
+details.fold > :not(summary){margin-left:14px;margin-right:14px}
+details.fold[open]{padding-bottom:12px}
+details.unpack{background:#f3f6fb;border-color:#d9e4f3}
+details.unpack > summary{color:#1c5cab}
+.unpackbody{font-size:14px;line-height:1.6;color:var(--ink)}
+.unpackbody ol{margin:4px 0;padding-left:20px}.unpackbody li{margin:4px 0}
+.unpackbody .calc{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid #d9e4f3;border-radius:6px;padding:6px 8px;margin:4px 0}
+details.eli5{margin:-6px 0 16px;border:1px solid #e8cfb0;background:var(--crema-soft);border-radius:10px;max-width:880px}
+details.eli5 > summary{cursor:pointer;padding:8px 14px;font-weight:700;color:var(--roast);font-size:14px}
+details.eli5 > p{margin:0 14px 8px;font-size:15px;color:var(--ink)}
+details.eli5 .analogy{color:var(--body);font-size:14px}
+details.eli5 > button{margin:0 14px 12px}
+.hdr-tools{display:flex;gap:6px;align-items:center}
+.hdr-tools input{margin:0}
+.hdr-tools button,.hdr-tools label{background:rgba(255,255,255,.12);border:0;color:#fff;padding:7px 12px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.hdr-tools button:hover,.hdr-tools label:hover{background:rgba(255,255,255,.22)}
+abbr.gl{text-decoration:underline dotted #b08a5c;text-underline-offset:3px;cursor:help}
+dialog#gloss{max-width:640px;width:calc(100% - 32px);max-height:80vh;border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:0 20px 60px rgba(40,25,10,.3)}
+dialog#gloss::backdrop{background:rgba(30,20,10,.35)}
+.gterm{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.gterm b{color:var(--ink)}.gterm .ex{color:var(--muted);font-size:13px}
+body.simple .src{display:none}
+.plain{background:#fff8ec;border:1px solid #f0dcb8;border-radius:8px;padding:8px 10px;font-size:14px;color:var(--ink);margin-bottom:8px}
 .trunc{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left!important}
 @media (max-width:900px){.cform,.cf4{grid-template-columns:1fr 1fr}}
 @media (max-width:1050px){
@@ -292,9 +319,10 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
     </div>
     <nav class="tabs" role="tablist" aria-label="Main sections">
       <button role="tab" id="tab-concepts" aria-selected="true" aria-controls="panel-concepts">① Concepts</button>
-      <button role="tab" id="tab-lab" aria-selected="false" aria-controls="panel-lab">② Lab: run the coffee shop</button>
+      <button role="tab" id="tab-lab" aria-selected="false" aria-controls="panel-lab">② Lab</button>
       <button role="tab" id="tab-companion" aria-selected="false" aria-controls="panel-companion">③ Game companion</button>
     </nav>
+    <div class="hdr-tools"><button id="glossBtn" title="Look up any term">📖 Glossary</button><label title="Open every plain-English explanation"><input type="checkbox" id="simpleT"> 🗣 Simple mode</label></div>
   </div>
 </header>
 
@@ -321,12 +349,14 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 01</div>
         <h2>What is dynamic pricing?</h2>
         <p class="lede">Prices that change along four dimensions, the <b>“4 Ps” of dynamic pricing</b> (Kopalle et al. 2023). These are not the marketing-mix 4 Ps! Click a P to see what it looks like in a coffee shop.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>Dynamic pricing just means the price is not fixed. It can change depending on <b>who</b> is buying, <b>what</b> they buy, <b>when</b> they buy and <b>where</b>.</p><p class="analogy">☕ A café that charges more on a rainy Saturday morning than on a quiet Tuesday afternoon is already doing dynamic pricing.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="pcards" id="pcards"></div>
         <div class="card detail" id="pdetail"></div>
         <h3 style="margin:22px 0 8px;font-size:17px">Dynamic pricing is an umbrella term</h3>
         <div class="terms" id="terms"></div>
         <div class="card detail" id="termdetail"></div>
-        <div class="grid2" style="margin-top:18px">
+        <details class="fold"><summary>Why firms adopt it, the downsides, and three real cases</summary>
+        <div class="grid2" style="margin-top:10px">
           <div class="card"><h3>Why firms adopt it</h3>
             <ul class="tight"><li>Capture more of each customer’s willingness-to-pay (WTP)</li><li>Allocate scarce inventory efficiently (e.g., the last 40 cups on a Saturday)</li><li>Personalise the experience and boost engagement</li><li>Competitive necessity: rivals reprice instantly</li></ul></div>
           <div class="card"><h3>Downsides</h3>
@@ -337,7 +367,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
           <div class="card case"><h4>✈️ Delta</h4><p>Planned AI revenue management across 20% of its domestic network. After public and lawmaker backlash, it assured US lawmakers that it would not set personalised fares.</p></div>
           <div class="card case"><h4>🚗 Uber</h4><p>Surge pricing reached 4× normal fares during the Sydney café siege. Uber later said: “We didn’t stop surge pricing immediately. This was the wrong decision.”</p></div>
           <div class="card case"><h4>🏢 RealPage</h4><p>The DOJ alleged that its shared rent-pricing algorithm let landlords coordinate rent increases. The 2024 suit was followed by a settlement.</p></div>
-        </div>
+        </div></details>
         <div class="takeaway"><b>Takeaway.</b> “One price for everyone” was itself an innovation that built trust. Data and algorithms are now moving pricing back toward the individual, which is powerful and risky in equal measure.</div>
         <p class="src">Slides 7–17 · Kopalle et al. (2023), <i>Journal of Retailing</i></p>
       </article>
@@ -347,6 +377,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 02 · Periods &amp; places</div>
         <h2>The best price moves with the conditions</h2>
         <p class="lede">This is the <b>same demand model the Lab uses</b>. Each walk-in buys if the coffee is worth more to them than the price, compared against the café across the street. Change the conditions and watch the profit-maximising price move.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>Raise the price and fewer people buy. Lower it and you sell more, but earn less on each cup. The best price is the sweet spot in between, and that sweet spot <b>moves</b> when the day changes.</p><p class="analogy">☕ Rain, a weekend crowd or a festival makes people keen for coffee, so the sweet spot goes up. A cheaper café across the road pulls it down.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="card">
           <div class="grid2">
             <div>
@@ -363,6 +394,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
             <div><div class="chart-title">Expected profit today vs. your price</div><div class="chart-sub">(price − $1.20 cost) × cups sold</div><div class="chart" id="c2profit"></div></div>
             <div><div class="chart-title">Cups sold today vs. your price (the demand curve)</div><div class="chart-sub">Higher price → fewer buyers</div><div class="chart" id="c2demand"></div></div>
           </div>
+          <details class="fold unpack"><summary>🔎 Unpack what’s happening</summary><div id="c2unpack"></div></details>
         </div>
         <div class="takeaway"><b>Takeaway.</b> A fixed menu price is right on, at most, one kind of day. Rain, weekends and events raise willingness-to-pay, and a cheaper competitor lowers it. Dynamic pricing means re-solving this curve every day, or every hour.</div>
         <p class="src">Slides 8–12 · Demand model: multinomial logit with an outside option (walk away) and a competitor.</p>
@@ -373,6 +405,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 03 · People</div>
         <h2>Uniform price vs. personalised prices: who wins?</h2>
         <p class="lede">1,000 simulated morning customers: <b>students</b> (lower WTP) and <b>professionals</b> (higher WTP). Compare one price for all, a price per segment, and an AI that estimates each person’s WTP. The baseline is always the <b>best possible uniform price</b>.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>One price for everyone leaves money on the table: some people would have paid more, and some walk away. Charging each person what they are willing to pay earns the café more. Many low-budget customers actually gain, while people who would pay a lot end up paying more.</p><p class="analogy">☕ A student who would only pay $3 gets a $3 coffee instead of none. The lawyer who would happily pay $6 now pays $5.50 instead of $4.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="card">
           <div class="row" style="margin-bottom:10px"><span class="seg" id="c3mode"><button data-m="uniform" aria-pressed="true">Uniform price</button><button data-m="segment" aria-pressed="false">Segment prices</button><button data-m="personal" aria-pressed="false">Personalised (AI)</button></span>
             <button class="btn small" id="c3opt">Set to profit-maximising</button></div>
@@ -382,6 +415,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
           </div>
           <div style="margin-top:12px"><div class="chart-title">Willingness-to-pay of the 1,000 customers</div>
             <div class="legend" id="c3legend"></div><div class="chart" id="c3hist"></div></div>
+          <details class="fold unpack"><summary>🔎 Unpack what’s happening</summary><div id="c3unpack"></div></details>
         </div>
         <div class="takeaway"><b>Compare with Dubé &amp; Misra (2023, ZipRecruiter).</b> Optimising the <i>uniform</i> price gave the biggest gain (+55% profit). Personalisation added another +19%. Total consumer surplus fell, yet <b>more than 60% of individual consumers were better off</b>: low-WTP customers paid less and high-WTP customers paid more. Try “Personalised” and look at the better-off and worse-off rows.</div>
         <p class="src">Slides 37–38 · Dubé &amp; Misra (2023), <i>Journal of Political Economy</i></p>
@@ -392,6 +426,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 04 · Data &amp; algorithms</div>
         <h2>From heuristics to machine learning to reinforcement learning</h2>
         <p class="lede">How do we turn all those data points (weather, events, competitor prices, inventory) into a price? Here are three generations of pricing logic. Build your own rule and race it against the other two over <b>100 simulated three-week periods</b>.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>A <b>rule of thumb</b> is a recipe you write yourself. <b>ML</b> is a forecaster: it predicts today and picks today’s best price. <b>RL</b> is a learner: it tries things over and over and learns which price works in each situation, including how today affects tomorrow.</p><p class="analogy">☕ Rule of thumb: “raise prices when stock is low.” ML: “today looks busy, so charge $5.” RL: “busy Friday, but Saturday will be busier, so save some cups.”</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="grid3">
           <div class="card"><div class="eyebrow">Naïve</div><h3>Heuristic rule</h3><p style="margin:0;font-size:14px">“If inventory &lt; X, raise the price by Y%.” Simple and transparent, but blind to the patterns it was never told about.</p></div>
           <div class="card"><div class="eyebrow">Machine learning</div><h3>Predict, then optimise</h3><p style="margin:0;font-size:14px">Forecast today’s demand from the features, then pick the price that maximises <i>today’s</i> profit. Each prediction is independent.</p></div>
@@ -419,31 +454,34 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 05 · Human vs. machine</div>
         <h2>Simulate me, ML and RL</h2>
         <p class="lede">Price one week of the café yourself. The <b>ML suggestion</b> and the <b>RL agent</b> price the same seven days with the same 450 cups. Most people beat ML within a few tries, and very few beat RL. Find out why, then test whether a win is skill or just this particular week.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>ML is easy to beat because it only thinks about today, so it runs out of coffee before the busy weekend. RL is hard to beat because it has practised thousands of times and plans ahead. But beating it is not the lesson; understanding how it thinks is.</p><p class="analogy">☕ ML is like spending all your pocket money on Monday. RL is the friend who has done this budget a thousand times. Learn from the friend instead of racing them.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="card">
           <div class="row" style="justify-content:space-between;margin-bottom:10px">
             <div class="row"><b>Week <span class="mono" id="smSeed"></span></b><button class="btn small" id="smNew">New week</button><button class="btn small" id="smReset">Reset my prices to $4.50</button></div>
             <label style="font-size:14px"><input type="checkbox" id="smReveal"> Show the ML and RL prices</label>
           </div>
           <div class="weekgrid" id="smWeek"></div>
+          <details class="fold unpack" style="margin-top:10px"><summary>🔎 Unpack the week day by day</summary><div id="smUnpack"></div></details>
           <div class="grid2" style="margin-top:14px;align-items:start">
             <div><div class="chart-title">Net reward this week</div><div id="smScore"></div><div id="smWhy" style="font-size:14px;margin-top:8px"></div></div>
             <div><div class="chart-title">Cups left at the end of each day</div><div class="chart-sub">Where did each shop spend its 450 cups?</div><div class="legend" id="smLeg"></div><div class="chart" id="smStock"></div></div>
           </div>
         </div>
-        <div class="card" style="margin-top:16px">
+        <details class="fold" style="margin-top:16px"><summary>Step 2 · Skill or luck? Replay your prices across 500 other weeks</summary>
+        <div class="card" style="margin-top:10px">
           <div class="row" style="justify-content:space-between"><h3 style="margin:0">Skill or luck? Replay across 500 other weeks</h3><button class="btn primary small" id="smRun">▶ Run the test</button></div>
           <p style="font-size:14px;margin:6px 0 10px">Your seven prices were chosen <i>for this week</i>, with its weather, events and rival prices in view. The test replays them on 500 new weeks (same price per weekday) and lets ML, RL and a static menu play those weeks too.</p>
           <div id="smTest"><p class="muted" style="font-size:13.5px;margin:0">Set your prices above, then run the test.</p></div>
-        </div>
-        <h3 style="margin:22px 0 10px;font-size:19px">Why beating the RL agent should not be the point</h3>
-        <div class="grid3 whycards">
+        </div></details>
+        <details class="fold"><summary>Why beating the RL agent should not be the point (6 reasons)</summary>
+        <div class="grid3 whycards" style="margin-top:10px">
           <div class="card"><div class="big">🏋️</div><h4>Unequal practice</h4><p>The agent trained on <b>20,000 episodes × 21 days = 420,000 simulated days</b>, about 1,150 years of café mornings. You get 21. Losing to it says nothing about your judgement, and beating it once says little either.</p></div>
           <div class="card"><div class="big">🎲</div><h4>One game is mostly noise</h4><p>Weather, events and rival prices swing a week’s profit far more than small pricing skill does. As the test above shows, even a fixed plan beats RL on some weeks. A single win or loss is largely the dice.</p></div>
           <div class="card"><div class="big">🎯</div><h4>Goodhart’s law</h4><p>“When a measure becomes a target, it ceases to be a good measure.” Chase the bot’s score and you start fitting this scenario (hindsight, gaming the rules) instead of learning how demand works. The score goes up and the understanding doesn’t.</p></div>
           <div class="card"><div class="big">🧭</div><h4>The manager’s job is different</h4><p>Algorithms optimise the reward they are given, inside the world they were trained on. People choose that reward (profit or loyalty?), set guardrails (no surge pricing in an emergency, no discrimination), notice when the world changes (a new rival, a siege) and explain prices to customers and regulators.</p></div>
           <div class="card"><div class="big">🔁</div><h4>What the game is really for</h4><p>It lets you <i>feel</i> the RL loop: observe, hypothesise, explore or exploit, get a reward, update. The exercise asks <b>how you learned</b>, not whether you won. Your thinking journal in the <b>Game companion</b> tab is the evidence.</p></div>
           <div class="card"><div class="big">🤝</div><h4>The better question</h4><p>Not “human or algorithm?” but “how do I direct one?” The ZipRecruiter study found the big gain was setting the right price level, a managerial decision, before any personalisation algorithm was switched on.</p></div>
-        </div>
+        </div></details>
         <div class="takeaway"><b>Takeaway.</b> ML is easy to beat because it is <i>myopic</i>: it maximises each day alone and spends stock the weekend needed. RL is hard to beat because it plans across days and has practised more than any human could. So treat the RL agent as a <b>benchmark to learn from</b>, not an opponent: ask what its prices reveal about demand, and focus on how your own policy improves.</div>
         <p class="src">Slides 26–27, 37, 43</p>
       </article>
@@ -453,6 +491,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 06 · Reinforcement learning</div>
         <h2>The RL vocabulary, in a coffee shop</h2>
         <p class="lede">RL is machine learning where an <b>agent</b> learns by interacting with an <b>environment</b> and receiving rewards or penalties. The objective is to maximise <b>long-term cumulative reward</b>. Click a term, or simulate a day to watch the loop run.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>RL is learning by trial and error. The learner looks at the situation, tries something, gets a reward (or not), and slowly figures out what works best in each situation.</p><p class="analogy">☕ Like training a puppy: sit → treat. Our “puppy” is the pricing algorithm, and the treat is the day’s profit.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="grid2">
           <div class="card loop"><svg id="loopsvg" viewBox="0 0 520 315" role="img" aria-label="Reinforcement learning loop: agent sends action to environment; environment returns state and reward"></svg>
             <div class="row" style="margin-top:6px"><button class="btn primary" id="c5run">▶ Simulate one day</button><span class="muted" id="c5msg" style="font-size:13.5px"></span></div></div>
@@ -472,6 +511,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 07 · The fundamental trade-off</div>
         <h2>Explore vs. exploit</h2>
         <p class="lede">Imagine an ordinary Tuesday: you don’t know which price earns the most, and each day’s profit is noisy. <b>Exploring</b> tries new prices to gather information. <b>Exploiting</b> uses the best price found so far. Run your own experiment, or let an ε-greedy agent do it.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>Do you order your favourite dish again (<b>exploit</b>) or try something new that might be even better (<b>explore</b>)? Too much of either costs you. Good learners try new things early and settle down later.</p><p class="analogy">☕ Testing a $6 latte once is how you find out whether customers would pay it. Testing it every day just loses sales.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="card">
           <div class="row" style="margin-bottom:12px;justify-content:space-between">
             <div class="row"><b>Day <span id="c6day">0</span> / 30</b><span class="chip">Total profit <b class="mono" id="c6tot">$0</b></span><span class="chip">Regret vs. always-best <b class="mono" id="c6reg">$0</b></span></div>
@@ -494,6 +534,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 08 · How RL is different</div>
         <h2>Sequential decisions: today’s price changes tomorrow’s options</h2>
         <p class="lede">In traditional ML each prediction is independent. In RL, current decisions affect <b>future opportunities, rewards and states</b>. Here you have one delivery of beans for <b>Friday and Saturday</b>, and a farmers’ market comes to town on Saturday.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>Cups you sell today cannot be sold tomorrow. If tomorrow is busier and people will pay more, it is worth charging a bit more today to save stock.</p><p class="analogy">☕ Selling your last 50 cups cheaply on Friday means turning away Saturday’s festival crowd, who would have paid more.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="card">
           <div class="grid2">
             <div>
@@ -505,6 +546,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
           </div>
           <div style="margin-top:12px"><div class="chart-title">Profit as a function of Friday’s price</div>
             <div class="legend" id="c7legend"></div><div class="chart" id="c7chart"></div></div>
+          <details class="fold unpack"><summary>🔎 Unpack what’s happening</summary><div id="c7unpack"></div></details>
         </div>
         <div class="takeaway"><b>Takeaway.</b> A myopic optimiser (the ML suggestion) maximises Friday alone and sells cups that would have earned more on Saturday. A sequential planner gives up a little Friday profit for a larger total. Slide the stock up: once inventory is plentiful the gap nearly disappears, because the future no longer constrains today.</div>
         <p class="src">Slide 27 · same idea as “allocating all delivery drivers to one busy area now may leave other regions understaffed later.”</p>
@@ -515,6 +557,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div class="eyebrow">Concept 09 · Legality &amp; acceptance</div>
         <h2>Fairness, framing and the law</h2>
         <p class="lede">Firms’ profit is only half the story. Customers judge fairness against a <b>reference price</b>, regulators are writing disclosure rules, and shared pricing algorithms can slide into collusion.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>People do not just judge the price, they judge whether it is <b>fair</b>. A discount feels like a gift, while a higher personal price feels like being targeted, even for the same amount. Laws are starting to require shops to say when an algorithm used personal data to set a price.</p><p class="analogy">☕ “You saved $0.60!” feels nice. “You pay $0.90 more than the last person” feels awful. It is the same coffee and the same $5.40.</p><button class="btn small" data-copy>Copy this explanation</button></details>
         <div class="grid2">
           <div class="card"><h3>1 · Framing: same money, different feeling</h3>
             <p style="margin:0 0 10px;font-size:14px">Two customers buy the same oat latte. You pay $5.40 and the other customer pays $4.50. Identical outcome, two framings:</p>
@@ -530,14 +573,15 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
             <p class="muted" style="font-size:13px;margin:8px 0 0" id="c8note"></p>
           </div>
         </div>
-        <div class="card" style="margin-top:16px"><h3>3 · Algorithmic collusion: two cafés, one vendor</h3>
+        <details class="fold" style="margin-top:16px"><summary>3 · Algorithmic collusion: two cafés, one vendor</summary>
+        <div class="card" style="margin-top:10px">
           <p style="margin:0 0 10px;font-size:14px">Two cafés on the same street. Each can price with its <b>own</b> algorithm, or both can subscribe to the <b>same vendor</b>, which pools their data and recommends prices. This is the pattern alleged in the RealPage case.</p>
           <div class="row"><span class="seg" id="c8coll"><button data-k="indep" aria-pressed="true">Independent algorithms</button><button data-k="shared" aria-pressed="false">Shared vendor algorithm</button></span></div>
           <div class="stats" id="c8stats" style="margin-top:12px"></div>
           <p class="muted" style="font-size:13px;margin:8px 0 0">Computed from the Lab’s demand model: “independent” is the price where neither café gains by deviating (Nash equilibrium); “shared” maximises the two cafés’ combined profit.</p>
-        </div>
-        <div class="card checklist" style="margin-top:16px"><h3>4 · Responsible-pricing checklist for our café <span class="chip" id="c8score">0 / 7</span></h3>
-          <div id="c8checks"></div></div>
+        </div></details>
+        <details class="fold"><summary>4 · Responsible-pricing checklist for our café <span class="chip" id="c8score">0 / 7</span></summary>
+        <div class="card checklist" style="margin-top:10px"><div id="c8checks"></div></div></details>
         <div class="takeaway"><b>Takeaway.</b> Personalised <i>discounts</i> feel like a gift and personalised <i>price increases</i> feel like exploitation, even when the money is identical. Disclosure laws target exactly that second case.</div>
         <p class="src">Slides 30–35 · “The Price Is Right” (Future of Privacy Forum)</p>
       </article>
@@ -557,7 +601,8 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
 
   <!-- PLAY -->
   <div data-subpanel="play">
-    <p class="lede" style="margin-top:0">You own a coffee shop. Each morning you see the conditions and set <b>one price for the day ($1–$10)</b>. Goal: maximise <b>net reward</b> over 21 days, which is profit minus penalties for turning customers away and for wasting beans. A trained <b>RL agent runs an identical shop on the same 21 days</b>. Can you beat it? You learn the way the agent does, by trial and error.</p>
+    <p class="lede" style="margin-top:0">You own a coffee shop. Each morning you see the conditions and set <b>one price for the day ($1–$10)</b>. Goal: maximise <b>net reward</b> over 21 days, which is profit minus penalties for turning customers away and for wasting beans. A trained <b>RL agent runs an identical shop on the same 21 days</b>. Treat it as a benchmark to learn from. You learn the way the agent does, by trial and error.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>You run the café for 21 days. Each morning, look at the conditions, pick one price, and see what happens. The real skill is working out <b>why</b> each day went the way it did.</p><p class="analogy">☕ Use the 🔎 “Why this reward?” box after each day to see exactly where the money came from and went.</p><button class="btn small" data-copy>Copy this explanation</button></details>
     <div class="labgrid">
       <div class="card today" id="today"></div>
       <div>
@@ -577,15 +622,17 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
 
     <div class="card debrief" id="debrief" hidden style="margin-top:16px"></div>
 
-    <div class="card" style="margin-top:16px">
+    <details class="fold" style="margin-top:16px"><summary>Daily log (every day’s numbers)</summary>
+    <div class="card" style="margin-top:10px">
       <div class="row" style="justify-content:space-between;margin-bottom:8px"><h3 style="margin:0">Daily log</h3><span class="muted" style="font-size:13px">Restock: 450 cups every Monday · cost $1.20/cup · turned-away customer −$0.50 · beans unsold on Sunday are discarded (−$1.20/cup)</span></div>
       <div class="logwrap"><table class="t" id="logTable"></table></div>
-    </div>
+    </div></details>
   </div>
 
   <!-- TRAIN -->
   <div data-subpanel="train" hidden>
     <p class="lede" style="margin-top:0">Here you are the data scientist. You start a <b>Q-learning agent</b> from zero and choose how it learns. Every simulated day it updates one cell of its <b>Q-table</b>: its running estimate of how good each price is in each state. Step through single days to see the arithmetic, or train thousands of episodes (each one a full 21-day game) and watch it improve.</p>
+        <details class="eli5"><summary>🗣 In plain English</summary><p>Watch a computer learn your job from scratch. It starts clueless, tries random prices, and keeps a scorecard (the Q-table) of how well each price worked in each situation. Over thousands of practice games the scorecard gets accurate.</p><p class="analogy">☕ Read the “In plain words” line in the step box: it says what the agent tried, what it earned and what it now believes.</p><button class="btn small" data-copy>Copy this explanation</button></details>
     <div class="traingrid">
       <div class="card">
         <h3>Hyperparameters</h3>
@@ -635,7 +682,8 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <div style="margin-top:10px"><div class="chart-title" id="inspTitle">State inspector</div><div class="chart-sub" id="inspSub">Click a row in the Q-table.</div><div class="chart" id="inspChart"></div></div>
       </div>
     </div>
-    <div class="card exp" style="margin-top:16px"><h3>Experiments to try (good material for your 2-slide presentation)</h3>
+    <details class="fold" style="margin-top:16px"><summary>Experiments to try (good material for your 2-slide presentation)</summary>
+    <div class="card exp" style="margin-top:10px">
       <ol>
         <li><b>No exploration:</b> Reset, set ε start = 0 and ε floor = 0, then train +5,000. The agent locks onto the first price that ever paid off. Compare its greedy score with the default.</li>
         <li><b>Short-sighted agent:</b> Reset, set γ = 0, then train +20,000. Does it still raise prices when stock is <i>Tight</i> before the weekend? Look at the “Normal · None · Tight” row.</li>
@@ -643,7 +691,7 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
         <li><b>Little experience:</b> Train only +500 and send it to the game as your opponent. Is it easier to beat?</li>
         <li><b>Read the policy:</b> After training, find the states where the agent charges the most. Do they match your intuition from Concept 02?</li>
       </ol>
-    </div>
+    </div></details>
   </div>
 
   <!-- HOW -->
@@ -696,7 +744,13 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
 <section id="panel-companion" class="tabpanel" role="tabpanel" aria-labelledby="tab-companion" hidden>
   <div class="eyebrow">Companion for the real Roast &amp; Reward game</div>
   <h2 style="font-size:28px;margin:4px 0 2px">A scratch pad for your thought process</h2>
-  <p class="lede">Keep this tab open beside <a href="https://apps.cte.smu.edu.sg/teaching-rl/" target="_blank" rel="noopener">the SMU game</a>. The goal is not to beat the RL agent. It is to <b>experience how a policy forms</b>: you observe a state, recall what you have seen before, form a hypothesis, choose to explore or exploit, commit, then update your beliefs from the reward. That is the RL loop, run by you. This page never tells you a price. It only helps you capture <i>why</i> you chose one and how your thinking changed.</p>
+  <p class="lede">Keep this tab open beside <a href="https://apps.cte.smu.edu.sg/teaching-rl/" target="_blank" rel="noopener">the SMU game</a>. Log <i>why</i> you chose each price and what you learned. This page never tells you a price.</p>
+  <details class="fold" style="margin-bottom:12px"><summary>How to use this companion (30 seconds)</summary><ol class="tight" style="font-size:14px">
+    <li><b>Before</b> setting a price in the game: copy the day’s conditions into <b>Today’s entry</b>, mark which factors push demand up or down, write one or two sentences on why, and predict cups sold. Then save.</li>
+    <li><b>After</b> the game shows the result: fill in the <b>⏳ Awaiting result</b> row (sold, reward, surprise, one-line lesson).</li>
+    <li>When something surprises you, open <b>🔎 Unpack</b> on that day in the <b>Thinking log</b>. It walks you through what probably happened.</li>
+    <li>When a lesson sticks, make it a rule in <b>My policy</b>. Retire rules the evidence breaks.</li>
+    <li>The goal is not to beat the RL agent. It is to experience how a policy forms: observe, hypothesise, explore or exploit, get a reward, update. That is the RL loop, run by you.</li></ol></details>
   <div class="cbar">
     <div class="subtabs" role="tablist" aria-label="Companion sections" style="margin:0">
       <button role="tab" aria-selected="true" data-csub="today">📝 Today’s entry</button>
@@ -722,6 +776,9 @@ input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius
   <div data-csubpanel="settings" hidden></div>
 </section>
 </main>
+<dialog id="gloss"><div class="row" style="justify-content:space-between"><h3 style="margin:0">📖 Glossary</h3><button class="btn small" id="glossClose">Close</button></div>
+  <input type="search" id="glossQ" placeholder="Search terms… (e.g. policy, ε, WTP)" style="width:100%;margin:10px 0;padding:8px;border:1px solid var(--line);border-radius:8px">
+  <div id="glossList"></div></dialog>
 <div id="tip" role="tooltip"></div>
 
 <script>
@@ -1153,6 +1210,25 @@ function bindRange(id, fmt, cb) {
       marks: [{ x: best, y: bestProfit, color: C.s2, label: 'Best ' + money2(best) }, { x: p, y: prof, color: C.ink, r: 6, label: 'You', dy: 22, dx: 8 }], aria: 'Profit versus price curve' });
     lineChart($('#c2demand'), { series: [{ name: 'Cups', color: C.s1, pts: dem, width: 2.5 }], xDomain: [1, 10], xFmt: v => '$' + v, yFmt: v => Math.round(v), height: 230, hover: 'x', tip: tipFn('Cups sold', v => Math.round(v)),
       marks: [{ x: p, y: q, color: C.ink, r: 6, label: Math.round(q) + ' cups' }], aria: 'Demand curve' });
+    unpackC2(d, p, q, prof, best, tr);
+  }
+  function unpackC2(d, p, q, prof, best, tr) {
+    const at = x => { const pp = clamp(x, 1, 10), qq = M.expDemand(d, pp); return [pp, qq, (pp - M.COST) * qq]; };
+    const [pu, qu, fu] = at(p + 0.5), [pd, qd, fd] = at(p - 0.5);
+    const base = { dow: 1, weather: 'sunny', event: null, comp: false, noise: 1 }, bBase = M.mlPrice(base);
+    const why = [];
+    if (d.dow >= 5) why.push('weekend customers are less price-sensitive <b>(↑)</b>');
+    if (M.WEATHER[d.weather].a > 0) why.push(`${M.WEATHER[d.weather].label.toLowerCase()} weather makes a hot coffee more appealing <b>(↑)</b>`);
+    if (d.event) why.push('the event brings more, and keener, customers <b>(↑)</b>');
+    if (d.comp) why.push(`the rival at ${money2(d.cprice)} steals customers whenever you are pricier <b>(${d.cprice < best ? '↓' : '↑ a little: they are pricier than your best price'})</b>`);
+    else why.push('no rival today, so you have more pricing power <b>(↑)</b>');
+    const verdict = fu > prof + 1 ? '→ <b>raising the price pays</b>: the extra $0.50 per cup outweighs the lost cups.' : fd > prof + 1 ? '→ <b>lowering the price pays</b>: the extra cups outweigh the smaller margin.' : '→ you are near the sweet spot: moving either way earns about the same or less.';
+    $('#c2unpack').innerHTML = `<div class="unpackbody"><ol>
+      <li><b>Who walks past?</b> About ${Math.round(tr)} people on a ${M.DAYS[d.dow]}.</li>
+      <li><b>Who buys from you?</b> At ${money2(p)}, ${pct(M.buyProb(d, p))} choose you${d.comp ? `, ${pct(trRival(d, p))} go to the rival` : ''}, and the rest skip coffee. That is ≈${Math.round(q)} cups.</li>
+      <li><b>What do you earn?</b><div class="calc">${Math.round(q)} cups × (${money2(p)} price − $1.20 cost) = ${money0(prof)}</div></li>
+      <li><b>Should you nudge the price?</b><div class="calc">${money2(pu)}: ≈${Math.round(qu)} cups → ${money0(fu)} (${smoney0(fu - prof)})<br>${money2(pd)}: ≈${Math.round(qd)} cups → ${money0(fd)} (${smoney0(fd - prof)})</div>${verdict}</li>
+      <li><b>Why is today’s best price ${money2(best)}</b> (a plain sunny Tuesday’s is ${money2(bBase)})? Because ${why.join('; ')}.</li></ol></div>`;
   }
   function trRival(d, p) { const u = Math.exp(M.utility(d) - M.B * p), c = Math.exp(M.utility(d) - M.COMP_EDGE - M.B * d.cprice); return c / (1 + u + c); }
   ['c2day', 'c2weather', 'c2event', 'c2comp'].forEach(id => $('#' + id).addEventListener('change', draw));
@@ -1227,6 +1303,17 @@ function bindRange(id, fmt, cb) {
     else if (st.mode === 'segment') { vline(st.ps, 'Student ' + money2(st.ps), 0); vline(st.pp, 'Professional ' + money2(st.pp), 16); }
     else T(svg, m.l + iw - 4, m.t + 4, 'Each customer sees their own price ≈ ' + pct(st.cap) + ' of their estimated WTP', { class: 'dl', 'text-anchor': 'end' });
     el.innerHTML = ''; el.appendChild(svg);
+    const seg = (stu, f) => cust.reduce((n, c, i) => n + (c.stu === stu && f(cur.surplus[i], base.surplus[i]) ? 1 : 0), 0);
+    const bS = seg(true, (s, b) => s > b + 1e-9), wS = seg(true, (s, b) => s < b - 1e-9), bP = seg(false, (s, b) => s > b + 1e-9), wP = seg(false, (s, b) => s < b - 1e-9);
+    const servedStu = cust.filter((c, i) => c.stu && base.surplus[i] >= 0).length;
+    const modeWhy = st.mode === 'uniform' ? `With one price, moving it ${st.p > optU ? 'up' : 'down'} from ${money2(optU)} ${st.p > optU ? 'prices people out and makes buyers pay more' : 'lets more people in but gives away margin'}.`
+      : st.mode === 'segment' ? `Students now see ${money2(st.ps)} and professionals ${money2(st.pp)}. Each group gets a price closer to what it can afford.`
+      : `Each person is charged about ${pct(st.cap)} of the AI’s estimate of their WTP. Low-WTP students who were priced out now get a coffee (better off), while high-WTP professionals pay closer to their maximum (worse off).${st.noise > 0.2 ? ' With a large estimate error, some people are wrongly over-charged and walk away.' : ''}`;
+    $('#c3unpack').innerHTML = `<div class="unpackbody"><ol>
+      <li><b>Baseline:</b> at the best single price (${money2(optU)}), ${base.n} of 1,000 buy, but only ${servedStu} of the 400 students, because most students’ WTP sits below it.</li>
+      <li><b>Your setting:</b> ${cur.n} buy. Students: <b>${bS}</b> better off, <b>${wS}</b> worse off. Professionals: <b>${bP}</b> better off, <b>${wP}</b> worse off.</li>
+      <li><b>Why:</b> ${modeWhy}</li>
+      <li><b>Profit ${cur.profit >= base.profit ? 'rises' : 'falls'} by ${money0(Math.abs(cur.profit - base.profit))}</b> and total consumer surplus ${cur.cs >= base.cs ? 'rises' : 'falls'} by ${money0(Math.abs(cur.cs - base.cs))}. Many small winners can coexist with a lower total, because the losers each lose more than the winners each gain.</li></ol></div>`;
   }
   legend($('#c3legend'), [{ name: 'Professionals (60%)', color: C.s2, kind: 'sq' }, { name: 'Students (40%)', color: C.s1, kind: 'sq' }]);
   ctrls(); redraw.c2 = draw;
@@ -1288,6 +1375,14 @@ function bindRange(id, fmt, cb) {
     lineChart($('#smStock'), { series, xDomain: [1, 7], xTicks: [1, 2, 3, 4, 5, 6, 7], xFmt: v => M.DAYS[v - 1], yDomain: [0, M.RESTOCK], yTicks: [0, 150, 300, 450], yFmt: v => v, height: 220, hover: 'x', aria: 'Cups left at end of each day',
       tip: (x, h) => `<div class="tt">${LONG[x - 1]} close</div>` + series.map((s, i) => h[i] ? tipRow(s.color, s.name, h[i][1] + ' cups') : '').join('') });
     st.last = { you: you.total, ml: ml.total, rl: rl.total };
+    const note = (y, r) => {
+      if (y.lost) return `You ran out and turned away ${y.lost}. Higher prices earlier in the week would have saved cups.`;
+      if (y.waste) return `${Math.round(y.waste / M.COST)} cups left over and discarded. Lower prices could have sold them.`;
+      if (r.price > y.price + 0.4) return `RL charged ${money2(r.price - y.price)} more, keeping cups for keener customers later.`;
+      if (y.price > r.price + 0.4) return `You charged ${money2(y.price - r.price)} more than RL and sold ${r.sold - y.sold} fewer cups.`;
+      return 'Similar prices, similar result.';
+    };
+    $('#smUnpack').innerHTML = `<table class="t"><tr><th>Day</th><th style="text-align:left">Conditions</th><th>You</th><th>RL</th><th>Reward gap</th><th style="text-align:left">What happened</th></tr>${you.log.map((y, i) => { const r = rl.log[i], d = st.days[i]; return `<tr><td>${M.DAYS[d.dow]}</td><td style="text-align:left">${condText(d)}</td><td class="num">${money2(y.price)} · ${y.sold}</td><td class="num">${money2(r.price)} · ${r.sold}</td><td class="num ${y.reward >= r.reward ? 'pos' : 'neg'}">${smoney0(y.reward - r.reward)}</td><td style="text-align:left;font-size:13px">${note(y, r)}</td></tr>`; }).join('')}</table><p class="muted" style="font-size:12.5px;margin:6px 0 0">Price · cups sold. Look for the day with the biggest gap: that is where the lesson is.</p>`;
   }
   function test() {
     const N = 500, W = Array.from({ length: N }, (_, i) => M.scenario(700000 + i * 13, 7));
@@ -1442,6 +1537,13 @@ function bindRange(id, fmt, cb) {
       marks: [{ x: mlP, y: mlO.total, color: C.s3, label: 'ML pick → ' + money0(mlO.total), dy: 22, anchor: mlP > 5 ? 'end' : 'start', dx: mlP > 5 ? -10 : 10 }, { x: planner[0], y: planner[1], color: C.s1, label: 'Planner → ' + money0(planner[1]), dy: -12 }],
       aria: 'Profit versus Friday price',
     });
+    const mF = pf - M.COST, mS = cur.s.p - M.COST, satDem = M.expDemand(sat, cur.s.p);
+    $('#c7unpack').innerHTML = `<div class="unpackbody"><ol>
+      <li><b>Friday:</b> at ${money2(pf)} you sell ≈${Math.round(cur.f.sold)} cups, earning <b>${money2(mF)}</b> on each (price − $1.20).</li>
+      <li><b>What is left:</b> ${Math.round(cur.left)} of ${stock} cups for Saturday’s market crowd.</li>
+      <li><b>Saturday:</b> the best you can do with ${Math.round(cur.left)} cups is charge ${money2(cur.s.p)}, earning <b>${money2(mS)}</b> per cup${cur.left > satDem + 1 ? `, but Saturday only wants ≈${Math.round(satDem)} cups at that price, so ${Math.round(cur.left - satDem)} are wasted` : ''}.</li>
+      <li><b>The trade-off:</b> ${mS > mF + 0.05 && cur.left <= satDem + 1 ? `a cup kept for Saturday earns ${money2(mS - mF)} more than a cup sold on Friday. So <b>raise Friday’s price</b> to save cups; that is what the planner does.` : cur.left > satDem + 1 ? 'you have more cups than Saturday needs, so selling extra on Friday costs nothing. Lowering Friday’s price can help.' : 'Friday and Saturday cups are worth about the same at the margin, so you are close to the planner’s answer.'}</li>
+      <li><b>ML’s blind spot:</b> it picks ${money2(mlP)} because that maximises Friday on its own (the dashed curve). It never asks what Saturday loses.</li></ol></div>`;
   }
   bindRange('c7stock', v => v, draw); bindRange('c7fri', money2, draw);
   redraw.c7 = draw;
@@ -1535,7 +1637,13 @@ const GAMEUI = (() => {
       lastBox = `<div class="result"><div class="rl"><span><b>Day ${rec.d + 1} (${dayName(day)}) result</b> at ${money2(rec.price)}</span><span class="rv ${rec.reward >= 0 ? 'pos' : 'neg'}">${smoney0(rec.reward)}</span></div>
         <div>${rec.demand} of ${rec.walkins} walk-ins wanted a coffee (${pct(rec.demand / Math.max(1, rec.walkins))}). Sold <b>${rec.sold}</b>${rec.lost ? `, <span class="neg">turned away ${rec.lost}</span> (−${money0(rec.stockPen)})` : ''}.</div>
         <div class="muted">Revenue ${money0(rec.revenue)} − cups ${money0(rec.cogs)}${rec.waste ? ` − <span class="neg">discarded ${Math.round(rec.waste / M.COST)} cups (${money0(rec.waste)})</span>` : ''}</div>
-        ${G.reveal ? `<div style="margin-top:4px">🤖 RL agent charged <b>${money2(rrec.price)}</b> → ${smoney0(rrec.reward)}</div>` : ''}</div>`;
+        ${G.reveal ? `<div style="margin-top:4px">🤖 RL agent charged <b>${money2(rrec.price)}</b> → ${smoney0(rrec.reward)}</div>` : ''}
+        <details class="fold unpack" id="gWhy" style="margin-top:8px" ${G.whyOpen ? 'open' : ''}><summary>🔎 Why this reward?</summary><div class="unpackbody"><ol>
+          <li><b>Walk-ins:</b> ${rec.walkins} (a typical ${M.DAYS[day.dow]} has ~${M.TRAFFIC[day.dow]}${M.WEATHER[day.weather].traffic < 1 ? `; ${M.WEATHER[day.weather].label.toLowerCase()} weather kept some away` : ''}${day.event ? '; the event added +50%' : ''}).</li>
+          <li><b>Wanted your coffee:</b> ${rec.demand} (${pct(rec.demand / Math.max(1, rec.walkins))}) at ${money2(rec.price)}. ${[day.dow >= 5 ? 'Weekend crowd: less price-sensitive.' : '', M.WEATHER[day.weather].a > 0 ? M.WEATHER[day.weather].label + ' weather raised appetite for coffee.' : '', day.event ? 'Event-goers are keener.' : '', day.comp ? `Rival at ${money2(day.cprice)}${day.cprice < rec.price ? ' was cheaper and pulled customers away.' : ' was pricier, which helped you.'}` : 'No rival today.'].filter(Boolean).join(' ')}</li>
+          <li><b>Sold:</b> ${rec.sold} = the smaller of demand (${rec.demand}) and stock (${rec.invStart}).${rec.lost ? ` ${rec.lost} turned away × $0.50 = −${money0(rec.stockPen)}.` : ''}</li>
+          <li><b>Money:</b><div class="calc">${rec.sold} × ${money2(rec.price)} = ${money0(rec.revenue)} revenue<br>− ${rec.sold} × $1.20 = ${money0(rec.cogs)} cups${rec.stockPen ? `<br>− ${money0(rec.stockPen)} turned away` : ''}${rec.waste ? `<br>− ${money0(rec.waste)} beans discarded (Sunday)` : ''}<br>= <b>${money0(rec.reward)}</b> reward</div></li>
+          <li><b>Ask yourself:</b> ${rec.lost ? 'You ran out. Was the price too low for the stock you had left?' : rec.demand / Math.max(1, rec.walkins) > 0.6 ? 'Most walk-ins bought. Could a higher price have kept most of them?' : rec.demand / Math.max(1, rec.walkins) < 0.3 ? 'Few walk-ins bought. Was the price above what they would pay?' : 'Conversion was middling. What would a $0.50 change have done?'}</li></ol></div></details></div>`;
     }
     if (done()) {
       const diff = G.you.total - G.rl.total;
@@ -1568,6 +1676,7 @@ const GAMEUI = (() => {
       if ($('#gUseML')) $('#gUseML').onclick = () => setP(ml);
       $('#gGo').onclick = submit;
     }
+    if ($('#gWhy')) $('#gWhy').ontoggle = e => { G.whyOpen = e.target.open; };
     $('#gML').onchange = e => { G.showML = e.target.checked; render(); };
     $('#gRev').onchange = e => { G.reveal = e.target.checked; render(); };
     $('#gNew').onclick = () => newGame(); $('#gRestart').onclick = () => newGame(G.seed);
@@ -1696,7 +1805,8 @@ const TR = (() => {
     const L = st.last, box = $('#stepBox');
     if (!L) { box.innerHTML = '<p class="muted" style="font-size:14px">Click <b>Step 1 day</b> to watch a single Q-learning update.</p>'; return; }
     const r = L.rec, f1 = v => v.toFixed(1);
-    box.innerHTML = `<div class="muted" style="font-size:13px">Episode ${L.ep + 1} · Day ${r.d + 1} (${dayName(L.day)}) · ${condText(L.day)}</div>
+    box.innerHTML = `<div class="plain">💬 <b>In plain words:</b> in a <b>${stateText(L.s).toLowerCase()}</b> situation, the agent ${L.explore ? 'rolled the dice and tried a random price' : 'used its best-known price'} of <b>${money2(M.PRICES[L.a])}</b> and earned <b>${money0(r.reward)}</b>. It used to value that choice at ${L.old.toFixed(0)}; now it values it at <b>${L.nw.toFixed(0)}</b>, ${L.nw > L.old ? 'a bit more attractive next time' : L.nw < L.old ? 'a bit less attractive next time' : 'unchanged'}.</div>
+      <div class="muted" style="font-size:13px">Episode ${L.ep + 1} · Day ${r.d + 1} (${dayName(L.day)}) · ${condText(L.day)}</div>
       <div class="formula" style="margin-top:6px">
       <b>1 · Observe state s</b><br>${stateText(L.s)}<br>
       <b>2 · Choose action a</b><br>roll ${L.roll.toFixed(2)} ${L.explore ? '&lt;' : '≥'} ε ${L.eps.toFixed(2)} → <span class="badge ${L.explore ? 'explore' : 'exploit'}">${L.explore ? 'EXPLORE' : 'EXPLOIT'}</span> price <b>${money2(M.PRICES[L.a])}</b>${L.explore ? ' (random)' : ' (best known)'}<br>
@@ -1818,6 +1928,93 @@ const TR = (() => {
   redraw.train = drawAll;
   return { ensureBench };
 })();
+
+// ============================== Explain tools: glossary, simple mode, copy ==============================
+const GLOSS = [
+  ['Willingness-to-pay (WTP)', /willingness-to-pay|\bWTP\b/i, 'The most a customer would pay. If your price is below it, they buy.', 'Sam would pay up to $5 for a latte, so at $4.50 Sam buys and at $5.50 Sam walks away.'],
+  ['Demand curve', /demand curve/i, 'How many cups sell at each price. Higher price → fewer cups.', 'At $3 you sell 90 cups, at $5 only 40.'],
+  ['Conversion', /\bconversion\b/i, 'The share of people walking in who actually buy.', '30 buyers out of 100 walk-ins = 30% conversion.'],
+  ['Price sensitivity', /price[- ]sensitiv\w*/i, 'How strongly sales drop when you raise the price.', 'Commuters are price-sensitive; weekend brunch crowds less so.'],
+  ['Consumer surplus', /consumer surplus/i, 'What customers “save”: the gap between what they would pay and what they actually pay, summed over everyone.', 'Would pay $6, paid $4.50 → $1.50 of surplus.'],
+  ['Myopic', /\bmyopic\b/i, 'Short-sighted: optimises today and ignores what it does to tomorrow.', 'Selling every cup cheaply on Friday, then having none for Saturday.'],
+  ['Heuristic', /\bheuristics?\b/i, 'A rule of thumb you write yourself.', '“If fewer than 100 cups are left, raise the price 25%.”'],
+  ['Machine learning (ML)', /\bML\b/, 'Software that learns patterns from data to make predictions. Here it forecasts today’s demand and picks today’s best price.', 'It sees rain + Saturday and predicts 120 buyers at $5.'],
+  ['Reinforcement learning (RL)', /reinforcement learning|\bRL\b/, 'Learning by trial and error: try an action, get a reward, adjust, and repeat thousands of times.', 'Like training a puppy with treats.'],
+  ['Agent', /\bagent\b/i, 'The decision-maker that learns: here, the pricing algorithm (or you).', 'The “brain” choosing today’s price.'],
+  ['Environment', /\benvironment\b/i, 'Everything the agent cannot control but reacts to.', 'Customers, weather, events and the rival café.'],
+  ['State', /\bstate\b/, 'A summary of the current situation the agent uses to decide.', '“High demand, cheaper rival, tight stock.”'],
+  ['Action', /\baction\b/, 'The choice the agent makes.', 'Setting today’s price to $5.00.'],
+  ['Reward', /\breward\b/i, 'The score after acting. Here it is the day’s net profit (minus penalties for turning people away or wasting beans).', 'Revenue $300 − cups $80 − penalties $10 = reward $210.'],
+  ['Policy', /\bpolic(y|ies)\b/i, 'A rule for choosing an action in every situation. It is what RL learns.', '“Rainy weekend → $5.50; quiet Tuesday with a cheap rival → $3.75.”'],
+  ['Explore', /\bexplor(e|es|ing|ation)\b/i, 'Trying something new to learn, even if it might pay less today.', 'Testing $6 once to see whether customers accept it.'],
+  ['Exploit', /\bexploit(ing)?\b/i, 'Using the best option you know so far.', 'Charging the $4.50 that has worked every Monday.'],
+  ['ε (epsilon)', /ε/, 'How often the agent explores at random. ε = 0.2 means 1 day in 5 it tries a random price.', 'High early (curious), low later (confident).'],
+  ['α (learning rate)', /α/, 'How much each new result changes the agent’s belief. High α = jumpy, low α = slow and steady.', 'α = 0.05: one bad day nudges the estimate only slightly.'],
+  ['γ (discount factor)', /γ/, 'How much the agent cares about future rewards versus today’s. 0 = only today.', 'γ = 0.5: tomorrow’s profit counts half as much as today’s.'],
+  ['Q-table / Q-value', /Q-table|Q-value/, 'The agent’s scorecard: for each state and price, how good it expects that choice to be over time.', 'Q(rainy weekend, $5.50) = 410 means “about $410 of value from here”.'],
+  ['Episode', /\bepisodes?\b/i, 'One full practice game, here 21 days.', 'The pre-trained agent played 20,000 episodes.'],
+  ['Greedy', /\bgreedy\b/i, 'Always picking the option with the best current estimate (no exploring).', 'The “greedy test” scores the agent with exploration switched off.'],
+  ['Regret', /\bregret\b/i, 'Profit lost compared with always choosing the truly best option.', 'Charging $3 on a day when $4 was best costs ~$27 of regret.'],
+  ['Overfitting', /overfit\w*/i, 'Tuning so tightly to the cases you saw that you do badly on new ones.', 'Perfect prices for one known week that flop on other weeks.'],
+  ['Hindsight optimum', /hindsight optimum/i, 'The best possible result if you had known every day’s demand in advance: a ceiling, not a real competitor.', 'Like picking lottery numbers after the draw.'],
+  ['Benchmark', /\bbenchmark\b/i, 'A reference point to compare against, not an opponent.', 'The RL agent’s price hints at where demand really is.'],
+  ['Sequential decision', /\bsequential\b/i, 'A choice that changes your future options.', 'Cups sold today are gone tomorrow.'],
+  ['Stockout / turned away', /turned away|stockout/i, 'Customers who wanted coffee after you ran out. It costs a $0.50 goodwill penalty each in the game.', 'Sold out by 2 p.m. → 30 people turned away.'],
+  ['Nash equilibrium', /Nash equilibrium/, 'Prices where neither café can gain by changing its own price alone.', 'Both cafés settle at $3.20.'],
+  ['Logit model', /\blogit\b/i, 'A standard formula for choice: each option’s appeal turns into a probability of being chosen.', 'Cheaper or more appealing → more likely to be picked.'],
+  ['Reference price', /reference price/i, 'The price customers think is “fair” or normal.', 'If lattes are “usually $4.50”, $5.40 feels like a rip-off.'],
+  ['Framing', /\bframing\b/i, 'How the same fact is presented changes how it feels.', '“$0.60 off” vs. “$0.90 more than the last person”.'],
+  ['Goodhart’s law', /Goodhart/, '“When a measure becomes a target, it ceases to be a good measure.”', 'Chasing the bot’s score instead of learning how demand works.'],
+  ['Surveillance pricing', /surveillance pricing/i, 'Personalised pricing based on tracked personal or behavioural data.', 'Your app infers your income from location history.'],
+];
+const GMAP = Object.fromEntries(GLOSS.map(g => [g[0], g]));
+function annotateGlossary() {
+  const groups = [...$$('.csec'), ...$$('[data-subpanel]'), $('#panel-companion > .lede'), ...$$('details.eli5')].filter(Boolean);
+  const SKIP = 'button,label,select,textarea,input,svg,.chart,abbr,summary,h2,h3,.formula,option,script,.stat,table,.receipt,.calc,.notebook,.eyebrow,.src,.legend,.chart-title,.chart-sub,[id]';
+  groups.forEach(root => {
+    const used = new Set(), queue = [];
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.nodeValue.trim() && !(n.parentElement.closest(SKIP) && n.parentElement.closest(SKIP) !== root && root.contains(n.parentElement.closest(SKIP))) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
+    while (w.nextNode()) queue.push(w.currentNode);
+    while (queue.length) {
+      const n = queue.shift(); let best = null;
+      for (const g of GLOSS) { if (used.has(g[0])) continue; const m = g[1].exec(n.nodeValue); if (m && (!best || m.index < best.m.index)) best = { g, m }; }
+      if (!best) continue;
+      used.add(best.g[0]);
+      const after = n.splitText(best.m.index); after.nodeValue = after.nodeValue.slice(best.m[0].length);
+      const ab = document.createElement('abbr'); ab.className = 'gl'; ab.tabIndex = 0; ab.dataset.g = best.g[0]; ab.textContent = best.m[0];
+      n.parentNode.insertBefore(ab, after); queue.unshift(after);
+    }
+  });
+}
+const glossTip = g => `<div class="tt">${esc(g[0])}</div><div>${esc(g[2])}</div><div style="color:var(--muted);margin-top:4px">☕ ${esc(g[3])}</div><div style="color:var(--muted);font-size:11.5px;margin-top:4px">Click for the full glossary</div>`;
+document.addEventListener('mouseover', e => { const a = e.target.closest && e.target.closest('abbr.gl'); if (a) showTip(glossTip(GMAP[a.dataset.g]), e); });
+document.addEventListener('mouseout', e => { if (e.target.closest && e.target.closest('abbr.gl')) hideTip(); });
+document.addEventListener('focusin', e => { const a = e.target.closest && e.target.closest('abbr.gl'); if (a) { const r = a.getBoundingClientRect(); showTip(glossTip(GMAP[a.dataset.g]), { clientX: r.left, clientY: r.bottom }); } });
+document.addEventListener('focusout', e => { if (e.target.closest && e.target.closest('abbr.gl')) hideTip(); });
+function renderGloss(q = '', focus) {
+  const s = q.trim().toLowerCase();
+  $('#glossList').innerHTML = GLOSS.filter(g => !s || (g[0] + g[2] + g[3]).toLowerCase().includes(s)).map(g => `<div class="gterm" id="g-${g[0].replace(/\W+/g, '')}"><b>${esc(g[0])}</b>: ${esc(g[2])}<div class="ex">☕ ${esc(g[3])}</div></div>`).join('') || '<p class="muted">No match.</p>';
+  if (focus) { const el = document.getElementById('g-' + focus.replace(/\W+/g, '')); if (el) { el.scrollIntoView({ block: 'center' }); el.style.background = 'var(--crema-soft)'; } }
+}
+const openGloss = focus => { hideTip(); $('#glossQ').value = ''; renderGloss('', focus); $('#gloss').showModal ? $('#gloss').showModal() : $('#gloss').setAttribute('open', ''); };
+$('#glossBtn').onclick = () => openGloss();
+$('#glossClose').onclick = () => $('#gloss').close();
+$('#gloss').addEventListener('click', e => { if (e.target.id === 'gloss') $('#gloss').close(); });
+$('#glossQ').oninput = e => renderGloss(e.target.value);
+document.addEventListener('click', e => {
+  const a = e.target.closest('abbr.gl'); if (a) openGloss(a.dataset.g);
+  const c = e.target.closest('[data-copy]');
+  if (c) { const box = c.closest('details'), txt = $$('p', box).map(p => p.textContent).join('\n'); (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => { c.textContent = 'Copied ✓'; setTimeout(() => c.textContent = 'Copy this explanation', 1500); }, () => { c.textContent = 'Select the text to copy'; }); }
+});
+function setSimple(on) {
+  document.body.classList.toggle('simple', on); $('#simpleT').checked = on;
+  $$('details.eli5').forEach(d => d.open = on);
+  try { localStorage.setItem('rr-simple', on ? '1' : '0'); } catch (e) { }
+}
+$('#simpleT').onchange = e => setSimple(e.target.checked);
+let simpleInit = false; try { simpleInit = localStorage.getItem('rr-simple') === '1'; } catch (e) { }
+setSimple(simpleInit);
+annotateGlossary();
 
 // ============================== COMPANION: thinking journal for the real game ==============================
 (() => {
@@ -1944,7 +2141,7 @@ const TR = (() => {
           <div class="row" style="margin-top:6px;justify-content:space-between"><label style="font-size:12.5px"><input type="checkbox" data-pol> make it a policy rule</label><button class="btn small primary" data-done>Done</button></div></div>`).join('') : '<p class="muted" style="font-size:13.5px;margin:0">Nothing pending. After you save a decision, come back here when the game shows the result.</p>'}
         <p class="muted" style="font-size:12px;margin:8px 0 0">Surprise: = as expected · ! somewhat · !! very</p></div>
       <div class="card" style="margin-top:14px"><h3>🧠 Similar days I’ve logged</h3><div id="jRecall">${recallMini(d, D.editing)}</div></div>
-      <div class="card" style="margin-top:14px"><h3>🧭 My policy</h3>${pol.length ? `<ul class="tight" style="font-size:13.5px">${pol.map(p => `<li>${esc(p.text)}</li>`).join('')}</ul>` : '<p class="muted" style="font-size:13px;margin:0">No rules yet. Tick “make it a policy rule” when a lesson sticks.</p>'}</div>
+      <details class="fold" style="margin-top:14px"><summary>🧭 My policy (${pol.length} rule${pol.length === 1 ? '' : 's'})</summary>${pol.length ? `<ul class="tight" style="font-size:13.5px">${pol.map(p => `<li>${esc(p.text)}</li>`).join('')}</ul>` : '<p class="muted" style="font-size:13px;margin:0">No rules yet. Tick “make it a policy rule” when a lesson sticks.</p>'}</details>
     </div></div>`;
     const STATEK = ['dow', 'weather', 'traffic', 'comp', 'cprice', 'inv'];
     el.oninput = el.onchange = e => {
@@ -1978,6 +2175,30 @@ const TR = (() => {
     if ($('#cpCancel')) $('#cpCancel').onclick = () => { D.editing = null; D.draft = newDraft(); save(); renderToday(); };
   }
 
+  // ---------- Unpack a logged day (diagnosis from your own journal, never a price) ----------
+  function unpackDay(r) {
+    const idx = D.days.indexOf(r), prev = D.days.slice(0, idx).filter(x => num(x.price) != null && num(x.sold) != null);
+    const sold = num(r.sold), inv = num(r.inv), pred = num(r.expSold), price = num(r.price), items = [];
+    if (sold == null) return '<p class="muted" style="font-size:13.5px">Add the result (cups sold) first, then come back to unpack this day.</p>';
+    if (inv != null && sold >= inv) items.push(`<b>Stock limited your sales.</b> You sold all ${inv} cups, so real demand was probably higher than ${sold}. Was the price too low for the stock you had left?`);
+    else items.push(`<b>Demand, not stock, set your sales.</b> ${inv != null ? `You had ${inv} cups and sold ${sold}, so ` : ''}${sold} is roughly how many people wanted coffee at ${money2(price)}.`);
+    if (pred != null) { const gap = sold - pred, rel = pred ? gap / pred : 0; items.push(`<b>Your prediction was ${Math.abs(rel) < 0.1 ? 'close' : gap > 0 ? 'too low' : 'too high'}:</b> predicted ${pred}, sold ${sold} (${gap >= 0 ? '+' : ''}${gap}, ${pct(Math.abs(rel))} off). ${Math.abs(rel) < 0.1 ? 'Your mental model handled this situation well.' : `Something pushed demand ${gap > 0 ? 'up' : 'down'} more than you expected. Which factor did you misjudge, or not mark at all?`}`); }
+    const score = x => (weekend(x.dow) === weekend(r.dow)) + (x.weather === r.weather) + (x.traffic === r.traffic) + (present(x.comp) === present(r.comp));
+    const ref = prev.sort((a, b) => score(b) - score(a) || (+b.n) - (+a.n))[0];
+    if (ref) {
+      const diffs = [];
+      if (weekend(ref.dow) !== weekend(r.dow)) diffs.push(`${weekend(r.dow) ? 'weekend' : 'weekday'} vs. ${weekend(ref.dow) ? 'weekend' : 'weekday'}`);
+      ['weather', 'traffic'].forEach(k => { if (ref[k] !== r[k]) diffs.push(`${k}: ${esc(r[k])} vs. ${esc(ref[k])}`); });
+      if (ref.comp !== r.comp || String(ref.cprice || '') !== String(r.cprice || '')) diffs.push(`competitor: ${esc(r.comp)}${r.cprice ? ' $' + esc(r.cprice) : ''} vs. ${esc(ref.comp)}${ref.cprice ? ' $' + esc(ref.cprice) : ''}`);
+      const dp = price - ref.price, ds = sold - ref.sold;
+      items.push(`<b>Compared with day ${esc(ref.n)}</b>, your closest earlier day: price ${Math.abs(dp) < 0.001 ? 'the same' : (dp > 0 ? '+' : '−') + money2(Math.abs(dp))}, cups sold ${ds >= 0 ? '+' : ''}${ds}. ${diffs.length ? `But ${diffs.length === 1 ? 'one other thing' : diffs.length + ' other things'} changed too (${diffs.join('; ')}), so you cannot pin the difference on price alone.` : 'Nothing else changed, so the price change most likely caused the difference. That makes it a clean experiment.'}`);
+      if (!diffs.length && Math.abs(dp) > 0.001 && ref.sold) items.push(`<b>Rough price sensitivity:</b> a ${pct(Math.abs(dp / ref.price))} price change moved sales by ${pct(Math.abs(ds / ref.sold))}, so customers here are ${Math.abs((ds / ref.sold) / (dp / ref.price)) > 1 ? 'quite' : 'not very'} price-sensitive.`);
+    } else items.push('<b>No earlier day to compare with yet.</b> This is your first data point for situations like it.');
+    if (num(r.rlPrice) != null) items.push(`<b>The RL agent charged ${money2(+r.rlPrice)}</b> (you: ${money2(price)}). If it went higher, it may expect stronger demand or be saving stock. What might it “know” from its practice?`);
+    if (r.mode === 'explore') items.push('<b>You were exploring.</b> Did you change just one thing compared with a past day? If so, what question did the experiment answer?');
+    return `<div class="unpackbody"><ol>${items.map(x => `<li>${x}</li>`).join('')}</ol><p style="margin:6px 0 0"><b>Now write a one-sentence lesson</b> in “What I learned” (Edit / reflect).</p></div>`;
+  }
+
   // ---------- Thinking log ----------
   function renderLog() {
     const el = $('[data-csubpanel="log"]'), rows = D.days;
@@ -1990,9 +2211,10 @@ const TR = (() => {
       <div class="stat"><div class="k">Surprises</div><div class="v">${rows.filter(r => r.surprise === 'very' || r.surprise === 'somewhat').length}</div><div class="d">days the market disagreed with me</div></div>
       <div class="stat"><div class="k">Policy changes</div><div class="v">${D.policy.length}</div><div class="d">${activePolicy().length} rules active</div></div>
     </div>
-    ${rows.length ? rows.slice().reverse().map(r => { const i = D.days.indexOf(r); return `<div class="ccard"><div class="chead"><span class="ch4">Day ${esc(r.n)} · ${esc(r.dow)} <span class="tag">${r.mode === 'explore' ? '🔍 explore' : r.mode === 'exploit' ? '🎯 exploit' : 'mode ?'}</span> ${r.surprise ? `<span class="tag ${r.surprise === 'expected' ? 'ok' : 'no'}">${SURP[r.surprise]}</span>` : ''}</span>
-      <span class="row"><button class="btn small" data-edit="${i}">Edit / reflect</button><button class="btn small" data-del="${i}" aria-label="Delete day">✕</button></span></div>
-      <div class="notebook">${trail(r).map(l => `<p>${esc(l)}</p>`).join('')}</div></div>`; }).join('') : '<p class="muted">No entries yet. Start in Today’s entry.</p>'}`;
+    ${rows.length ? rows.slice().reverse().map((r, k) => { const i = D.days.indexOf(r); return `<details class="fold jentry" ${k === 0 ? 'open' : ''}><summary>Day ${esc(r.n)} · ${esc(r.dow)} · ${f2(num(r.price))} → sold ${esc(r.sold || '?')} <span class="muted" style="font-weight:400">(pred ${esc(r.expSold || '?')})</span> <span class="tag">${r.mode === 'explore' ? '🔍' : r.mode === 'exploit' ? '🎯' : '·'}</span>${r.surprise ? ` <span class="tag ${r.surprise === 'expected' ? 'ok' : 'no'}">${SURP[r.surprise]}</span>` : ''}${r.awaiting ? ' <span class="tag">⏳ awaiting result</span>' : ''}</summary>
+      <div class="notebook" style="margin-top:4px">${trail(r).map(l => `<p>${esc(l)}</p>`).join('')}</div>
+      <details class="fold unpack"><summary>🔎 Unpack this day</summary>${unpackDay(r)}</details>
+      <div class="row" style="margin-top:8px"><button class="btn small" data-edit="${i}">Edit / reflect</button><button class="btn small" data-del="${i}" aria-label="Delete day">✕ Delete</button></div></details>`; }).join('') : '<p class="muted">No entries yet. Start in Today’s entry.</p>'}`;
     el.onclick = e => {
       const ed = e.target.closest('[data-edit]'), dl = e.target.closest('[data-del]');
       if (ed) { D.editing = +ed.dataset.edit; D.draft = { ...D.days[D.editing] }; save(); showCSub('today'); }
