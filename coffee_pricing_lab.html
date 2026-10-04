@@ -249,6 +249,29 @@ table.t td input{width:80px;padding:4px 6px;border:1px solid var(--line);border-
 .ccard .seg button,.card .seg button{font-size:13px}
 .timeline{margin:0;padding-left:20px}.timeline li{margin:0 0 10px;font-size:14px}
 input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px;font-family:var(--mono)}
+.weekgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.wday{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--surface-2);font-size:12.5px;display:flex;flex-direction:column;gap:4px}
+.wday .dn{font-weight:700;color:var(--ink);font-size:14px}
+.wday .cond{font-size:12px;color:var(--body);min-height:46px;background:none;border:0;padding:0}
+.wday input[type=range]{width:100%;accent-color:var(--roast)}
+.wday .pv{font:700 17px var(--mono);color:var(--ink);text-align:center}
+.wday .res{border-top:1px solid var(--line);padding-top:4px;font-family:var(--mono);font-size:11.5px}
+.wday .bench{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.whycards .card p{margin:0;font-size:13.5px}.whycards .big{font-size:24px}.whycards h4{font-size:15px;margin:4px 0}
+@media (max-width:1050px){.weekgrid{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:680px){.weekgrid{grid-template-columns:repeat(2,1fr)}}
+.today2{display:grid;grid-template-columns:1.45fr 1fr;gap:16px;align-items:start}
+.cform8{grid-template-columns:repeat(4,1fr)}
+.fqrow{display:flex;flex-wrap:wrap;gap:6px}
+.fq{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--ink)}
+.fq b{font-family:var(--mono);margin-left:2px}
+.fq.up{background:#e3f6ec;border-color:#9fd8b8}.fq.down{background:#fbe5e4;border-color:#efb3b0}.fq.none{background:var(--soft)}.fq.unsure{background:#fdf1d8;border-color:#efd39a}
+.starters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.starters .chip{cursor:pointer;font-size:12.5px}
+.pend{border:1px solid var(--line);border-left:3px solid var(--s2);border-radius:0 8px 8px 0;padding:8px 10px;margin-bottom:8px;font-size:13.5px;background:var(--surface-2)}
+.pend .seg button{padding:4px 10px}
+input.wide{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;color:var(--ink)}
+.mini-memo{font-size:13px;padding:5px 0;border-bottom:1px solid var(--line)}.mini-memo .q{color:var(--muted);font-style:italic;font-size:12.5px}
+@media (max-width:1050px){.today2{grid-template-columns:1fr}}
 .trunc{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left!important}
 @media (max-width:900px){.cform,.cf4{grid-template-columns:1fr 1fr}}
 @media (max-width:1050px){
@@ -284,10 +307,11 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
       <button data-c="1"><span class="n">02</span>Price, demand &amp; profit</button>
       <button data-c="2"><span class="n">03</span>Uniform vs personalised</button>
       <button data-c="3"><span class="n">04</span>Heuristics → ML → RL</button>
-      <button data-c="4"><span class="n">05</span>The RL vocabulary</button>
-      <button data-c="5"><span class="n">06</span>Explore vs exploit</button>
-      <button data-c="6"><span class="n">07</span>Sequential decisions</button>
-      <button data-c="7"><span class="n">08</span>Fairness, framing &amp; the law</button>
+      <button data-c="4"><span class="n">05</span>Simulate me, ML &amp; RL</button>
+      <button data-c="5"><span class="n">06</span>The RL vocabulary</button>
+      <button data-c="6"><span class="n">07</span>Explore vs exploit</button>
+      <button data-c="7"><span class="n">08</span>Sequential decisions</button>
+      <button data-c="8"><span class="n">09</span>Fairness, framing &amp; the law</button>
       <button class="btn primary go-lab" data-golab>Go to the Lab →</button>
     </nav>
 
@@ -392,7 +416,41 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
 
       <!-- 05 -->
       <article class="csec" data-sec="4" hidden>
-        <div class="eyebrow">Concept 05 · Reinforcement learning</div>
+        <div class="eyebrow">Concept 05 · Human vs. machine</div>
+        <h2>Simulate me, ML and RL</h2>
+        <p class="lede">Price one week of the café yourself. The <b>ML suggestion</b> and the <b>RL agent</b> price the same seven days with the same 450 cups. Most people beat ML within a few tries, and very few beat RL. Find out why, then test whether a win is skill or just this particular week.</p>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:10px">
+            <div class="row"><b>Week <span class="mono" id="smSeed"></span></b><button class="btn small" id="smNew">New week</button><button class="btn small" id="smReset">Reset my prices to $4.50</button></div>
+            <label style="font-size:14px"><input type="checkbox" id="smReveal"> Show the ML and RL prices</label>
+          </div>
+          <div class="weekgrid" id="smWeek"></div>
+          <div class="grid2" style="margin-top:14px;align-items:start">
+            <div><div class="chart-title">Net reward this week</div><div id="smScore"></div><div id="smWhy" style="font-size:14px;margin-top:8px"></div></div>
+            <div><div class="chart-title">Cups left at the end of each day</div><div class="chart-sub">Where did each shop spend its 450 cups?</div><div class="legend" id="smLeg"></div><div class="chart" id="smStock"></div></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="row" style="justify-content:space-between"><h3 style="margin:0">Skill or luck? Replay across 500 other weeks</h3><button class="btn primary small" id="smRun">▶ Run the test</button></div>
+          <p style="font-size:14px;margin:6px 0 10px">Your seven prices were chosen <i>for this week</i>, with its weather, events and rival prices in view. The test replays them on 500 new weeks (same price per weekday) and lets ML, RL and a static menu play those weeks too.</p>
+          <div id="smTest"><p class="muted" style="font-size:13.5px;margin:0">Set your prices above, then run the test.</p></div>
+        </div>
+        <h3 style="margin:22px 0 10px;font-size:19px">Why beating the RL agent should not be the point</h3>
+        <div class="grid3 whycards">
+          <div class="card"><div class="big">🏋️</div><h4>Unequal practice</h4><p>The agent trained on <b>20,000 episodes × 21 days = 420,000 simulated days</b>, about 1,150 years of café mornings. You get 21. Losing to it says nothing about your judgement, and beating it once says little either.</p></div>
+          <div class="card"><div class="big">🎲</div><h4>One game is mostly noise</h4><p>Weather, events and rival prices swing a week’s profit far more than small pricing skill does. As the test above shows, even a fixed plan beats RL on some weeks. A single win or loss is largely the dice.</p></div>
+          <div class="card"><div class="big">🎯</div><h4>Goodhart’s law</h4><p>“When a measure becomes a target, it ceases to be a good measure.” Chase the bot’s score and you start fitting this scenario (hindsight, gaming the rules) instead of learning how demand works. The score goes up and the understanding doesn’t.</p></div>
+          <div class="card"><div class="big">🧭</div><h4>The manager’s job is different</h4><p>Algorithms optimise the reward they are given, inside the world they were trained on. People choose that reward (profit or loyalty?), set guardrails (no surge pricing in an emergency, no discrimination), notice when the world changes (a new rival, a siege) and explain prices to customers and regulators.</p></div>
+          <div class="card"><div class="big">🔁</div><h4>What the game is really for</h4><p>It lets you <i>feel</i> the RL loop: observe, hypothesise, explore or exploit, get a reward, update. The exercise asks <b>how you learned</b>, not whether you won. Your thinking journal in the <b>Game companion</b> tab is the evidence.</p></div>
+          <div class="card"><div class="big">🤝</div><h4>The better question</h4><p>Not “human or algorithm?” but “how do I direct one?” The ZipRecruiter study found the big gain was setting the right price level, a managerial decision, before any personalisation algorithm was switched on.</p></div>
+        </div>
+        <div class="takeaway"><b>Takeaway.</b> ML is easy to beat because it is <i>myopic</i>: it maximises each day alone and spends stock the weekend needed. RL is hard to beat because it plans across days and has practised more than any human could. So treat the RL agent as a <b>benchmark to learn from</b>, not an opponent: ask what its prices reveal about demand, and focus on how your own policy improves.</div>
+        <p class="src">Slides 26–27, 37, 43</p>
+      </article>
+
+      <!-- 06 -->
+      <article class="csec" data-sec="5" hidden>
+        <div class="eyebrow">Concept 06 · Reinforcement learning</div>
         <h2>The RL vocabulary, in a coffee shop</h2>
         <p class="lede">RL is machine learning where an <b>agent</b> learns by interacting with an <b>environment</b> and receiving rewards or penalties. The objective is to maximise <b>long-term cumulative reward</b>. Click a term, or simulate a day to watch the loop run.</p>
         <div class="grid2">
@@ -410,8 +468,8 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
       </article>
 
       <!-- 06 -->
-      <article class="csec" data-sec="5" hidden>
-        <div class="eyebrow">Concept 06 · The fundamental trade-off</div>
+      <article class="csec" data-sec="6" hidden>
+        <div class="eyebrow">Concept 07 · The fundamental trade-off</div>
         <h2>Explore vs. exploit</h2>
         <p class="lede">Imagine an ordinary Tuesday: you don’t know which price earns the most, and each day’s profit is noisy. <b>Exploring</b> tries new prices to gather information. <b>Exploiting</b> uses the best price found so far. Run your own experiment, or let an ε-greedy agent do it.</p>
         <div class="card">
@@ -432,8 +490,8 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
       </article>
 
       <!-- 07 -->
-      <article class="csec" data-sec="6" hidden>
-        <div class="eyebrow">Concept 07 · How RL is different</div>
+      <article class="csec" data-sec="7" hidden>
+        <div class="eyebrow">Concept 08 · How RL is different</div>
         <h2>Sequential decisions: today’s price changes tomorrow’s options</h2>
         <p class="lede">In traditional ML each prediction is independent. In RL, current decisions affect <b>future opportunities, rewards and states</b>. Here you have one delivery of beans for <b>Friday and Saturday</b>, and a farmers’ market comes to town on Saturday.</p>
         <div class="card">
@@ -453,8 +511,8 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
       </article>
 
       <!-- 08 -->
-      <article class="csec" data-sec="7" hidden>
-        <div class="eyebrow">Concept 08 · Legality &amp; acceptance</div>
+      <article class="csec" data-sec="8" hidden>
+        <div class="eyebrow">Concept 09 · Legality &amp; acceptance</div>
         <h2>Fairness, framing and the law</h2>
         <p class="lede">Firms’ profit is only half the story. Customers judge fairness against a <b>reference price</b>, regulators are writing disclosure rules, and shared pricing algorithms can slide into collusion.</p>
         <div class="grid2">
@@ -599,7 +657,7 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
           <li><b>Weekend</b> customers are less price-sensitive (leisure, not commuters).</li>
           <li><b>Competitor</b> “Bean There” opens on 50% of days, priced at $3.00–$5.50.</li>
           <li>Each walk-in chooses <i>our café</i>, <i>the competitor</i> or <i>nothing</i> (logit choice):<br>
-            <span class="formula" style="display:block;margin-top:6px">P(buy here) = e<sup>u − 0.9·p</sup> / (1 + e<sup>u − 0.9·p</sup> + e<sup>u − 0.3 − 0.9·p<sub>comp</sub></sup>)</span>
+            <span class="formula" style="display:block;margin-top:6px">P(buy here) = e<sup>u − 0.9·p</sup> / (1 + e<sup>u − 0.9·p</sup> + e<sup>u + 0.2 − 0.9·p<sub>comp</sub></sup>)</span>
             where u rises with weekend, weather and events. Daily demand also has ±10% random noise.</li>
         </ul></div>
       <div class="card"><h3>Reward &amp; inventory</h3>
@@ -669,14 +727,14 @@ input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px
 <script>
 // ===== MODEL START =====
 const M = (() => {
-  const COST = 1.2, RESTOCK = 450, STOCKOUT_PEN = 0.5, A0 = 4.0, B = 0.9, COMP_EDGE = 0.3, WEEKEND_WTP = 0.8;
+  const COST = 1.2, RESTOCK = 450, STOCKOUT_PEN = 0.5, A0 = 4.0, B = 0.9, COMP_EDGE = -0.2, WEEKEND_WTP = 0.8;
   const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const TRAFFIC = [110, 100, 105, 115, 140, 185, 165];
   const WEATHER = {
     sunny: { label: 'Sunny', icon: '☀️', traffic: 1.0, a: 0.0 },
-    cloudy: { label: 'Cloudy', icon: '⛅', traffic: 0.95, a: 0.1 },
-    rainy: { label: 'Rainy', icon: '🌧️', traffic: 0.8, a: 0.35 },
-    cold: { label: 'Cold snap', icon: '🥶', traffic: 0.9, a: 0.5 },
+    cloudy: { label: 'Cloudy', icon: '⛅', traffic: 0.95, a: 0.25 },
+    rainy: { label: 'Rainy', icon: '🌧️', traffic: 0.8, a: 0.7 },
+    cold: { label: 'Cold snap', icon: '🥶', traffic: 0.9, a: 1.0 },
   };
   const WKEYS = Object.keys(WEATHER);
   const EVENTS = ['Farmers’ market', 'Office fair', 'Concert nearby', 'University open day', 'Marathon'];
@@ -702,7 +760,7 @@ const M = (() => {
     return days;
   }
   function traffic(day) { return TRAFFIC[day.dow] * WEATHER[day.weather].traffic * (day.event ? 1.5 : 1); }
-  function utility(day) { return A0 + (day.dow >= 5 ? WEEKEND_WTP : 0) + WEATHER[day.weather].a + (day.event ? 0.5 : 0); }
+  function utility(day) { return A0 + (day.dow >= 5 ? WEEKEND_WTP : 0) + WEATHER[day.weather].a + (day.event ? 1.2 : 0); }
   // probability a walk-in buys from us at price p
   function buyProb(day, p) {
     const u = Math.exp(utility(day) - B * p);
@@ -738,7 +796,7 @@ const M = (() => {
 
   // ---- RL state encoding ----
   const DEM = ['Low', 'Normal', 'High'], COMP = ['None', 'Cheaper', 'Pricier'], INV = ['Tight', 'OK', 'Plenty'];
-  function demandLevel(day) { const x = traffic(day) * Math.exp(utility(day) - A0); return x < 120 ? 0 : x < 165 ? 1 : 2; }
+  function demandLevel(day) { const x = traffic(day) * Math.exp(utility(day) - A0); return x < 140 ? 0 : x < 500 ? 1 : 2; }
   function compLevel(day) { return !day.comp ? 0 : day.cprice < 4 ? 1 : 2; }
   function invLevel(inv, day) {
     // compare stock left with the share of this week's traffic still to come ("on pace" = 1)
@@ -1000,16 +1058,16 @@ $('#tab-companion').onclick = () => showTab('companion');
 $$('[data-golab]').forEach(b => b.onclick = () => showTab('lab'));
 
 function showConcept(i) {
-  currentConcept = clamp(i, 0, 7);
+  currentConcept = clamp(i, 0, 8);
   $$('.csec').forEach(s => s.hidden = +s.dataset.sec !== currentConcept);
   $$('.cnav [data-c]').forEach(b => b.setAttribute('aria-current', +b.dataset.c === currentConcept));
   $('#cprev').disabled = currentConcept === 0;
-  $('#cnext').textContent = currentConcept === 7 ? 'Go to the Lab →' : 'Next →';
+  $('#cnext').textContent = currentConcept === 8 ? 'Go to the Lab →' : 'Next →';
   hideTip(); redrawVisible();
 }
 $$('.cnav [data-c]').forEach(b => b.onclick = () => { showConcept(+b.dataset.c); window.scrollTo({ top: 0 }); });
 $('#cprev').onclick = () => { showConcept(currentConcept - 1); window.scrollTo({ top: 0 }); };
-$('#cnext').onclick = () => { if (currentConcept === 7) showTab('lab'); else { showConcept(currentConcept + 1); window.scrollTo({ top: 0 }); } };
+$('#cnext').onclick = () => { if (currentConcept === 8) showTab('lab'); else { showConcept(currentConcept + 1); window.scrollTo({ top: 0 }); } };
 
 function showSub(name) {
   currentSub = name;
@@ -1194,6 +1252,68 @@ function bindRange(id, fmt, cb) {
   redraw.c3 = draw;
 })();
 
+// ============================== Concept 05 · Simulate me, ML & RL ==============================
+(() => {
+  const st = { seed: 4242, prices: Array(7).fill(4.5) };
+  const LONG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const playPrices = (days, prices) => M.playPolicy(days, shop => prices[shop.t]);
+  function build() {
+    st.days = M.scenario(st.seed, 7);
+    $('#smSeed').textContent = '#' + st.seed;
+    $('#smWeek').innerHTML = st.days.map((d, i) => `<div class="wday"><div class="dn">${M.DAYS[d.dow]}</div>
+      <div class="cond">${M.WEATHER[d.weather].icon} ${M.WEATHER[d.weather].label}${d.event ? '<br>🎪 ' + d.event : ''}<br>${d.comp ? 'Rival ' + money2(d.cprice) : 'No rival'}</div>
+      <div class="bench" data-open="${i}"></div>
+      <div class="pv" data-pv="${i}">${money2(st.prices[i])}</div>
+      <input type="range" min="1" max="10" step="0.25" value="${st.prices[i]}" data-day="${i}" aria-label="${LONG[d.dow]} price">
+      <div class="res" data-res="${i}"></div><div class="bench" data-bench="${i}"></div></div>`).join('');
+    update();
+  }
+  function update() {
+    const you = playPrices(st.days, st.prices), ml = M.playPolicy(st.days, M.policies.ml()), rl = M.playPolicy(st.days, M.policies.rl(GAME_AGENT));
+    const reveal = $('#smReveal').checked;
+    you.log.forEach((r, i) => {
+      $(`[data-open="${i}"]`).textContent = `${r.invStart} cups at open`;
+      $(`[data-pv="${i}"]`).textContent = money2(st.prices[i]);
+      $(`[data-res="${i}"]`).innerHTML = `sold ${r.sold}/${r.demand}${r.lost ? `<br><span class="neg">turned away ${r.lost}</span>` : ''}${r.waste ? `<br><span class="neg">wasted ${Math.round(r.waste / M.COST)}</span>` : ''}<br><b>${money0(r.reward)}</b>`;
+      $(`[data-bench="${i}"]`).innerHTML = reveal ? `ML ${money2(ml.log[i].price)} · RL ${money2(rl.log[i].price)}` : '';
+    });
+    hbars($('#smScore'), [{ label: '<b>You</b>', v: you.total, color: C.s1 }, { label: 'ML suggestion', v: ml.total, color: C.s3 }, { label: 'RL agent', v: rl.total, color: C.s2 }]);
+    const sum = (sh, k, from = 0, to = 7) => sh.log.slice(from, to).reduce((a, r) => a + r[k], 0);
+    const mlWk = sum(ml, 'sold', 0, 5), rlWk = sum(rl, 'sold', 0, 5), mlLost = sum(ml, 'lost'), rlLost = sum(rl, 'lost');
+    const verdict = you.total >= rl.total ? '🏆 You beat the RL agent this week. Now check whether it was skill or the week, below.' : you.total >= ml.total ? '👍 You beat ML. Beating RL is much harder. Compare where your cups went with where its cups went.' : 'Tip: look at the stock chart. Which days deserve your scarce cups?';
+    $('#smWhy').innerHTML = `<p style="margin:0 0 6px"><b>Why ML is beatable:</b> it maximises each day on its own. It sold <b>${mlWk}</b> cups Mon–Fri against RL’s <b>${rlWk}</b>, then turned away <b>${mlLost}</b> customers (RL: ${rlLost}) when the higher-paying weekend crowd arrived.</p><p style="margin:0">${verdict}</p>`;
+    const cups = sh => sh.log.map((r, i) => [i + 1, r.invEnd + (r.waste ? Math.round(r.waste / M.COST) : 0)]);
+    const series = [{ name: 'You', color: C.s1, pts: cups(you), markers: true, width: 2.5 }, { name: 'ML suggestion', color: C.s3, pts: cups(ml), markers: true }, { name: 'RL agent', color: C.s2, pts: cups(rl), markers: true }];
+    legend($('#smLeg'), series.map(s => ({ name: s.name, color: s.color })));
+    lineChart($('#smStock'), { series, xDomain: [1, 7], xTicks: [1, 2, 3, 4, 5, 6, 7], xFmt: v => M.DAYS[v - 1], yDomain: [0, M.RESTOCK], yTicks: [0, 150, 300, 450], yFmt: v => v, height: 220, hover: 'x', aria: 'Cups left at end of each day',
+      tip: (x, h) => `<div class="tt">${LONG[x - 1]} close</div>` + series.map((s, i) => h[i] ? tipRow(s.color, s.name, h[i][1] + ' cups') : '').join('') });
+    st.last = { you: you.total, ml: ml.total, rl: rl.total };
+  }
+  function test() {
+    const N = 500, W = Array.from({ length: N }, (_, i) => M.scenario(700000 + i * 13, 7));
+    const res = W.map(d => ({ you: playPrices(d, st.prices).total, ml: M.playPolicy(d, M.policies.ml()).total, rl: M.playPolicy(d, M.policies.rl(GAME_AGENT)).total, st: M.playPolicy(d, M.policies.fixed(STATIC_PRICE)).total }));
+    const avg = k => res.reduce((a, r) => a + r[k], 0) / N, rate = f => pct(res.filter(f).length / N);
+    const A = { you: avg('you'), ml: avg('ml'), rl: avg('rl'), st: avg('st') };
+    $('#smTest').innerHTML = `<div class="grid2" style="align-items:start"><div><div class="chart-title">Average weekly reward across 500 new weeks</div><div id="smTestBars"></div></div>
+      <div class="stats" style="grid-template-columns:1fr 1fr">
+        <div class="stat"><div class="k">This week: you vs. RL</div><div class="v ${st.last.you >= st.last.rl ? 'pos' : 'neg'}">${smoney0(st.last.you - st.last.rl)}</div><div class="d">the one week you could see</div></div>
+        <div class="stat"><div class="k">500 weeks: you vs. RL</div><div class="v ${A.you >= A.rl ? 'pos' : 'neg'}">${smoney0(A.you - A.rl)}</div><div class="d">average per week, same prices replayed</div></div>
+        <div class="stat"><div class="k">Your plan beats RL in</div><div class="v">${rate(r => r.you > r.rl)}</div><div class="d">of weeks: some wins are just luck</div></div>
+        <div class="stat"><div class="k">Static $${STATIC_PRICE.toFixed(2)} beats RL in</div><div class="v">${rate(r => r.st > r.rl)}</div><div class="d">of weeks: no thinking at all</div></div>
+        <div class="stat"><div class="k">RL beats ML in</div><div class="v">${rate(r => r.rl > r.ml)}</div><div class="d">of weeks: consistency is RL’s edge</div></div>
+      </div></div>
+      <p style="font-size:14px;margin:10px 0 0"><b>What happened?</b> Your prices were a <i>plan</i> for one week you could see. RL has a <i>policy</i>: a rule for any state it meets. A plan tuned in hindsight rarely generalises, and that is overfitting, the same trap as chasing the leaderboard.</p>`;
+    hbars($('#smTestBars'), [{ label: '<b>Your prices, replayed</b>', v: A.you, color: C.s1 }, { label: 'ML suggestion', v: A.ml, color: C.s3 }, { label: 'RL agent', v: A.rl, color: C.s2 }, { label: `Static $${STATIC_PRICE.toFixed(2)}`, v: A.st, color: C.s4 }]);
+  }
+  $('#smWeek').addEventListener('input', e => { const i = e.target.dataset.day; if (i == null) return; st.prices[+i] = +e.target.value; update(); });
+  $('#smReveal').onchange = update;
+  $('#smNew').onclick = () => { st.seed = Math.floor(Math.random() * 90000) + 1000; build(); $('#smTest').innerHTML = '<p class="muted" style="font-size:13.5px;margin:0">New week. Set your prices, then run the test.</p>'; };
+  $('#smReset').onclick = () => { st.prices = Array(7).fill(4.5); build(); };
+  $('#smRun').onclick = test;
+  build();
+  redraw.c4 = update;
+})();
+
 // ============================== Concept 05 ==============================
 (() => {
   const svg = $('#loopsvg');
@@ -1324,7 +1444,7 @@ function bindRange(id, fmt, cb) {
     });
   }
   bindRange('c7stock', v => v, draw); bindRange('c7fri', money2, draw);
-  redraw.c6 = draw;
+  redraw.c7 = draw;
 })();
 
 // ============================== Concept 08 ==============================
@@ -1728,7 +1848,7 @@ const TR = (() => {
   const ta = (key, val, ph, label) => `<label class="jl">${label}</label><textarea data-k="${key}" placeholder="${esc(ph)}">${esc(val || '')}</textarea>`;
   const activePolicy = () => D.policy.filter(p => !p.retired);
   const levelText = (k, st) => k === 'day' ? `${st.dow} (${weekend(st.dow) ? 'weekend' : 'weekday'})` : k === 'inv' ? (num(st.inv) != null ? `${st.inv} cups` : 'not entered') : k === 'comp' ? `${st.comp}${present(st.comp) && num(st.cprice) != null ? ' at ' + money2(+st.cprice) : ''}` : st[k];
-  const CONF = ['', 'guessing', 'low', 'medium', 'fairly sure', 'certain'];
+  const CONF = ['', 'guessing', 'low', 'medium', 'high', 'certain'];
   const SURP = { expected: 'as expected', somewhat: 'somewhat surprised', very: 'very surprised' };
 
   // similar past days, from my own journal (memory aid, not an answer)
@@ -1772,92 +1892,90 @@ const TR = (() => {
     return L;
   }
 
-  // ---------- Today's entry ----------
-  const SF = [['n', 'Day #', 'number'], ['dow', 'Day of week', 'dow'], ['weather', 'Weather', 'weather'], ['traffic', 'Market traffic', 'traffic'], ['comp', 'Competitor', 'comp'], ['cprice', 'Competitor price $', 'number'], ['inv', 'Inventory (cups)', 'number'], ['ml', 'ML-suggested price $', 'number']];
+  // ---------- Today's entry (streamlined: decide now, reflect when the result is in) ----------
+  const SF = [['n', 'Day #', 'number'], ['dow', 'Day', 'dow'], ['weather', 'Weather', 'weather'], ['traffic', 'Traffic', 'traffic'], ['comp', 'Competitor', 'comp'], ['cprice', 'Rival $', 'number'], ['inv', 'Stock', 'number'], ['ml', 'ML hint $', 'number']];
+  const CYCLE = ['', 'up', 'down', 'none', 'unsure'], ARROW = { '': '·', up: '↑', down: '↓', none: '–', unsure: '?' };
+  const STARTERS = ['Compared with day ', 'I’m testing whether ', 'Stock is ', 'My rule says ', 'The rival is '];
   function newDraft() {
     const last = D.days[D.days.length - 1];
-    return { n: D.days.length + 1, dow: DOWS[(last ? DOWS.indexOf(last.dow) + 1 : 0) % 7], weather: opts('weather')[0] || '', traffic: opts('traffic')[0] || '', comp: opts('comp')[0] || '', cprice: '', inv: last && num(last.inv) != null && num(last.sold) != null ? Math.max(0, last.inv - last.sold) : '', ml: '',
-      notice: '', factors: {}, hypothesis: '', mode: '', modeWhy: '', policyFit: '', policyWhy: '', price: '', expSold: '', conf: '3', sold: '', reward: '', rlPrice: '', rlReward: '', surprise: '', learned: '', policyChange: '' };
+    return { n: D.days.length + 1, dow: DOWS[(last ? DOWS.indexOf(last.dow) + 1 : 0) % 7], weather: last ? last.weather : opts('weather')[0] || '', traffic: opts('traffic')[0] || '', comp: last ? last.comp : opts('comp')[0] || '', cprice: '', inv: last && num(last.inv) != null && num(last.sold) != null ? Math.max(0, last.inv - last.sold) : '', ml: '',
+      factors: {}, hypothesis: '', mode: '', conf: '3', price: '', expSold: '', sold: '', reward: '', rlPrice: '', rlReward: '', surprise: '', learned: '', policyChange: '' };
+  }
+  const pending = () => D.days.map((r, i) => [r, i]).filter(([r]) => r.awaiting);
+  const chips = d => FACT.map(([k, n]) => { const v = (d.factors || {})[k] || ''; return `<button type="button" class="fq ${v}" data-cyc="${k}" title="Click to cycle: raises WTP ↑ · lowers WTP ↓ · no effect – · not sure ?">${n.split(' ')[0]} <span class="muted">${esc(levelText(k, d))}</span> <b>${ARROW[v]}</b></button>`; }).join('');
+  const seg = (key, pairs, val, attr = 'data-rk') => `<div class="seg">${pairs.map(([v, l]) => `<button type="button" ${attr}="${key}" data-rv="${v}" aria-pressed="${val === v}">${l}</button>`).join('')}</div>`;
+  function recallMini(st, skip) {
+    const R = recall(st, skip);
+    if (!R.rows.length) return '<p class="muted" style="font-size:13px;margin:0">Nothing comparable yet, so today is exploration.</p>';
+    return `<div class="muted" style="font-size:12px;margin-bottom:4px">${R.name}</div>` + R.rows.slice(-4).reverse().map(r => `<div class="mini-memo"><b>D${esc(r.n)} ${esc((r.dow || '').slice(0, 3))}</b> ${esc(r.weather)} · ${f2(num(r.price))} → sold ${esc(r.sold || '?')} <span class="muted">(pred ${esc(r.expSold || '?')})</span>${r.learned ? `<div class="q">“${esc(r.learned)}”</div>` : ''}</div>`).join('');
   }
   function renderToday() {
     const el = $('[data-csubpanel="today"]');
     if (!D.draft) D.draft = newDraft();
-    const d = D.draft, editing = D.editing != null, pol = activePolicy();
+    const d = D.draft, editing = D.editing != null, pol = activePolicy(), pend = pending();
     const field = ([k, label, type]) => `<div><label>${label}</label>${type === 'number' ? `<input type="number" step="any" data-k="${k}" value="${esc(d[k] ?? '')}">` : sel(k, type === 'dow' ? DOWS : opts(type), d[k])}</div>`;
-    const radios = (key, pairs) => `<div class="seg">${pairs.map(([v, l]) => `<button type="button" data-rk="${key}" data-rv="${v}" aria-pressed="${d[key] === v}">${l}</button>`).join('')}</div>`;
-    el.innerHTML = `<div class="grid2" style="align-items:start">
-    <div>
-      <div class="card"><div class="stepno">1 · Observe</div><h3>${editing ? `Editing day ${esc(d.n)}` : `Day ${esc(d.n)} of ${esc(D.settings.days)}`}: what the game shows</h3>
-        <div class="cform">${SF.map(field).join('')}</div>
-        ${ta('notice', d.notice, 'Anything unusual today? e.g. first rainy weekend, or the competitor is much cheaper than usual.', 'What stands out to me today?')}</div>
-
-      <div class="card" style="margin-top:14px"><div class="stepno">2 · Recall</div><h3>What have I seen before in conditions like this?</h3>
-        <div id="jRecall">${recallHtml(d, D.editing)}</div>
-        ${pol.length ? `<div class="csection"><h4>My current policy says</h4><ul class="tight">${pol.map(p => `<li>${esc(p.text)} <span class="muted">(since day ${esc(p.since)})</span></li>`).join('')}</ul></div>` : '<p class="muted" style="font-size:13px;margin:10px 0 0">No written policy yet. You can add rules in <b>My policy</b> once patterns appear.</p>'}</div>
-
-      <div class="card" style="margin-top:14px"><div class="stepno">3 · Think</div><h3>Which way does each factor push willingness-to-pay?</h3>
-        <div id="jFactors">${factorChips(d)}</div>
-        ${ta('hypothesis', d.hypothesis, 'e.g. Rain + event should lift WTP. My Friday event day sold out at $5, so I think demand holds at $5.50.', 'My hypothesis: what do I believe, and what evidence is it based on?')}
-        <label class="jl">Am I exploring or exploiting today?</label>${radios('mode', [['explore', '🔍 Exploring: testing something new'], ['exploit', '🎯 Exploiting: using what I know']])}
-        ${ta('modeWhy', d.modeWhy, d.mode === 'explore' ? 'What exactly am I testing, and what result would change my mind?' : 'Which past evidence makes me confident enough to exploit?', 'Why?')}
-        <label class="jl">Does this decision follow my policy?</label>${radios('policyFit', [['follows', 'Follows it'], ['deviates', 'Deviates'], ['none', 'No policy yet']])}
-        ${d.policyFit === 'deviates' ? ta('policyWhy', d.policyWhy, 'What makes today an exception? Is the rule wrong, or is today special?', 'Why deviate?') : ''}</div>
-
-      <div class="card" style="margin-top:14px"><div class="stepno">4 · Decide</div><h3>Commit before you see the result</h3>
-        <div class="cform" style="grid-template-columns:1fr 1fr 1.4fr">
-          <div><label>My price $</label><input type="number" step="0.25" min="1" max="10" data-k="price" value="${esc(d.price)}"></div>
-          <div><label>I predict cups sold</label><input type="number" data-k="expSold" value="${esc(d.expSold)}"></div>
-          <div><label>Confidence: <span id="jConf">${CONF[+d.conf]}</span></label><input type="range" min="1" max="5" step="1" data-k="conf" value="${esc(d.conf)}" style="width:100%;accent-color:var(--roast)"></div>
-        </div></div>
-
-      <div class="card" style="margin-top:14px"><div class="stepno">5 · Reflect</div><h3>After the game reveals the day</h3>
-        <div class="cform">
-          <div><label>Cups sold</label><input type="number" data-k="sold" value="${esc(d.sold)}"></div>
-          <div><label>My reward $</label><input type="number" step="any" data-k="reward" value="${esc(d.reward)}"></div>
-          <div><label>RL price (optional)</label><input type="number" step="any" data-k="rlPrice" value="${esc(d.rlPrice)}"></div>
-          <div><label>RL reward (optional)</label><input type="number" step="any" data-k="rlReward" value="${esc(d.rlReward)}"></div>
-        </div>
-        <label class="jl">How surprised am I?</label>${radios('surprise', [['expected', 'As expected'], ['somewhat', 'Somewhat surprised'], ['very', 'Very surprised']])}
-        ${ta('learned', d.learned, 'What does the gap between my prediction and the result tell me? Which belief should I update?', 'What I learned')}
-        ${ta('policyChange', d.policyChange, 'e.g. New rule: on event days start at least $1 above a normal day. (Leave empty if no change.)', 'Does this change my policy?')}
-        ${d.policyChange ? '<label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" id="jAddPol"> Also add it to <b>My policy</b> when I save</label>' : ''}
-        <div class="row" style="margin-top:12px"><button class="btn primary" id="cpSave">${editing ? `Update day ${esc(d.n)}` : 'Save entry to journal'}</button>${editing ? '<button class="btn" id="cpCancel">Cancel edit</button>' : '<button class="btn" id="cpClear">Clear form</button>'}<span class="muted" id="cpMsg" style="font-size:13px"></span></div>
-        <p class="muted" style="font-size:12.5px;margin:6px 0 0">You can save before the result is in, then come back via <b>Thinking log → Edit</b> to reflect.</p></div>
+    const outcome = editing ? `<div class="csection"><h4>Result and reflection</h4><div class="cform">
+        <div><label>Cups sold</label><input type="number" data-k="sold" value="${esc(d.sold)}"></div><div><label>Reward $</label><input type="number" step="any" data-k="reward" value="${esc(d.reward)}"></div>
+        <div><label>RL price (opt.)</label><input type="number" step="any" data-k="rlPrice" value="${esc(d.rlPrice)}"></div><div><label>RL reward (opt.)</label><input type="number" step="any" data-k="rlReward" value="${esc(d.rlReward)}"></div></div>
+        <label class="jl">Surprise</label>${seg('surprise', [['expected', 'As expected'], ['somewhat', 'Somewhat'], ['very', 'Very']], d.surprise)}
+        <label class="jl">What I learned</label><textarea data-k="learned">${esc(d.learned)}</textarea>
+        <label class="jl">Policy change (optional)</label><input data-k="policyChange" class="wide" value="${esc(d.policyChange)}"></div>` : '';
+    el.innerHTML = `<div class="today2">
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">${editing ? `Editing day ${esc(d.n)}` : `Day ${esc(d.n)} of ${esc(D.settings.days)}`}</h3><span class="muted" style="font-size:12.5px">Fill this in <b>before</b> you set the price in the game</span></div>
+      <div class="cform cform8" style="margin-top:10px">${SF.map(field).join('')}</div>
+      <label class="jl">Factors <span style="text-transform:none;font-weight:400">(click to cycle ↑ raises WTP, ↓ lowers, – no effect, ? not sure)</span></label><div class="fqrow" id="jChips">${chips(d)}</div>
+      <label class="jl">Why this price? <span style="text-transform:none;font-weight:400">One or two sentences is enough</span></label>
+      <div class="starters">${STARTERS.map(s => `<button type="button" class="chip" data-start="${esc(s)}">+ ${esc(s.trim())}…</button>`).join('')}</div>
+      <textarea data-k="hypothesis" id="jWhy" placeholder="e.g. Compared with day 3, today has an event, so I think WTP is higher. Testing $5.50.">${esc(d.hypothesis)}</textarea>
+      <div class="row" style="margin-top:10px;gap:16px">${seg('mode', [['explore', '🔍 Explore'], ['exploit', '🎯 Exploit']], d.mode)}${seg('conf', [['2', 'Low'], ['3', 'Medium'], ['4', 'High']], d.conf)}<span class="muted" style="font-size:12.5px">confidence</span></div>
+      <div class="row" style="margin-top:12px;align-items:flex-end">
+        <div class="cf" style="width:120px"><label>My price $</label><input type="number" step="0.25" min="1" max="10" data-k="price" value="${esc(d.price)}"></div>
+        <div class="cf" style="width:140px"><label>I predict cups</label><input type="number" data-k="expSold" value="${esc(d.expSold)}"></div>
+        <button class="btn primary" id="cpSave">${editing ? 'Update entry' : 'Save decision'}</button><span class="kbd">Ctrl/⌘ + Enter</span>
+        ${editing ? '<button class="btn" id="cpCancel">Cancel</button>' : ''}<span class="muted" id="cpMsg" style="font-size:13px"></span></div>
+      ${outcome}
     </div>
-    <div class="card" style="position:sticky;top:12px"><h3>My thinking trail, as it will be logged</h3><div id="jSent"></div><div id="jTrail" class="notebook"></div>
-      <div class="csection"><h4>Prompts if you are stuck</h4><ul class="tight" style="font-size:13.5px">
-        <li>What would have to be true for a <i>higher</i> price to work today? A lower one?</li>
-        <li>Is today different from my comparable days in a way that matters?</li>
-        <li>If I am exploring, am I changing only <i>one</i> thing, so the result is interpretable?</li>
-        <li>How will I know tomorrow whether today was a good decision?</li>
-        <li>Inventory: cups left ÷ days left = how many cups can I afford to sell per day?</li></ul></div></div>
-    </div>`;
-    const live = () => { $('#jSent').innerHTML = sentence(d, `<b class="mono">${num(d.price) != null ? money2(+d.price) : '$ __'}</b>`); $('#jTrail').innerHTML = trail(d).map(l => `<p>${esc(l)}</p>`).join(''); };
+    <div>
+      <div class="card"><h3>⏳ Awaiting result ${pend.length ? `<span class="tag">${pend.length}</span>` : ''}</h3>
+        ${pend.length ? pend.map(([r, i]) => `<div class="pend" data-pi="${i}"><div><b>Day ${esc(r.n)} · ${esc((r.dow || '').slice(0, 3))}</b> at <b class="mono">${f2(num(r.price))}</b> <span class="muted">· predicted ${esc(r.expSold || '?')} cups</span></div>
+          <div class="row" style="margin-top:6px"><input type="number" class="mini" data-pk="sold" value="${esc(r.sold || '')}" placeholder="sold"><input type="number" step="any" class="mini" data-pk="reward" value="${esc(r.reward || '')}" placeholder="reward $">${seg('surprise', [['expected', '='], ['somewhat', '!'], ['very', '!!']], r.surprise, 'data-pk2')}</div>
+          <input class="wide" data-pk="learned" value="${esc(r.learned || '')}" placeholder="What did I learn? (one line)" style="margin-top:6px">
+          <div class="row" style="margin-top:6px;justify-content:space-between"><label style="font-size:12.5px"><input type="checkbox" data-pol> make it a policy rule</label><button class="btn small primary" data-done>Done</button></div></div>`).join('') : '<p class="muted" style="font-size:13.5px;margin:0">Nothing pending. After you save a decision, come back here when the game shows the result.</p>'}
+        <p class="muted" style="font-size:12px;margin:8px 0 0">Surprise: = as expected · ! somewhat · !! very</p></div>
+      <div class="card" style="margin-top:14px"><h3>🧠 Similar days I’ve logged</h3><div id="jRecall">${recallMini(d, D.editing)}</div></div>
+      <div class="card" style="margin-top:14px"><h3>🧭 My policy</h3>${pol.length ? `<ul class="tight" style="font-size:13.5px">${pol.map(p => `<li>${esc(p.text)}</li>`).join('')}</ul>` : '<p class="muted" style="font-size:13px;margin:0">No rules yet. Tick “make it a policy rule” when a lesson sticks.</p>'}</div>
+    </div></div>`;
     const STATEK = ['dow', 'weather', 'traffic', 'comp', 'cprice', 'inv'];
     el.oninput = el.onchange = e => {
-      const k = e.target.dataset.k; if (!k) return;
-      d[k] = e.target.value; save(); live();
-      if (k === 'conf') $('#jConf').textContent = CONF[+d.conf];
-      if (STATEK.includes(k) && e.type === 'change') { $('#jRecall').innerHTML = recallHtml(d, D.editing); $('#jFactors').innerHTML = factorChips(d); }
-      if (k === 'policyChange' && e.type === 'change') renderToday();
+      const k = e.target.dataset.k, pk = e.target.dataset.pk;
+      if (k) { d[k] = e.target.value; save(); if (STATEK.includes(k) && e.type === 'change') { $('#jChips').innerHTML = chips(d); $('#jRecall').innerHTML = recallMini(d, D.editing); } }
+      if (pk) { const row = D.days[+e.target.closest('[data-pi]').dataset.pi]; row[pk] = e.target.value; save(); }
     };
     el.onclick = e => {
-      const fb = e.target.closest('[data-fk]'), rb = e.target.closest('[data-rk]');
-      if (fb) { d.factors = { ...(d.factors || {}), [fb.dataset.fk]: fb.dataset.fv }; save(); $('#jFactors').innerHTML = factorChips(d); live(); }
-      if (rb) { d[rb.dataset.rk] = rb.dataset.rv; save(); renderToday(); }
+      const cy = e.target.closest('[data-cyc]'), rb = e.target.closest('[data-rk]'), p2 = e.target.closest('[data-pk2]'), st = e.target.closest('[data-start]'), done = e.target.closest('[data-done]');
+      if (cy) { const k = cy.dataset.cyc, cur = (d.factors || {})[k] || ''; d.factors = { ...(d.factors || {}), [k]: CYCLE[(CYCLE.indexOf(cur) + 1) % CYCLE.length] }; save(); $('#jChips').innerHTML = chips(d); }
+      if (rb) { d[rb.dataset.rk] = rb.dataset.rv; save(); $$(`[data-rk="${rb.dataset.rk}"]`, el).forEach(b => b.setAttribute('aria-pressed', b === rb)); }
+      if (p2) { const box = p2.closest('[data-pi]'); D.days[+box.dataset.pi].surprise = p2.dataset.rv; save(); $$('[data-pk2]', box).forEach(b => b.setAttribute('aria-pressed', b === p2)); }
+      if (st) { const w = $('#jWhy'); w.value = (w.value ? w.value.replace(/\s*$/, ' ') : '') + st.dataset.start; d.hypothesis = w.value; save(); w.focus(); w.setSelectionRange(w.value.length, w.value.length); }
+      if (done) {
+        const box = done.closest('[data-pi]'), row = D.days[+box.dataset.pi];
+        if (num(row.sold) == null && num(row.reward) == null) { done.textContent = 'Enter sold or reward'; return; }
+        if ($('[data-pol]', box).checked && row.learned) { row.policyChange = row.learned; D.policy.push({ id: Date.now(), text: row.learned, since: row.n, why: `Day ${row.n} result`, retired: null, retiredWhy: '' }); }
+        row.awaiting = false; save(); renderToday();
+      }
     };
-    $('#cpSave').onclick = () => {
-      if (num(d.price) == null) { $('#cpMsg').textContent = 'Commit a price first. Step 4.'; return; }
-      if ($('#jAddPol') && $('#jAddPol').checked) D.policy.push({ id: Date.now(), text: d.policyChange, since: d.n, why: d.learned || '', retired: null, retiredWhy: '' });
-      const row = { ...d };
+    const submit = () => {
+      if (num(d.price) == null) { $('#cpMsg').textContent = 'Enter your price first.'; return; }
+      const row = { ...d, awaiting: editing ? (num(d.sold) == null && num(d.reward) == null) : true };
       if (editing) D.days[D.editing] = row; else D.days.push(row);
       D.days.sort((a, b) => (+a.n || 0) - (+b.n || 0));
       D.editing = null; D.draft = newDraft(); save(); renderToday();
-      $('#cpMsg').textContent = editing ? 'Updated.' : `Day ${row.n} saved to your journal.`;
+      $('#cpMsg').textContent = editing ? 'Updated.' : `Day ${row.n} saved. It is waiting for its result on the right.`;
     };
+    $('#cpSave').onclick = submit;
+    el.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submit(); } };
     if ($('#cpCancel')) $('#cpCancel').onclick = () => { D.editing = null; D.draft = newDraft(); save(); renderToday(); };
-    if ($('#cpClear')) $('#cpClear').onclick = () => { D.draft = newDraft(); save(); renderToday(); };
-    live();
   }
 
   // ---------- Thinking log ----------
@@ -2003,7 +2121,7 @@ const TR = (() => {
     hideTip(); renderCSub();
   }
   $$('[data-csub]').forEach(b => b.onclick = () => showCSub(b.dataset.csub));
-  redraw.companion = renderCSub;
+  redraw.companion = () => { if (sub === 'obs' || sub === 'log') renderCSub(); };
   showCSub('today');
 })();
 
