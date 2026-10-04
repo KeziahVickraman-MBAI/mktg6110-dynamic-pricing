@@ -208,6 +208,49 @@ textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:8
 .badge.explore{background:var(--s2)} .badge.exploit{background:var(--s1)}
 .kbd{font:12px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:#fff}
 
+/* companion */
+.cbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cform{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.cform label,.cf label{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.cform select,.cform input,.cf select,.cf input{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink)}
+.cform input[type=number],.cf input[type=number]{font-family:var(--mono)}
+.csection{border-top:1px solid var(--line);margin-top:16px;padding-top:14px}
+.csection > h4{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--crema);margin-bottom:10px}
+.sentence{font-size:16px;line-height:1.9;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:12px 16px}
+.sentence .hy{color:#8a5a00;font-weight:700;background:#fdf1d8;padding:1px 5px;border-radius:4px}
+.sentence .hg{color:#11683f;font-weight:700;background:#e3f6ec;padding:1px 5px;border-radius:4px}
+.sentence input{width:90px;font:700 16px var(--mono);padding:3px 8px;border:1px solid var(--line);border-radius:6px}
+.rsteps{list-style:none;margin:0;padding:0;counter-reset:st}
+.rsteps > li{counter-increment:st;position:relative;padding:10px 12px 10px 46px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:var(--surface)}
+.rsteps > li::before{content:counter(st);position:absolute;left:12px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--roast);color:#fff;font:700 12px/24px var(--mono);text-align:center}
+.rsteps h5{margin:0 0 3px;font-size:14px;color:var(--ink)}
+.rsteps .calc{font-family:var(--mono);font-size:12.5px;color:var(--body);background:var(--surface-2);border-radius:6px;padding:6px 8px;margin-top:5px;line-height:1.6}
+.rsteps .verdict{font-weight:700;color:var(--roast)}
+.suggest{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--crema-soft);border:1px solid #e8cfb0;border-radius:10px;padding:12px 16px}
+.suggest .p{font:700 30px var(--mono);color:var(--ink)}
+.tag{display:inline-block;font:700 11px var(--mono);padding:2px 7px;border-radius:5px;background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+.tag.ok{background:#e3f6ec;color:#11683f;border-color:#bfe6d0}.tag.no{background:#fbe5e4;color:#9b2c2a;border-color:#f1c4c2}
+.ccard{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface);margin-bottom:14px}
+.ccard .chead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ccard .ch4{font-size:16px;font-weight:700;color:var(--ink)}
+.cf4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+.evid{font-size:13px;color:var(--body)}
+.evid b{font-family:var(--mono)}
+table.t td input{width:80px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;font-family:var(--mono);text-align:right}
+.jl{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 4px}
+.stepno{font:700 11.5px var(--mono);letter-spacing:.08em;color:var(--crema);text-transform:uppercase;margin-bottom:2px}
+.memo{border:1px solid var(--line);border-left:3px solid var(--crema);border-radius:0 8px 8px 0;background:var(--surface-2);padding:8px 10px;margin-bottom:8px;font-size:13.5px}
+.memo .q,.timeline .q{color:var(--muted);font-size:13px;margin-top:3px;font-style:italic}
+.notebook{background:#fffdf8;border:1px dashed #cdbfa9;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:14px;color:var(--ink);min-height:60px}
+.notebook p{margin:0 0 6px}
+.fchip{display:grid;grid-template-columns:minmax(150px,1fr) auto;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+@media (max-width:680px){.fchip{grid-template-columns:1fr}}
+.fchip .seg button{padding:4px 9px;font-size:12.5px}
+.ccard .seg button,.card .seg button{font-size:13px}
+.timeline{margin:0;padding-left:20px}.timeline li{margin:0 0 10px;font-size:14px}
+input.mini{width:80px;padding:5px;border:1px solid var(--line);border-radius:6px;font-family:var(--mono)}
+.trunc{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left!important}
+@media (max-width:900px){.cform,.cf4{grid-template-columns:1fr 1fr}}
 @media (max-width:1050px){
   .concepts,.labgrid,.traingrid{grid-template-columns:1fr}
   .cnav{position:static;display:flex;flex-wrap:wrap}
@@ -227,6 +270,7 @@ textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:8
     <nav class="tabs" role="tablist" aria-label="Main sections">
       <button role="tab" id="tab-concepts" aria-selected="true" aria-controls="panel-concepts">① Concepts</button>
       <button role="tab" id="tab-lab" aria-selected="false" aria-controls="panel-lab">② Lab: run the coffee shop</button>
+      <button role="tab" id="tab-companion" aria-selected="false" aria-controls="panel-companion">③ Game companion</button>
     </nav>
   </div>
 </header>
@@ -590,6 +634,35 @@ textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:8
     </div>
   </div>
 </section>
+<!-- ============================== COMPANION ============================== -->
+<section id="panel-companion" class="tabpanel" role="tabpanel" aria-labelledby="tab-companion" hidden>
+  <div class="eyebrow">Companion for the real Roast &amp; Reward game</div>
+  <h2 style="font-size:28px;margin:4px 0 2px">A scratch pad for your thought process</h2>
+  <p class="lede">Keep this tab open beside <a href="https://apps.cte.smu.edu.sg/teaching-rl/" target="_blank" rel="noopener">the SMU game</a>. The goal is not to beat the RL agent. It is to <b>experience how a policy forms</b>: you observe a state, recall what you have seen before, form a hypothesis, choose to explore or exploit, commit, then update your beliefs from the reward. That is the RL loop, run by you. This page never tells you a price. It only helps you capture <i>why</i> you chose one and how your thinking changed.</p>
+  <div class="cbar">
+    <div class="subtabs" role="tablist" aria-label="Companion sections" style="margin:0">
+      <button role="tab" aria-selected="true" data-csub="today">📝 Today’s entry</button>
+      <button role="tab" aria-selected="false" data-csub="log">📒 Thinking log</button>
+      <button role="tab" aria-selected="false" data-csub="policy">🧭 My policy</button>
+      <button role="tab" aria-selected="false" data-csub="obs">📈 My observations</button>
+      <button role="tab" aria-selected="false" data-csub="checks">✅ Scenario checks</button>
+      <button role="tab" aria-selected="false" data-csub="settings">⚙ Menus</button>
+    </div>
+    <div class="row">
+      <button class="btn small" id="cpCopy">📋 Copy summary</button>
+      <button class="btn small" id="cpExport">⬇ Export</button>
+      <label class="btn small" style="cursor:pointer">⬆ Import<input type="file" id="cpImport" accept="application/json" hidden></label>
+      <button class="btn small" id="cpReset">Reset</button>
+    </div>
+  </div>
+  <p class="muted" id="cpSaved" style="font-size:12.5px;margin:-6px 0 12px"></p>
+  <div data-csubpanel="today"></div>
+  <div data-csubpanel="log" hidden></div>
+  <div data-csubpanel="policy" hidden></div>
+  <div data-csubpanel="obs" hidden></div>
+  <div data-csubpanel="checks" hidden></div>
+  <div data-csubpanel="settings" hidden></div>
+</section>
 </main>
 <div id="tip" role="tooltip"></div>
 
@@ -917,11 +990,13 @@ function showTab(name) {
   $$('.tabs [role=tab]').forEach(b => b.setAttribute('aria-selected', b.id === 'tab-' + name));
   $('#panel-concepts').hidden = name !== 'concepts';
   $('#panel-lab').hidden = name !== 'lab';
+  $('#panel-companion').hidden = name !== 'companion';
   hideTip(); redrawVisible();
   window.scrollTo({ top: 0 });
 }
 $('#tab-concepts').onclick = () => showTab('concepts');
 $('#tab-lab').onclick = () => showTab('lab');
+$('#tab-companion').onclick = () => showTab('companion');
 $$('[data-golab]').forEach(b => b.onclick = () => showTab('lab'));
 
 function showConcept(i) {
@@ -947,6 +1022,7 @@ $$('.subtabs [data-sub]').forEach(b => b.onclick = () => showSub(b.dataset.sub))
 
 function redrawVisible() {
   if (currentTab === 'concepts') redraw['c' + currentConcept] && redraw['c' + currentConcept]();
+  else if (currentTab === 'companion') redraw.companion && redraw.companion();
   else redraw[currentSub] && redraw[currentSub]();
 }
 let rsz; addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(redrawVisible, 120); });
@@ -1621,6 +1697,314 @@ const TR = (() => {
   document.addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && currentTab === 'lab' && currentSub === 'train' && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) && !st.running) $('#trStep').click(); });
   redraw.train = drawAll;
   return { ensureBench };
+})();
+
+// ============================== COMPANION: thinking journal for the real game ==============================
+(() => {
+  const KEY = 'rr-journal-v2';
+  const DOWS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const FACT = [['day', 'Day of week'], ['weather', 'Weather'], ['traffic', 'Market traffic'], ['comp', 'Competitor'], ['inv', 'Inventory left']];
+  const DIRS = [['up', '↑ raises WTP'], ['down', '↓ lowers WTP'], ['none', '– no effect'], ['unsure', '? not sure']];
+  const blank = () => ({
+    settings: { weather: 'Sunny, Cloudy, Rainy', traffic: 'normal with no events, high with an event', comp: 'absent, present', days: 21 },
+    days: [], draft: null, editing: null, policy: [],
+    checks: [newCheck()],
+  });
+  function newCheck(base) { return { dow: 'Monday', weather: 'Sunny', traffic: 'normal with no events', comp: 'absent', ...(base || {}), factors: {}, uses: [], answer: '', conf: '3', why: '', lo: '', hi: '', after: '' }; }
+  let D;
+  try { const s = JSON.parse(localStorage.getItem(KEY)); D = s && Array.isArray(s.days) ? Object.assign(blank(), s) : blank(); } catch (e) { D = blank(); }
+  let sub = 'today';
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(D)); $('#cpSaved').textContent = `Saved in this browser at ${new Date().toLocaleTimeString()}. Use Export to keep a file copy.`; }
+    catch (e) { $('#cpSaved').textContent = 'Browser storage is unavailable here. Use Export to keep your journal.'; }
+  }
+  const opts = k => String(D.settings[k]).split(',').map(x => x.trim()).filter(Boolean);
+  const num = v => (v === '' || v == null || isNaN(+v)) ? null : +v;
+  const weekend = d => d === 'Saturday' || d === 'Sunday';
+  const present = c => !/absent|none|closed|^no\b/i.test(c || '');
+  const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+  const f2 = v => v == null ? '—' : money2(v);
+  const sel = (key, options, val) => `<select data-k="${key}">${options.map(o => `<option ${o === val ? 'selected' : ''}>${esc(o)}</option>`).join('')}${val && !options.includes(val) ? `<option selected>${esc(val)}</option>` : ''}</select>`;
+  const ta = (key, val, ph, label) => `<label class="jl">${label}</label><textarea data-k="${key}" placeholder="${esc(ph)}">${esc(val || '')}</textarea>`;
+  const activePolicy = () => D.policy.filter(p => !p.retired);
+  const levelText = (k, st) => k === 'day' ? `${st.dow} (${weekend(st.dow) ? 'weekend' : 'weekday'})` : k === 'inv' ? (num(st.inv) != null ? `${st.inv} cups` : 'not entered') : k === 'comp' ? `${st.comp}${present(st.comp) && num(st.cprice) != null ? ' at ' + money2(+st.cprice) : ''}` : st[k];
+  const CONF = ['', 'guessing', 'low', 'medium', 'fairly sure', 'certain'];
+  const SURP = { expected: 'as expected', somewhat: 'somewhat surprised', very: 'very surprised' };
+
+  // similar past days, from my own journal (memory aid, not an answer)
+  function recall(st, skip) {
+    const rows = D.days.filter((r, i) => i !== skip && num(r.price) != null);
+    const wk = weekend(st.dow), cp = present(st.comp);
+    const tiers = [
+      ['same day type, weather, traffic and competitor', r => weekend(r.dow) === wk && r.weather === st.weather && r.traffic === st.traffic && present(r.comp) === cp],
+      ['same day type, traffic and competitor', r => weekend(r.dow) === wk && r.traffic === st.traffic && present(r.comp) === cp],
+      ['same traffic and competitor', r => r.traffic === st.traffic && present(r.comp) === cp]];
+    for (const [name, f] of tiers) { const m = rows.filter(f); if (m.length) return { name, rows: m }; }
+    return { name: 'nothing comparable yet', rows: [] };
+  }
+  function recallHtml(st, skip, pick) {
+    const R = recall(st, skip);
+    if (!R.rows.length) return `<p class="muted" style="font-size:13.5px;margin:0">No comparable day in your journal yet. Whatever you do today is exploration, so make the hypothesis count.</p>`;
+    return `<div class="muted" style="font-size:12.5px;margin-bottom:6px">Matched on: ${R.name}</div>` + R.rows.map(r => `<div class="memo">${pick ? `<label style="float:right;font-size:12px"><input type="checkbox" data-use="${esc(r.n)}" ${pick.includes(String(r.n)) ? 'checked' : ''}> drawing on this</label>` : ''}
+      <b>Day ${esc(r.n)} · ${esc(r.dow)}</b> · ${esc(r.weather)} · ${esc(r.traffic)} · comp ${esc(r.comp)}<br>
+      I charged <b class="mono">${f2(num(r.price))}</b> (${r.mode === 'explore' ? '🔍 exploring' : r.mode === 'exploit' ? '🎯 exploiting' : 'mode not set'}), predicted ${esc(r.expSold || '?')} cups, sold ${esc(r.sold || '?')}${num(r.reward) != null ? `, reward ${money0(+r.reward)}` : ''}${r.surprise ? ` · ${SURP[r.surprise]}` : ''}
+      ${r.hypothesis ? `<div class="q">Thought: ${esc(r.hypothesis)}</div>` : ''}${r.learned ? `<div class="q">Learned: ${esc(r.learned)}</div>` : ''}</div>`).join('');
+  }
+  function factorChips(st, list = FACT) {
+    return list.map(([k, name]) => `<div class="fchip"><div><b>${name}</b><span class="muted"> · ${esc(levelText(k, st))}</span></div><div class="seg">${DIRS.map(([v, l]) => `<button type="button" data-fk="${k}" data-fv="${v}" aria-pressed="${(st.factors || {})[k] === v}">${l}</button>`).join('')}</div></div>`).join('');
+  }
+  function sentence(st, answerHtml) {
+    return `<div class="sentence">For a <span class="hy">${esc(st.dow)}</span>, when the weather is <span class="hy">${esc(st.weather)}</span>, the market traffic is <span class="hy">${esc(st.traffic)}</span> and the competitor is <span class="hg">${esc(st.comp)}${present(st.comp) && num(st.cprice) != null ? ' at ' + money2(+st.cprice) : ''}</span>${num(st.inv) != null ? `, with <span class="hy">${esc(st.inv)} cups</span> in stock` : ''}: the optimal price of coffee for that day is ${answerHtml}</div>`;
+  }
+  // the day's entry as a lab-notebook paragraph (also used by Copy summary)
+  function trail(d) {
+    const f = d.factors || {}, fx = FACT.filter(([k]) => f[k]).map(([k, n]) => `${n} ${f[k] === 'up' ? '↑' : f[k] === 'down' ? '↓' : f[k] === 'none' ? '–' : '?'}`).join(', ');
+    const L = [`Day ${d.n} (${d.dow}): ${d.weather}, ${d.traffic}, competitor ${d.comp}${present(d.comp) && d.cprice ? ' $' + d.cprice : ''}${d.inv !== '' && d.inv != null ? `, ${d.inv} cups` : ''}${d.ml ? `, ML suggested $${d.ml}` : ''}.`];
+    if (d.notice) L.push(`Noticed: ${d.notice}`);
+    if (fx) L.push(`Factors: ${fx}.`);
+    if (d.hypothesis) L.push(`Hypothesis: ${d.hypothesis}`);
+    if (d.mode) L.push(`${d.mode === 'explore' ? 'Exploring' : 'Exploiting'}${d.modeWhy ? ': ' + d.modeWhy : '.'}`);
+    if (d.policyFit) L.push(`Policy: ${d.policyFit === 'follows' ? 'follows my policy' : d.policyFit === 'deviates' ? 'deviates from my policy' : 'no policy yet'}${d.policyWhy ? ' (' + d.policyWhy + ')' : ''}.`);
+    if (d.price) L.push(`Decision: $${d.price}, predicting ${d.expSold || '?'} cups (confidence: ${CONF[+d.conf] || '?'}).`);
+    if (d.sold || d.reward) L.push(`Result: sold ${d.sold || '?'}${d.reward ? `, reward $${d.reward}` : ''}${d.surprise ? `, ${SURP[d.surprise]}` : ''}.`);
+    if (d.learned) L.push(`Learned: ${d.learned}`);
+    if (d.policyChange) L.push(`Policy change: ${d.policyChange}`);
+    return L;
+  }
+
+  // ---------- Today's entry ----------
+  const SF = [['n', 'Day #', 'number'], ['dow', 'Day of week', 'dow'], ['weather', 'Weather', 'weather'], ['traffic', 'Market traffic', 'traffic'], ['comp', 'Competitor', 'comp'], ['cprice', 'Competitor price $', 'number'], ['inv', 'Inventory (cups)', 'number'], ['ml', 'ML-suggested price $', 'number']];
+  function newDraft() {
+    const last = D.days[D.days.length - 1];
+    return { n: D.days.length + 1, dow: DOWS[(last ? DOWS.indexOf(last.dow) + 1 : 0) % 7], weather: opts('weather')[0] || '', traffic: opts('traffic')[0] || '', comp: opts('comp')[0] || '', cprice: '', inv: last && num(last.inv) != null && num(last.sold) != null ? Math.max(0, last.inv - last.sold) : '', ml: '',
+      notice: '', factors: {}, hypothesis: '', mode: '', modeWhy: '', policyFit: '', policyWhy: '', price: '', expSold: '', conf: '3', sold: '', reward: '', rlPrice: '', rlReward: '', surprise: '', learned: '', policyChange: '' };
+  }
+  function renderToday() {
+    const el = $('[data-csubpanel="today"]');
+    if (!D.draft) D.draft = newDraft();
+    const d = D.draft, editing = D.editing != null, pol = activePolicy();
+    const field = ([k, label, type]) => `<div><label>${label}</label>${type === 'number' ? `<input type="number" step="any" data-k="${k}" value="${esc(d[k] ?? '')}">` : sel(k, type === 'dow' ? DOWS : opts(type), d[k])}</div>`;
+    const radios = (key, pairs) => `<div class="seg">${pairs.map(([v, l]) => `<button type="button" data-rk="${key}" data-rv="${v}" aria-pressed="${d[key] === v}">${l}</button>`).join('')}</div>`;
+    el.innerHTML = `<div class="grid2" style="align-items:start">
+    <div>
+      <div class="card"><div class="stepno">1 · Observe</div><h3>${editing ? `Editing day ${esc(d.n)}` : `Day ${esc(d.n)} of ${esc(D.settings.days)}`}: what the game shows</h3>
+        <div class="cform">${SF.map(field).join('')}</div>
+        ${ta('notice', d.notice, 'Anything unusual today? e.g. first rainy weekend, or the competitor is much cheaper than usual.', 'What stands out to me today?')}</div>
+
+      <div class="card" style="margin-top:14px"><div class="stepno">2 · Recall</div><h3>What have I seen before in conditions like this?</h3>
+        <div id="jRecall">${recallHtml(d, D.editing)}</div>
+        ${pol.length ? `<div class="csection"><h4>My current policy says</h4><ul class="tight">${pol.map(p => `<li>${esc(p.text)} <span class="muted">(since day ${esc(p.since)})</span></li>`).join('')}</ul></div>` : '<p class="muted" style="font-size:13px;margin:10px 0 0">No written policy yet. You can add rules in <b>My policy</b> once patterns appear.</p>'}</div>
+
+      <div class="card" style="margin-top:14px"><div class="stepno">3 · Think</div><h3>Which way does each factor push willingness-to-pay?</h3>
+        <div id="jFactors">${factorChips(d)}</div>
+        ${ta('hypothesis', d.hypothesis, 'e.g. Rain + event should lift WTP. My Friday event day sold out at $5, so I think demand holds at $5.50.', 'My hypothesis: what do I believe, and what evidence is it based on?')}
+        <label class="jl">Am I exploring or exploiting today?</label>${radios('mode', [['explore', '🔍 Exploring: testing something new'], ['exploit', '🎯 Exploiting: using what I know']])}
+        ${ta('modeWhy', d.modeWhy, d.mode === 'explore' ? 'What exactly am I testing, and what result would change my mind?' : 'Which past evidence makes me confident enough to exploit?', 'Why?')}
+        <label class="jl">Does this decision follow my policy?</label>${radios('policyFit', [['follows', 'Follows it'], ['deviates', 'Deviates'], ['none', 'No policy yet']])}
+        ${d.policyFit === 'deviates' ? ta('policyWhy', d.policyWhy, 'What makes today an exception? Is the rule wrong, or is today special?', 'Why deviate?') : ''}</div>
+
+      <div class="card" style="margin-top:14px"><div class="stepno">4 · Decide</div><h3>Commit before you see the result</h3>
+        <div class="cform" style="grid-template-columns:1fr 1fr 1.4fr">
+          <div><label>My price $</label><input type="number" step="0.25" min="1" max="10" data-k="price" value="${esc(d.price)}"></div>
+          <div><label>I predict cups sold</label><input type="number" data-k="expSold" value="${esc(d.expSold)}"></div>
+          <div><label>Confidence: <span id="jConf">${CONF[+d.conf]}</span></label><input type="range" min="1" max="5" step="1" data-k="conf" value="${esc(d.conf)}" style="width:100%;accent-color:var(--roast)"></div>
+        </div></div>
+
+      <div class="card" style="margin-top:14px"><div class="stepno">5 · Reflect</div><h3>After the game reveals the day</h3>
+        <div class="cform">
+          <div><label>Cups sold</label><input type="number" data-k="sold" value="${esc(d.sold)}"></div>
+          <div><label>My reward $</label><input type="number" step="any" data-k="reward" value="${esc(d.reward)}"></div>
+          <div><label>RL price (optional)</label><input type="number" step="any" data-k="rlPrice" value="${esc(d.rlPrice)}"></div>
+          <div><label>RL reward (optional)</label><input type="number" step="any" data-k="rlReward" value="${esc(d.rlReward)}"></div>
+        </div>
+        <label class="jl">How surprised am I?</label>${radios('surprise', [['expected', 'As expected'], ['somewhat', 'Somewhat surprised'], ['very', 'Very surprised']])}
+        ${ta('learned', d.learned, 'What does the gap between my prediction and the result tell me? Which belief should I update?', 'What I learned')}
+        ${ta('policyChange', d.policyChange, 'e.g. New rule: on event days start at least $1 above a normal day. (Leave empty if no change.)', 'Does this change my policy?')}
+        ${d.policyChange ? '<label style="font-size:13px;display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" id="jAddPol"> Also add it to <b>My policy</b> when I save</label>' : ''}
+        <div class="row" style="margin-top:12px"><button class="btn primary" id="cpSave">${editing ? `Update day ${esc(d.n)}` : 'Save entry to journal'}</button>${editing ? '<button class="btn" id="cpCancel">Cancel edit</button>' : '<button class="btn" id="cpClear">Clear form</button>'}<span class="muted" id="cpMsg" style="font-size:13px"></span></div>
+        <p class="muted" style="font-size:12.5px;margin:6px 0 0">You can save before the result is in, then come back via <b>Thinking log → Edit</b> to reflect.</p></div>
+    </div>
+    <div class="card" style="position:sticky;top:12px"><h3>My thinking trail, as it will be logged</h3><div id="jSent"></div><div id="jTrail" class="notebook"></div>
+      <div class="csection"><h4>Prompts if you are stuck</h4><ul class="tight" style="font-size:13.5px">
+        <li>What would have to be true for a <i>higher</i> price to work today? A lower one?</li>
+        <li>Is today different from my comparable days in a way that matters?</li>
+        <li>If I am exploring, am I changing only <i>one</i> thing, so the result is interpretable?</li>
+        <li>How will I know tomorrow whether today was a good decision?</li>
+        <li>Inventory: cups left ÷ days left = how many cups can I afford to sell per day?</li></ul></div></div>
+    </div>`;
+    const live = () => { $('#jSent').innerHTML = sentence(d, `<b class="mono">${num(d.price) != null ? money2(+d.price) : '$ __'}</b>`); $('#jTrail').innerHTML = trail(d).map(l => `<p>${esc(l)}</p>`).join(''); };
+    const STATEK = ['dow', 'weather', 'traffic', 'comp', 'cprice', 'inv'];
+    el.oninput = el.onchange = e => {
+      const k = e.target.dataset.k; if (!k) return;
+      d[k] = e.target.value; save(); live();
+      if (k === 'conf') $('#jConf').textContent = CONF[+d.conf];
+      if (STATEK.includes(k) && e.type === 'change') { $('#jRecall').innerHTML = recallHtml(d, D.editing); $('#jFactors').innerHTML = factorChips(d); }
+      if (k === 'policyChange' && e.type === 'change') renderToday();
+    };
+    el.onclick = e => {
+      const fb = e.target.closest('[data-fk]'), rb = e.target.closest('[data-rk]');
+      if (fb) { d.factors = { ...(d.factors || {}), [fb.dataset.fk]: fb.dataset.fv }; save(); $('#jFactors').innerHTML = factorChips(d); live(); }
+      if (rb) { d[rb.dataset.rk] = rb.dataset.rv; save(); renderToday(); }
+    };
+    $('#cpSave').onclick = () => {
+      if (num(d.price) == null) { $('#cpMsg').textContent = 'Commit a price first. Step 4.'; return; }
+      if ($('#jAddPol') && $('#jAddPol').checked) D.policy.push({ id: Date.now(), text: d.policyChange, since: d.n, why: d.learned || '', retired: null, retiredWhy: '' });
+      const row = { ...d };
+      if (editing) D.days[D.editing] = row; else D.days.push(row);
+      D.days.sort((a, b) => (+a.n || 0) - (+b.n || 0));
+      D.editing = null; D.draft = newDraft(); save(); renderToday();
+      $('#cpMsg').textContent = editing ? 'Updated.' : `Day ${row.n} saved to your journal.`;
+    };
+    if ($('#cpCancel')) $('#cpCancel').onclick = () => { D.editing = null; D.draft = newDraft(); save(); renderToday(); };
+    if ($('#cpClear')) $('#cpClear').onclick = () => { D.draft = newDraft(); save(); renderToday(); };
+    live();
+  }
+
+  // ---------- Thinking log ----------
+  function renderLog() {
+    const el = $('[data-csubpanel="log"]'), rows = D.days;
+    const pe = rows.filter(r => num(r.expSold) != null && num(r.sold) != null).map(r => Math.abs(r.expSold - r.sold));
+    const early = mean(pe.slice(0, 5)), late = pe.length > 5 ? mean(pe.slice(-5)) : null;
+    el.innerHTML = `<div class="stats" style="margin-bottom:14px">
+      <div class="stat"><div class="k">Days journaled</div><div class="v">${rows.length} / ${esc(D.settings.days)}</div></div>
+      <div class="stat"><div class="k">Explore / exploit</div><div class="v">${rows.filter(r => r.mode === 'explore').length} / ${rows.filter(r => r.mode === 'exploit').length}</div></div>
+      <div class="stat"><div class="k">Prediction error</div><div class="v">${early == null ? '—' : Math.round(early) + (late != null ? ' → ' + Math.round(late) : '')}</div><div class="d">cups, first 5 days${late != null ? ' → last 5' : ''}. Falling = your mental model is learning.</div></div>
+      <div class="stat"><div class="k">Surprises</div><div class="v">${rows.filter(r => r.surprise === 'very' || r.surprise === 'somewhat').length}</div><div class="d">days the market disagreed with me</div></div>
+      <div class="stat"><div class="k">Policy changes</div><div class="v">${D.policy.length}</div><div class="d">${activePolicy().length} rules active</div></div>
+    </div>
+    ${rows.length ? rows.slice().reverse().map(r => { const i = D.days.indexOf(r); return `<div class="ccard"><div class="chead"><span class="ch4">Day ${esc(r.n)} · ${esc(r.dow)} <span class="tag">${r.mode === 'explore' ? '🔍 explore' : r.mode === 'exploit' ? '🎯 exploit' : 'mode ?'}</span> ${r.surprise ? `<span class="tag ${r.surprise === 'expected' ? 'ok' : 'no'}">${SURP[r.surprise]}</span>` : ''}</span>
+      <span class="row"><button class="btn small" data-edit="${i}">Edit / reflect</button><button class="btn small" data-del="${i}" aria-label="Delete day">✕</button></span></div>
+      <div class="notebook">${trail(r).map(l => `<p>${esc(l)}</p>`).join('')}</div></div>`; }).join('') : '<p class="muted">No entries yet. Start in Today’s entry.</p>'}`;
+    el.onclick = e => {
+      const ed = e.target.closest('[data-edit]'), dl = e.target.closest('[data-del]');
+      if (ed) { D.editing = +ed.dataset.edit; D.draft = { ...D.days[D.editing] }; save(); showCSub('today'); }
+      if (dl && confirm(`Delete day ${D.days[+dl.dataset.del].n} from your journal?`)) { D.days.splice(+dl.dataset.del, 1); D.editing = null; save(); renderLog(); }
+    };
+  }
+
+  // ---------- My policy (versioned) ----------
+  function renderPolicy() {
+    const el = $('[data-csubpanel="policy"]'), act = activePolicy(), old = D.policy.filter(p => p.retired);
+    const nextDay = D.days.length ? Math.max(...D.days.map(r => +r.n || 0)) : 1;
+    el.innerHTML = `<div class="grid2" style="align-items:start"><div class="card"><h3>My policy right now</h3>
+      <p style="font-size:14px;margin:0 0 10px">A policy is your strategy for choosing a price in each situation, the same thing an RL agent learns. Write rules in plain words. When evidence contradicts a rule, retire it with a reason instead of deleting it, so you can see how your thinking evolved.</p>
+      ${act.length ? act.map(p => `<div class="memo"><b>${esc(p.text)}</b><div class="q">since day ${esc(p.since)}${p.why ? ' · because: ' + esc(p.why) : ''}</div><button class="btn small" data-retire="${p.id}" style="margin-top:6px">Retire this rule</button></div>`).join('') : '<p class="muted">No rules yet. Early on, that is honest: you are still exploring.</p>'}
+      <div class="csection"><h4>Add a rule</h4>
+        <label class="jl">Rule</label><textarea id="pNew" placeholder="e.g. When the competitor is present and cheaper, stay within $0.50 of their price."></textarea>
+        <label class="jl">Evidence that convinced me</label><textarea id="pWhy" placeholder="e.g. Days 2 and 4: at $1+ above the competitor I sold under 40 cups."></textarea>
+        <div class="row" style="margin-top:8px"><label style="font-size:13px">Since day <input type="number" id="pSince" value="${nextDay}" style="width:64px;padding:4px;border:1px solid var(--line);border-radius:6px"></label><button class="btn primary small" id="pAdd">Add rule</button></div></div></div>
+      <div class="card"><h3>How my policy evolved</h3>
+        ${D.policy.length ? `<ol class="timeline">${D.policy.slice().sort((a, b) => (+a.since) - (+b.since)).flatMap(p => [[+p.since, `<b>Day ${esc(p.since)}:</b> adopted “${esc(p.text)}”${p.why ? `<div class="q">${esc(p.why)}</div>` : ''}`], ...(p.retired ? [[+p.retired, `<b>Day ${esc(p.retired)}:</b> retired “${esc(p.text)}”${p.retiredWhy ? `<div class="q">${esc(p.retiredWhy)}</div>` : ''}`]] : [])]).sort((a, b) => a[0] - b[0]).map(x => `<li>${x[1]}</li>`).join('')}</ol>` : '<p class="muted">Your policy history will appear here. It makes a great slide: “how my policy changed over 21 days.”</p>'}
+        ${old.length ? `<p class="muted" style="font-size:13px">${old.length} retired rule(s): each one is something the market taught you.</p>` : ''}</div></div>`;
+    $('#pAdd').onclick = () => { const t = $('#pNew').value.trim(); if (!t) return; D.policy.push({ id: Date.now(), text: t, why: $('#pWhy').value.trim(), since: $('#pSince').value || nextDay, retired: null, retiredWhy: '' }); save(); renderPolicy(); };
+    el.onclick = e => {
+      const b = e.target.closest('[data-retire]'); if (!b) return;
+      const p = D.policy.find(x => String(x.id) === b.dataset.retire), why = prompt('What evidence made you retire this rule?', '');
+      if (why == null) return;
+      p.retired = nextDay; p.retiredWhy = why; save(); renderPolicy();
+    };
+  }
+
+  // ---------- Observations ----------
+  function renderObs() {
+    const el = $('[data-csubpanel="obs"]'), rows = D.days.filter(r => num(r.price) != null);
+    const sold = rows.filter(r => num(r.sold) != null), pe = rows.filter(r => num(r.expSold) != null && num(r.sold) != null);
+    const byConf = [1, 2, 3, 4, 5].map(c => { const m = pe.filter(r => +r.conf === c); return [c, m.length, mean(m.map(r => Math.abs(r.expSold - r.sold)))]; }).filter(x => x[1]);
+    el.innerHTML = `<p class="lede" style="margin-top:0">Charts of <b>your own</b> journal, there to prompt reflection. They do not compute a “right” price; reading them is your job.</p>
+      <div class="grid2"><div class="card"><div class="chart-title">My price vs. cups sold</div><div class="chart-sub">🔍 = exploring, 🎯 = exploiting. Hover a dot for that day’s conditions and what you were thinking.</div><div class="legend" id="oLeg"></div><div class="chart" id="oScatter"></div></div>
+      <div class="card"><div class="chart-title">Prediction error by day</div><div class="chart-sub">|predicted − actual| cups. Is my mental model of the market getting sharper?</div><div class="chart" id="oErr"></div></div></div>
+      <div class="card" style="margin-top:14px"><h3>Am I well calibrated?</h3><p style="font-size:14px;margin:0 0 8px">When you say you are confident, are your predictions actually closer?</p>
+        ${byConf.length ? `<table class="t"><tr><th>Confidence</th><th>Days</th><th>Avg prediction error (cups)</th></tr>${byConf.map(([c, n, e]) => `<tr><td>${CONF[c]}</td><td class="num">${n}</td><td class="num">${Math.round(e)}</td></tr>`).join('')}</table>` : '<p class="muted">Needs days with both a prediction and a result.</p>'}</div>`;
+    const ex = sold.filter(r => r.mode === 'explore'), xp = sold.filter(r => r.mode !== 'explore');
+    const series = [{ name: '🎯 Exploiting / unset', color: C.s1, pts: xp.map(r => [+r.price, +r.sold]), dots: true, rows: xp }, { name: '🔍 Exploring', color: C.s2, pts: ex.map(r => [+r.price, +r.sold]), dots: true, rows: ex }];
+    legend($('#oLeg'), series.map(s => ({ name: s.name, color: s.color, kind: 'dot' })));
+    if (sold.length) lineChart($('#oScatter'), { series, xDomain: [1, 10], xFmt: v => '$' + v, yFmt: v => Math.round(v), height: 240, xLabel: 'My price', hover: 'point', aria: 'Price versus cups sold',
+      tip: (s, p, i) => { const r = s.rows[i]; return `<div class="tt">Day ${esc(r.n)} · ${esc(r.dow)}</div><div style="font-size:12px">${esc(r.weather)} · ${esc(r.traffic)} · comp ${esc(r.comp)}</div>` + tipRow(null, 'Price', money2(+r.price)) + tipRow(null, 'Predicted → sold', `${esc(r.expSold || '?')} → ${esc(r.sold)}`) + (r.hypothesis ? `<div style="font-size:12px;margin-top:3px;color:var(--muted)">“${esc(r.hypothesis.slice(0, 120))}”</div>` : ''); } });
+    else $('#oScatter').innerHTML = '<p class="muted" style="font-size:13.5px">Record cups sold to see your observations.</p>';
+    if (pe.length) lineChart($('#oErr'), { series: [{ name: 'Error', color: C.s1, pts: pe.map(r => [+r.n, Math.abs(r.expSold - r.sold)]), markers: true }], xDomain: [1, Math.max(+D.settings.days || 21, ...pe.map(r => +r.n))], xFmt: v => 'D' + v, yFmt: v => Math.round(v), height: 240, hover: 'x', aria: 'Prediction error by day',
+      tip: (x, h) => `<div class="tt">Day ${x}</div>` + (h[0] ? tipRow(null, 'Off by', Math.round(h[0][1]) + ' cups') : '') });
+    else $('#oErr').innerHTML = '<p class="muted" style="font-size:13.5px">Make a prediction in step 4 and record the result to track this.</p>';
+  }
+
+  // ---------- Scenario checks ----------
+  function renderChecks() {
+    const el = $('[data-csubpanel="checks"]'), act = activePolicy();
+    el.innerHTML = `<div class="cbar"><div><div class="eyebrow">Policy question</div><p style="margin:2px 0 0;font-size:14px">Answer each scenario from <b>your policy and your journal</b>, and write the reasoning down <i>before</i> you check the game’s recommended range. Then reflect on any gap.</p></div>
+      <button class="btn primary" id="cpAddCheck" ${D.checks.length >= 5 ? 'disabled' : ''}>⊕ Add another scenario</button></div>
+      ${D.checks.map((c, i) => {
+        const ans = num(c.answer), lo = num(c.lo), hi = num(c.hi);
+        const verdict = ans != null && lo != null && hi != null ? (ans < lo ? `<span class="tag no">below the range</span>` : ans > hi ? `<span class="tag no">above the range</span>` : '<span class="tag ok">in range ✓</span>') : '';
+        return `<div class="ccard" data-ci="${i}"><div class="chead"><span class="ch4">Scenario check ${i + 1}</span>${D.checks.length > 1 ? `<button class="btn small" data-rm="${i}">Remove</button>` : ''}</div>
+        <div class="cf4">${sel('dow', DOWS, c.dow)}${sel('weather', opts('weather'), c.weather)}${sel('traffic', opts('traffic'), c.traffic)}${sel('comp', opts('comp'), c.comp)}</div>
+        ${sentence(c, `$ <input type="number" step="0.25" data-k="answer" value="${esc(c.answer)}" aria-label="Your optimal price">`)}
+        <details style="margin-top:10px" ${i === D.checks.length - 1 ? 'open' : ''}><summary style="cursor:pointer;font-weight:700;color:var(--roast)">Scratch pad</summary>
+          <div class="grid2" style="margin-top:10px;align-items:start"><div>
+            <label class="jl">a · Which way does each factor push?</label><div>${factorChips(c, FACT.slice(0, 4))}</div>
+            <label class="jl">b · Which of my rules apply?</label>${act.length ? act.map(p => `<label style="display:flex;gap:6px;font-size:13.5px;margin:3px 0"><input type="checkbox" data-rule="${p.id}" ${c.uses.includes(String(p.id)) ? 'checked' : ''}> ${esc(p.text)}</label>`).join('') : '<p class="muted" style="font-size:13px;margin:0">No policy rules written yet.</p>'}
+            <label class="jl">c · Confidence: ${CONF[+c.conf]}</label><input type="range" min="1" max="5" step="1" data-k="conf" value="${esc(c.conf)}" style="width:100%;accent-color:var(--roast)">
+          </div><div>
+            <label class="jl">d · Which of my logged days am I drawing on?</label><div>${recallHtml(c, null, c.uses)}</div>
+          </div></div>
+          ${ta('why', c.why, 'Walk through it: start from a comparable day, adjust for what is different, and say why.', 'e · My reasoning')}
+        </details>
+        <div class="row" style="margin-top:10px;font-size:14px"><span>Game’s recommended range: $</span><input type="number" step="0.25" data-k="lo" value="${esc(c.lo)}" class="mini"><span>to $</span><input type="number" step="0.25" data-k="hi" value="${esc(c.hi)}" class="mini"><span>${verdict}</span></div>
+        ${verdict ? ta('after', c.after, ans != null && lo != null && hi != null && (ans < lo || ans > hi) ? 'Which factor did I misjudge? Which rule should change?' : 'Which part of my reasoning held up? Was I right for the right reason?', 'f · After seeing the range') : ''}</div>`;
+      }).join('')}`;
+    const C2 = i => D.checks[i];
+    el.oninput = e => { const card = e.target.closest('[data-ci]'), k = e.target.dataset.k; if (card && k && e.target.tagName === 'TEXTAREA') { C2(+card.dataset.ci)[k] = e.target.value; save(); } };
+    el.onchange = e => {
+      const card = e.target.closest('[data-ci]'); if (!card) return; const c = C2(+card.dataset.ci), k = e.target.dataset.k;
+      if (e.target.dataset.use) { const v = e.target.dataset.use; c.uses = e.target.checked ? [...c.uses, v] : c.uses.filter(x => x !== v); save(); return; }
+      if (e.target.dataset.rule) { const v = e.target.dataset.rule; c.uses = e.target.checked ? [...c.uses, v] : c.uses.filter(x => x !== v); save(); return; }
+      if (k && e.target.tagName !== 'TEXTAREA') { c[k] = e.target.value; save(); renderChecks(); }
+    };
+    el.onclick = e => {
+      if (e.target.id === 'cpAddCheck' && D.checks.length < 5) { const l = D.checks[D.checks.length - 1]; D.checks.push(newCheck({ dow: l.dow, weather: l.weather, traffic: l.traffic, comp: l.comp })); save(); renderChecks(); }
+      const rm = e.target.closest('[data-rm]'); if (rm) { D.checks.splice(+rm.dataset.rm, 1); save(); renderChecks(); }
+      const fb = e.target.closest('[data-fk]'), card = e.target.closest('[data-ci]');
+      if (fb && card) { const c = C2(+card.dataset.ci); c.factors = { ...c.factors, [fb.dataset.fk]: fb.dataset.fv }; save(); renderChecks(); }
+    };
+  }
+
+  // ---------- Settings ----------
+  function renderSettings() {
+    const el = $('[data-csubpanel="settings"]'), S0 = D.settings;
+    el.innerHTML = `<div class="card" style="max-width:720px"><h3>Match the game’s menus</h3><p class="muted" style="font-size:13px;margin:0 0 8px">Comma-separated. Edit these to match exactly what the game’s dropdowns show.</p>
+      <div class="cf"><label>Weather options</label><input data-s="weather" value="${esc(S0.weather)}"></div>
+      <div class="cf" style="margin-top:8px"><label>Market traffic options</label><input data-s="traffic" value="${esc(S0.traffic)}"></div>
+      <div class="cf" style="margin-top:8px"><label>Competitor options</label><input data-s="comp" value="${esc(S0.comp)}"></div>
+      <div class="cf" style="margin-top:8px;max-width:200px"><label>Days in the game</label><input type="number" data-s="days" value="${esc(S0.days)}"></div></div>`;
+    el.onchange = e => { if (e.target.dataset.s) { S0[e.target.dataset.s] = e.target.value; save(); } };
+  }
+
+  // ---------- toolbar ----------
+  function summary() {
+    const act = activePolicy();
+    return ['# Roast & Reward: my thinking journal', '', '## My policy now', ...(act.length ? act.map(p => `- ${p.text} (since day ${p.since})${p.why ? ': ' + p.why : ''}`) : ['- (no rules written)']), '',
+      '## How my policy evolved', ...D.policy.flatMap(p => [`- Day ${p.since}: adopted “${p.text}”`, ...(p.retired ? [`- Day ${p.retired}: retired “${p.text}”: ${p.retiredWhy}`] : [])]), '',
+      '## Daily entries', ...D.days.flatMap(r => [...trail(r), '']),
+      '## Scenario checks', ...D.checks.map((c, i) => `${i + 1}. ${c.dow}, ${c.weather}, ${c.traffic}, competitor ${c.comp} → $${c.answer || '?'} (confidence: ${CONF[+c.conf]})${c.lo || c.hi ? `; game range $${c.lo}–$${c.hi}` : ''}\n   Reasoning: ${c.why || '-'}${c.after ? `\n   After: ${c.after}` : ''}`)].join('\n');
+  }
+  function dl(name, text, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+  $('#cpCopy').onclick = () => { const t = summary(); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => $('#cpSaved').textContent = 'Journal copied as Markdown: paste it into your slides or notes.', () => { $('#cpSaved').textContent = 'Clipboard blocked, so the journal was downloaded instead.'; dl('roast-reward-journal.md', t, 'text/markdown'); }); };
+  $('#cpExport').onclick = () => dl(`roast-reward-journal-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(D, null, 2), 'application/json');
+  $('#cpImport').onchange = e => {
+    const f = e.target.files[0]; if (!f) return;
+    f.text().then(txt => { const s = JSON.parse(txt); if (!Array.isArray(s.days)) throw 0; D = Object.assign(blank(), s); save(); renderCSub(); $('#cpSaved').textContent = `Imported ${D.days.length} entries.`; }).catch(() => { $('#cpSaved').textContent = 'That file is not a journal export.'; });
+    e.target.value = '';
+  };
+  $('#cpReset').onclick = () => { if (confirm('Erase your whole journal, policy and scenario checks? Export first if you want a copy.')) { D = blank(); save(); renderCSub(); } };
+
+  function renderCSub() { ({ today: renderToday, log: renderLog, policy: renderPolicy, obs: renderObs, checks: renderChecks, settings: renderSettings })[sub](); }
+  function showCSub(name) {
+    sub = name;
+    $$('[data-csub]').forEach(b => b.setAttribute('aria-selected', b.dataset.csub === name));
+    $$('[data-csubpanel]').forEach(p => p.hidden = p.dataset.csubpanel !== name);
+    hideTip(); renderCSub();
+  }
+  $$('[data-csub]').forEach(b => b.onclick = () => showCSub(b.dataset.csub));
+  redraw.companion = renderCSub;
+  showCSub('today');
 })();
 
 // ============================== boot ==============================
