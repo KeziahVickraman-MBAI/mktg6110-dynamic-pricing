@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roast &amp; Reward · My Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1f2a44; --amber:#e8a33d; --amber-soft:#fbe9d0; --amber-ink:#9a6b1e; --ink:#1f2937; --body:#374151;
+  --muted:#6b7280; --line:#e5e7eb; --soft:#f3f4f6; --red:#b93a3a; --green:#1f7a3a;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#15171c;overflow:hidden;font:15px/1.4 Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--body)}
+#viewport{position:fixed;inset:0}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;background:#fff;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.slide{position:absolute;inset:0;display:none;padding:14px 40px 0}
+.slide.on{display:block}
+/* breadcrumb + title */
+.crumbs{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:7px}
+.crumbs b{color:var(--ink)}
+.crumbs .sep{margin:0 9px;opacity:.6}
+h1{font-size:28px;line-height:1.2;color:var(--ink);margin:12px 0 16px;font-weight:700;max-width:1200px}
+.cols{display:grid;grid-template-columns:400px 1fr;gap:24px;align-items:start}
+/* left points */
+.points{display:flex;flex-direction:column;gap:6px}
+.point{display:flex;gap:14px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:opacity .35s,background .25s,box-shadow .25s}
+.point:hover{background:var(--soft)}
+.point .ico{flex:none;width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center}
+.point .ico svg{width:19px;height:19px}
+.point h3{margin:1px 0 3px;font-size:18px;color:var(--ink);font-weight:700}
+.point p{margin:0;font-size:15px;line-height:1.4}
+.point.on{background:#fff8ec;box-shadow:inset 4px 0 0 var(--amber)}
+/* explainer: one chart, one sentence */
+.explainer{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:0 10px 10px 0;padding:12px 18px 12px;height:458px;display:flex;flex-direction:column}
+.exhead{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.tag{background:var(--navy);color:#fff;font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 10px;letter-spacing:.04em}
+.tabs{display:flex;gap:6px}
+.tabs button{font:inherit;font-size:12px;font-weight:600;padding:4px 9px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;cursor:pointer}
+.tabs button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.vtitle{font-size:17px;font-weight:700;color:var(--ink);margin:12px 0 0}
+.vsub{font-size:13px;color:var(--muted);margin:2px 0 0}
+.chart{flex:1;min-height:0;margin-top:6px}
+.chart svg{width:100%;height:100%;display:block}
+.ctl{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--ink);margin-top:8px;flex-wrap:wrap}
+.ctl .sl{display:flex;align-items:center;gap:8px}
+.ctl input{width:220px;accent-color:#1f2a44}
+.ctl .sllab{font:600 13px var(--mono);min-width:110px}
+.ctl button{font:inherit;font-size:12.5px;font-weight:600;padding:4px 11px;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;cursor:pointer}
+.ctl button:hover{background:var(--soft)}
+.ctl .seg2{display:inline-flex;gap:4px;margin-right:6px}
+.ctl .seg2 button.on{background:var(--navy);color:#fff}
+.cap{margin:6px 0 0;font-size:16px;line-height:1.4;color:var(--ink);border-left:4px solid var(--amber);padding:2px 0 2px 12px}
+.cap b{color:var(--navy)}
+svg text{font-family:Inter,"Segoe UI",system-ui,sans-serif}
+/* strip */
+.strip{position:absolute;left:40px;right:40px;bottom:30px;border:1.5px solid var(--navy);border-radius:9px;padding:13px 18px 10px;display:grid;gap:20px;transition:opacity .35s}
+.strip .lab{position:absolute;top:-9px;left:14px;background:var(--navy);color:#fff;font:700 10.5px var(--mono);letter-spacing:.08em;padding:2px 8px;border-radius:3px}
+.strip h5{margin:0 0 3px;font-size:10.5px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.strip p{margin:0;font-size:14px;line-height:1.35;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.strip .arrow{align-self:center;font-size:22px;color:var(--amber-ink)}
+.s1strip p{-webkit-line-clamp:3;font-size:13px}
+.strip .now{color:var(--amber-ink);font-weight:700}
+.foot{position:absolute;left:40px;right:40px;bottom:8px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.foot i{font-style:italic}
+/* one point at a time */
+body.pbp .b-hide{opacity:0;pointer-events:none}
+.strip.b-focus{box-shadow:0 0 0 3px rgba(232,163,61,.7)}
+@media print{.b-hide{opacity:1!important}.b-focus{box-shadow:none!important}.point.on{background:none;box-shadow:none}}
+/* editing */
+body.editing [data-edit]{outline:1px dashed #c9a46a;outline-offset:2px;cursor:text}
+body.editing [data-edit]:focus{outline:2px solid var(--s1)}
+/* toolbar */
+#toolbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:4px;align-items:center;background:rgba(20,22,28,.86);color:#fff;border-radius:999px;padding:5px 8px;font-size:13px;transition:opacity .3s;z-index:5}
+#toolbar button,#toolbar label{all:unset;cursor:pointer;padding:4px 10px;border-radius:999px;white-space:nowrap}
+#toolbar button:hover,#toolbar label:hover,#toolbar button:focus-visible{background:rgba(255,255,255,.18)}
+#toolbar .count{min-width:44px;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+#toolbar .sepv{width:1px;height:18px;background:rgba(255,255,255,.25);margin:0 4px}
+body.idle #toolbar{opacity:0}
+#toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#1f2a44;color:#fff;padding:7px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;z-index:6;pointer-events:none}
+#tip{position:fixed;pointer-events:none;z-index:9;background:#fff;border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.18);border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--ink);display:none;max-width:260px}
+button:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#toolbar,#toast{transition:none}}
+@media print{
+  html,body{overflow:visible;background:#fff;height:auto}
+  #viewport{position:static}#stage{position:relative;transform:none!important;box-shadow:none;left:0!important;top:0!important;height:auto;overflow:visible}
+  .slide{display:block!important;position:relative;width:1280px;height:720px;break-after:page;page-break-after:always;overflow:hidden}
+  #toolbar,#toast,#tip{display:none}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- ======================= SLIDE 1 ======================= -->
+<section class="slide" aria-label="Findings and key policy">
+  <div class="crumbs"><span><b>FINDINGS &amp; POLICY</b><span class="sep">›</span>WHY ML, NOT RL</span><span>Slide 1 of 2</span></div>
+  <h1 data-edit="s1title" id="s1title"></h1>
+  <div class="cols">
+    <div class="points" id="s1points"></div>
+    <div class="explainer" id="ex1"></div>
+  </div>
+  <div class="strip s1strip" style="grid-template-columns:1fr 26px 1.15fr 1.15fr"><span class="lab">KEY POLICY DECISION</span>
+    <div><h5>Before</h5><p data-edit="kpBefore" id="kpBefore"></p></div>
+    <div class="arrow">→</div>
+    <div><h5 id="kpDecH">My decision</h5><p data-edit="kpDecision" id="kpDecision" class="now"></p></div>
+    <div><h5>The trigger</h5><p data-edit="kpTrigger" id="kpTrigger"></p></div>
+  </div>
+  <div class="foot"><span data-edit="foot1" id="foot1"></span><span>1</span></div>
+</section>
+
+<!-- ======================= SLIDE 2 ======================= -->
+<section class="slide" aria-label="Why we can beat ML but not RL">
+  <div class="crumbs"><span>FINDINGS &amp; POLICY<span class="sep">›</span><b>WHY ML, NOT RL</b></span><span>Slide 2 of 2</span></div>
+  <h1 data-edit="s2title" id="s2title"></h1>
+  <div class="cols">
+    <div class="points" id="s2points"></div>
+    <div class="explainer" id="ex2"></div>
+  </div>
+  <div class="strip" style="grid-template-columns:1fr 1fr 1fr"><span class="lab">DECISION STRIP</span>
+    <div><h5>Beat ML by</h5><p data-edit="dsML" id="dsML"></p></div>
+    <div><h5>Why not RL</h5><p data-edit="dsRL" id="dsRL"></p></div>
+    <div><h5>What I do instead</h5><p data-edit="dsDo" id="dsDo" class="now"></p></div>
+  </div>
+  <div class="foot"><span data-edit="foot2" id="foot2"></span><span>2</span></div>
+</section>
+
+</div></div>
+<div id="toolbar" role="toolbar" aria-label="Slide controls">
+  <button id="prev" aria-label="Previous slide">◀</button><span class="count" id="count"></span><button id="next" aria-label="Next slide">▶</button>
+  <span class="sepv"></span>
+  <label title="Load the JSON exported from the Game companion">⬆ Import journal<input type="file" id="imp" accept="application/json,.json" hidden></label>
+  <button id="pbpBtn" title="Switch between one point at a time and all points (P)">☰ Show all</button>
+  <button id="editBtn" title="Click text on the slides to change it">✎ Edit text</button>
+  <button id="resetBtn" title="Restore the generated text">⟲ Reset text</button>
+  <button id="printBtn" title="Print or save both slides as PDF">⎙ PDF</button>
+  <button id="fs" aria-label="Full screen">⛶</button>
+</div>
+<div id="toast"></div><div id="tip"></div>
+
+<script>
+// ===== MODEL START =====
+const M = (() => {
+  const COST = 1.2, RESTOCK = 450, STOCKOUT_PEN = 0.5, A0 = 4.0, B = 0.9, COMP_EDGE = -0.2, WEEKEND_WTP = 0.8;
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const TRAFFIC = [110, 100, 105, 115, 140, 185, 165];
+  const WEATHER = {
+    sunny: { label: 'Sunny', icon: '☀️', traffic: 1.0, a: 0.0 },
+    cloudy: { label: 'Cloudy', icon: '⛅', traffic: 0.95, a: 0.25 },
+    rainy: { label: 'Rainy', icon: '🌧️', traffic: 0.8, a: 0.7 },
+    cold: { label: 'Cold snap', icon: '🥶', traffic: 0.9, a: 1.0 },
+  };
+  const WKEYS = Object.keys(WEATHER);
+  const EVENTS = ['Farmers’ market', 'Office fair', 'Concert nearby', 'University open day', 'Marathon'];
+  const PRICES = []; for (let p = 1; p <= 10.0001; p += 0.5) PRICES.push(+p.toFixed(2));
+
+  function rng(seed) { // mulberry32
+    let t = seed >>> 0;
+    return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ t >>> 15, 1 | t); r ^= r + Math.imul(r ^ r >>> 7, 61 | r); return ((r ^ r >>> 14) >>> 0) / 4294967296; };
+  }
+  function gauss(r) { let u = 0, v = 0; while (!u) u = r(); v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+  // 21 days of exogenous conditions + demand noise (shared by every player of the same scenario)
+  function scenario(seed, nDays = 21) {
+    const r = rng(seed), days = [];
+    for (let d = 0; d < nDays; d++) {
+      const dow = d % 7, wr = r();
+      const weather = wr < 0.45 ? 'sunny' : wr < 0.7 ? 'cloudy' : wr < 0.9 ? 'rainy' : 'cold';
+      const ev = r() < (dow >= 4 ? 0.3 : 0.1);
+      const comp = r() < 0.5;
+      const cprice = comp ? Math.round((3 + r() * 2.5) * 4) / 4 : null;
+      days.push({ d, dow, weather, event: ev ? EVENTS[Math.floor(r() * EVENTS.length)] : null, comp, cprice, noise: Math.exp(0.1 * gauss(r) - 0.005) });
+    }
+    return days;
+  }
+  function traffic(day) { return TRAFFIC[day.dow] * WEATHER[day.weather].traffic * (day.event ? 1.5 : 1); }
+  function utility(day) { return A0 + (day.dow >= 5 ? WEEKEND_WTP : 0) + WEATHER[day.weather].a + (day.event ? 1.2 : 0); }
+  // probability a walk-in buys from us at price p
+  function buyProb(day, p) {
+    const u = Math.exp(utility(day) - B * p);
+    const c = day.comp ? Math.exp(utility(day) - COMP_EDGE - B * day.cprice) : 0;
+    return u / (1 + u + c);
+  }
+  function expDemand(day, p) { return traffic(day) * buyProb(day, p); }
+  // ML-style suggestion: forecast today's demand, maximise today's profit, ignore inventory & future
+  function mlPrice(day) {
+    let best = 1, bv = -1e9;
+    for (let p = 1; p <= 10.0001; p += 0.05) { const v = (p - COST) * expDemand(day, p); if (v > bv) { bv = v; best = p; } }
+    return Math.round(best * 4) / 4;
+  }
+
+  function newShop() { return { inv: RESTOCK, t: 0, total: 0, log: [] }; }
+  // advance one day; returns record
+  function step(shop, day, p) {
+    if (day.dow === 0 && shop.t > 0) shop.inv = RESTOCK;
+    const invStart = shop.inv;
+    const walkins = Math.round(traffic(day) * day.noise);
+    const demand = Math.round(expDemand(day, p) * day.noise);
+    const sold = Math.min(demand, shop.inv);
+    const lost = demand - sold;
+    shop.inv -= sold;
+    const revenue = p * sold, cogs = COST * sold, stockPen = STOCKOUT_PEN * lost;
+    const waste = day.dow === 6 ? COST * shop.inv : 0;
+    const reward = revenue - cogs - stockPen - waste;
+    shop.total += reward; shop.t++;
+    const rec = { d: day.d, price: p, invStart, walkins, demand, sold, lost, revenue, cogs, stockPen, waste, reward, cum: shop.total, invEnd: shop.inv };
+    shop.log.push(rec);
+    return rec;
+  }
+
+  // ---- RL state encoding ----
+  const DEM = ['Low', 'Normal', 'High'], COMP = ['None', 'Cheaper', 'Pricier'], INV = ['Tight', 'OK', 'Plenty'];
+  function demandLevel(day) { const x = traffic(day) * Math.exp(utility(day) - A0); return x < 140 ? 0 : x < 500 ? 1 : 2; }
+  function compLevel(day) { return !day.comp ? 0 : day.cprice < 4 ? 1 : 2; }
+  function invLevel(inv, day) {
+    // compare stock left with the share of this week's traffic still to come ("on pace" = 1)
+    let left = 0, all = 0; for (let k = 0; k < 7; k++) { all += TRAFFIC[k]; if (k >= day.dow) left += TRAFFIC[k]; }
+    const r = inv / (RESTOCK * left / all); return r < 0.85 ? 0 : r < 1.05 ? 1 : 2;
+  }
+  function stateOf(shop, day) {
+    const inv = (day.dow === 0 && shop.t > 0) ? RESTOCK : shop.inv;
+    return demandLevel(day) * 9 + compLevel(day) * 3 + invLevel(inv, day);
+  }
+  function stateName(s) { return { dem: DEM[Math.floor(s / 9)], comp: COMP[Math.floor(s / 3) % 3], inv: INV[s % 3] }; }
+  const NS = 27, NA = PRICES.length;
+
+  function newAgent() { return { Q: Array.from({ length: NS }, () => new Float64Array(NA)), N: Array.from({ length: NS }, () => new Uint32Array(NA)), episodes: 0 }; }
+  function greedy(agent, s) { const q = agent.Q[s]; let b = 0; for (let a = 1; a < NA; a++) if (q[a] > q[b]) b = a; return b; }
+  function choose(agent, s, eps, r) { const roll = r(); if (roll < eps) return { a: Math.floor(r() * NA), explore: true, roll }; return { a: greedy(agent, s), explore: false, roll }; }
+
+  // one Q-learning transition; returns details for the step explainer
+  function qStep(agent, ctx, hp, r) {
+    const { shop, days } = ctx, day = days[shop.t];
+    const s = stateOf(shop, day);
+    const { a, explore, roll } = choose(agent, s, hp.eps, r);
+    const rec = step(shop, day, PRICES[a]);
+    const done = shop.t >= days.length;
+    const s2 = done ? null : stateOf(shop, days[shop.t]);
+    const maxNext = done ? 0 : Math.max(...agent.Q[s2]);
+    const old = agent.Q[s][a];
+    const target = rec.reward + (done ? 0 : hp.gamma * maxNext);
+    agent.Q[s][a] = old + hp.alpha * (target - old);
+    agent.N[s][a]++;
+    return { s, a, explore, roll, eps: hp.eps, rec, s2, maxNext, old, target, nw: agent.Q[s][a], done, day };
+  }
+  function runEpisode(agent, seed, hp, r) {
+    const ctx = { shop: newShop(), days: scenario(seed) };
+    while (ctx.shop.t < ctx.days.length) qStep(agent, ctx, hp, r);
+    agent.episodes++;
+    return ctx.shop.total;
+  }
+  // policy evaluation (no learning) on a scenario
+  function playPolicy(days, pick) {
+    const shop = newShop();
+    for (const day of days) step(shop, day, pick(shop, day));
+    return shop;
+  }
+  const policies = {
+    rl: agent => (shop, day) => PRICES[greedy(agent, stateOf(shop, day))],
+    ml: () => (shop, day) => mlPrice(day),
+    fixed: p => () => p,
+  };
+  function train(agent, n, hp, seedBase, r, onEp) {
+    for (let i = 0; i < n; i++) {
+      const tot = runEpisode(agent, seedBase + agent.episodes * 7919, hp, r);
+      if (onEp) onEp(tot, agent.episodes);
+      hp.eps = Math.max(hp.epsMin, hp.eps * hp.decay);
+    }
+  }
+
+  // perfect-hindsight planner: knows every day's demand in advance, solves each week by dynamic programming
+  function oracle(days) {
+    const prices = []; for (let p = 1; p <= 10.0001; p += 0.25) prices.push(p);
+    const plan = [];
+    for (let w = 0; w < days.length / 7; w++) {
+      const wk = days.slice(w * 7, w * 7 + 7), V = [], pick = [];
+      V[7] = Float64Array.from({ length: RESTOCK + 1 }, (_, i) => -COST * i);
+      for (let k = 6; k >= 0; k--) {
+        const day = wk[k], opts = prices.map(p => [p, Math.round(expDemand(day, p) * day.noise)]);
+        V[k] = new Float64Array(RESTOCK + 1).fill(-1e9); pick[k] = new Float64Array(RESTOCK + 1);
+        for (let i = 0; i <= RESTOCK; i++) for (const [p, d] of opts) {
+          const sold = Math.min(d, i), v = (p - COST) * sold - STOCKOUT_PEN * (d - sold) + V[k + 1][i - sold];
+          if (v > V[k][i]) { V[k][i] = v; pick[k][i] = p; }
+        }
+      }
+      let inv = RESTOCK;
+      for (let k = 0; k < 7; k++) { const p = pick[k][inv]; plan.push(p); inv -= Math.min(inv, Math.round(expDemand(wk[k], p) * wk[k].noise)); }
+    }
+    return playPolicy(days, (shop) => plan[shop.t]);
+  }
+
+  return { oracle, COST, RESTOCK, STOCKOUT_PEN, DAYS, TRAFFIC, WEATHER, WKEYS, PRICES, DEM, COMP, INV, NS, NA, rng, scenario, traffic, utility, buyProb, expDemand, mlPrice, newShop, step, stateOf, stateName, newAgent, greedy, qStep, runEpisode, playPolicy, policies, train, demandLevel, compLevel, invLevel, A0, B, COMP_EDGE };
+})();
+// ===== MODEL END =====
+
+</script>
+<script>
+const GRID = {"Hs":[0,1,2,3,4,5,6],"Ns":[7,21,100,1000,10000,420000],"grid":[[1138,1176,1203,1210,1211,1211,1203],[1287,1339,1359,1374,1379,1385,1381],[1346,1410,1443,1454,1472,1475,1484],[1351,1450,1477,1497,1508,1517,1525],[1354,1445,1480,1495,1506,1515,1521],[1356,1446,1479,1498,1506,1511,1521]],"bench":{"ml":1241,"rl":1413,"st":1325,"or":1597}};
+const SAMPLE = {"days":[{"n":1,"dow":"Monday","weather":"Rainy","traffic":"normal with no events","comp":"absent","cprice":"","inv":450,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"4.0","expSold":"47","sold":"63","reward":"176.4","rlPrice":"5.0","rlReward":"206.4","surprise":"somewhat","learned":""},{"n":2,"dow":"Tuesday","weather":"Sunny","traffic":"normal with no events","comp":"absent","cprice":"","inv":387,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"5.5","expSold":"60","sold":"76","reward":"326.8","rlPrice":"5.0","rlReward":"329.8","surprise":"somewhat","learned":"At $5.50 on a quiet Tuesday conversion collapsed: weekday commuters are price-sensitive"},{"n":3,"dow":"Wednesday","weather":"Sunny","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":311,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"3.5","expSold":"57","sold":"41","reward":"94.3","rlPrice":"5.5","rlReward":"134.3","surprise":"somewhat","learned":""},{"n":4,"dow":"Thursday","weather":"Rainy","traffic":"normal with no events","comp":"absent","cprice":"","inv":270,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"6.0","expSold":"55","sold":"55","reward":"264.0","rlPrice":"4.5","rlReward":"253.0","surprise":"expected","learned":"Rival present at $4 made $6 unworkable"},{"n":5,"dow":"Friday","weather":"Cloudy","traffic":"high with an event","comp":"absent","cprice":"","inv":215,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"4.5","expSold":"67","sold":"78","reward":"257.4","rlPrice":"5.5","rlReward":"235.4","surprise":"somewhat","learned":"Event day sold less than expected at $4.50: rain kept people away"},{"n":6,"dow":"Saturday","weather":"Rainy","traffic":"normal with no events","comp":"absent","cprice":"","inv":137,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"6.5","expSold":"45","sold":"77","reward":"408.1","rlPrice":"5.0","rlReward":"381.1","surprise":"very","learned":"Saturday event crowd still bought at $6.50: weekends tolerate higher prices"},{"n":7,"dow":"Sunday","weather":"Cloudy","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":60,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"5.75","expSold":"66","sold":"54","reward":"245.7","rlPrice":"5.5","rlReward":"269.7","surprise":"somewhat","learned":""},{"n":8,"dow":"Monday","weather":"Rainy","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":450,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"52","sold":"60","reward":"213.0","rlPrice":"4.5","rlReward":"229.0","surprise":"expected","learned":""},{"n":9,"dow":"Tuesday","weather":"Sunny","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":390,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"43","sold":"33","reward":"117.15","rlPrice":"4.5","rlReward":"120.15","surprise":"somewhat","learned":"Holding $4.75 on weekdays is stable"},{"n":10,"dow":"Wednesday","weather":"Cloudy","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":357,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"70","sold":"77","reward":"273.35","rlPrice":"5.0","rlReward":"307.35","surprise":"expected","learned":""},{"n":11,"dow":"Thursday","weather":"Rainy","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":280,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"5.5","expSold":"66","sold":"65","reward":"279.5","rlPrice":"5.5","rlReward":"301.5","surprise":"expected","learned":""},{"n":12,"dow":"Friday","weather":"Cloudy","traffic":"normal with no events","comp":"absent","cprice":"","inv":215,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"58","sold":"53","reward":"188.15","rlPrice":"5.0","rlReward":"178.15","surprise":"expected","learned":""},{"n":13,"dow":"Saturday","weather":"Rainy","traffic":"high with an event","comp":"absent","cprice":"","inv":162,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"5.75","expSold":"62","sold":"60","reward":"273.0","rlPrice":"5.5","rlReward":"270.0","surprise":"expected","learned":""},{"n":14,"dow":"Sunday","weather":"Cloudy","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":102,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"5.75","expSold":"60","sold":"64","reward":"291.2","rlPrice":"4.5","rlReward":"269.2","surprise":"expected","learned":""},{"n":15,"dow":"Monday","weather":"Cloudy","traffic":"normal with no events","comp":"absent","cprice":"","inv":450,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"55","sold":"61","reward":"216.55","rlPrice":"5.0","rlReward":"194.55","surprise":"expected","learned":""},{"n":16,"dow":"Tuesday","weather":"Sunny","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":389,"ml":"","hypothesis":"Testing price response","mode":"explore","conf":"3","price":"5.5","expSold":"53","sold":"46","reward":"197.8","rlPrice":"5.0","rlReward":"220.8","surprise":"expected","learned":""},{"n":17,"dow":"Wednesday","weather":"Sunny","traffic":"normal with no events","comp":"absent","cprice":"","inv":343,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"67","sold":"59","reward":"209.45","rlPrice":"5.0","rlReward":"221.45","surprise":"expected","learned":""},{"n":18,"dow":"Thursday","weather":"Rainy","traffic":"normal with no events","comp":"absent","cprice":"","inv":284,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"57","sold":"53","reward":"188.15","rlPrice":"4.5","rlReward":"197.15","surprise":"expected","learned":""},{"n":19,"dow":"Friday","weather":"Sunny","traffic":"high with an event","comp":"absent","cprice":"","inv":231,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"4.75","expSold":"40","sold":"31","reward":"110.05","rlPrice":"4.5","rlReward":"132.05","surprise":"somewhat","learned":""},{"n":20,"dow":"Saturday","weather":"Cloudy","traffic":"normal with no events","comp":"absent","cprice":"","inv":200,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"5.75","expSold":"49","sold":"54","reward":"245.7","rlPrice":"5.5","rlReward":"220.7","surprise":"expected","learned":""},{"n":21,"dow":"Sunday","weather":"Cloudy","traffic":"normal with no events","comp":"present","cprice":"4.25","inv":146,"ml":"","hypothesis":"Using my weekday/weekend rule","mode":"exploit","conf":"3","price":"5.75","expSold":"67","sold":"65","reward":"295.75","rlPrice":"4.5","rlReward":"313.75","surprise":"expected","learned":""}],"policy":[{"id":1,"text":"Weekdays: stay around $4.75","since":7,"why":"Days 1-5","retired":null,"retiredWhy":""},{"id":2,"text":"Weekends and events: $5.50 or more","since":7,"why":"Day 6","retired":null,"retiredWhy":""},{"id":3,"text":"Undercut the rival when present","since":4,"why":"Day 4","retired":12,"retiredWhy":"Undercutting lowered profit without many extra cups"},{"id":4,"text":"Explore one change at a time","since":2,"why":"Day 2 mixed two changes","retired":null,"retiredWhy":""}],"checks":[]};
+</script>
+<script>
+// ============================== helpers ==============================
+const $ = (s, el = document) => el.querySelector(s), $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const num = v => (v === '' || v == null || isNaN(+v)) ? null : +v;
+const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+const m0 = v => v == null ? '—' : (v < 0 ? '−$' : '$') + Math.abs(Math.round(v)).toLocaleString('en-US');
+const m2 = v => v == null ? '—' : (v < 0 ? '−$' : '$') + Math.abs(v).toFixed(2);
+const sm0 = v => (v >= 0 ? '+$' : '−$') + Math.abs(Math.round(v)).toLocaleString('en-US');
+const r0 = v => v == null ? '?' : Math.round(v);
+const C = { s1: '#2a78d6', s2: '#eb6834', s3: '#1baf7a', s4: '#eda100', navy: '#1f2a44', amber: '#e8a33d', ink: '#1f2937', muted: '#6b7280', gray: '#9ca3af' };
+const toast = t => { const el = $('#toast'); el.textContent = t; el.style.opacity = 1; clearTimeout(toast.h); toast.h = setTimeout(() => el.style.opacity = 0, 2600); };
+const tip = $('#tip');
+const showTip = (html, ev) => { tip.innerHTML = html; tip.style.display = 'block'; const r = tip.getBoundingClientRect(); let x = ev.clientX + 14, y = ev.clientY + 14; if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14; if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14; tip.style.left = x + 'px'; tip.style.top = y + 'px'; };
+const hideTip = () => tip.style.display = 'none';
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } } };
+const ICON = {
+  flask: '<path d="M9 3h6"/><path d="M10 3v6L4.5 18.5A1.7 1.7 0 006 21h12a1.7 1.7 0 001.5-2.5L14 9V3"/><path d="M7.5 15h9"/>',
+  bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>',
+  bulb: '<path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/>',
+};
+const icon = k => `<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg></span>`;
+
+// ============================== stage + navigation (as in the OPIM639 explainer) ==============================
+const slides = $$('.slide'), stage = $('#stage');
+let cur = 0;
+function fit() {
+  const W = document.documentElement.clientWidth || innerWidth, H = document.documentElement.clientHeight || innerHeight, S = Math.min(W / 1280, H / 720);
+  stage.style.transform = `scale(${S})`; stage.style.left = ((W - 1280 * S) / 2) + 'px'; stage.style.top = ((H - 720 * S) / 2) + 'px';
+}
+addEventListener('resize', fit); document.addEventListener('fullscreenchange', () => setTimeout(fit, 50)); fit();
+function go(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+  if (typeof updateCount === 'function' && typeof pbp !== 'undefined') updateCount(); else $('#count').textContent = `${cur + 1} / ${slides.length}`;
+  try { history.replaceState(null, '', '#' + (cur + 1)); } catch (e) { }
+}
+$('#next').onclick = () => nextStep(); $('#prev').onclick = () => prevStep();
+const toggleFS = () => { try { const p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); p && p.catch && p.catch(() => { }); } catch (e) { } };
+$('#fs').onclick = toggleFS; if (!document.fullscreenEnabled) $('#fs').style.display = 'none';
+document.addEventListener('keydown', e => {
+  if (e.target.isContentEditable || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if (['ArrowRight', 'PageDown', ' '].includes(e.key) && e.target.tagName !== 'BUTTON') { e.preventDefault(); nextStep(); }
+  else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); prevStep(); }
+  else if (e.key === 'p' || e.key === 'P') setPbp(!pbp);
+  else if (e.key === 'f' || e.key === 'F') toggleFS();
+});
+let idle; const wake = () => { document.body.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(() => document.body.classList.add('idle'), 2500); };
+addEventListener('mousemove', wake); addEventListener('keydown', wake); wake();
+
+// ============================== editable text ==============================
+let edits = store.get('rr-deck-edits-v2', {});
+function setText(key, html) { const el = $(`[data-edit="${key}"]`); if (el) el.innerHTML = edits[key] ?? html; }
+$('#editBtn').onclick = () => {
+  const on = !document.body.classList.contains('editing');
+  document.body.classList.toggle('editing', on);
+  $$('[data-edit]').forEach(el => el.contentEditable = on);
+  $('#editBtn').textContent = on ? '✓ Done editing' : '✎ Edit text';
+  toast(on ? 'Click any outlined text to change it. Changes save in this browser.' : 'Edits saved.');
+};
+document.addEventListener('input', e => { const el = e.target.closest && e.target.closest('[data-edit]'); if (el) { edits[el.dataset.edit] = el.innerHTML; store.set('rr-deck-edits-v2', edits); } });
+$('#resetBtn').onclick = () => { if (confirm('Restore all generated text? Your edits will be removed.')) { edits = {}; store.set('rr-deck-edits-v2', edits); renderAll(); toast('Text restored.'); } };
+$('#printBtn').onclick = () => window.print();
+
+// ============================== journal source ==============================
+function loadJournal() {
+  const imp = store.get('rr-deck-journal', null);
+  if (imp && Array.isArray(imp.days) && imp.days.length) return { J: imp, src: `imported file${imp._file ? ' (' + imp._file + ')' : ''}` };
+  const comp = store.get('rr-journal-v2', null);
+  if (comp && Array.isArray(comp.days) && comp.days.filter(r => num(r.price) != null).length >= 3) return { J: comp, src: 'my Game companion journal' };
+  return { J: SAMPLE, src: 'SAMPLE DATA: import your journal (⬆ in the toolbar)' };
+}
+$('#imp').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => { const s = JSON.parse(t); if (!Array.isArray(s.days)) throw 0; s._file = f.name; store.set('rr-deck-journal', s); edits = {}; store.set('rr-deck-edits-v2', edits); renderAll(); toast(`Loaded ${s.days.length} days from ${f.name}.`); })
+    .catch(() => toast('That file is not a Game companion export.'));
+  e.target.value = '';
+};
+
+// ============================== analysis of the journal ==============================
+const weekend = d => d === 'Saturday' || d === 'Sunday';
+const present = c => !/absent|none|closed|^no\b/i.test(c || '');
+const isEvent = t => /event/i.test(t || '') && !/no event/i.test(t || '');
+const SITS = ['Weekday', 'Weekday + rival', 'Weekend', 'Event day'];
+const sitOf = r => isEvent(r.traffic) ? 'Event day' : weekend(r.dow) ? 'Weekend' : present(r.comp) ? 'Weekday + rival' : 'Weekday';
+function analyse(J) {
+  const days = (J.days || []).filter(r => num(r.price) != null).sort((a, b) => (+a.n || 0) - (+b.n || 0)), N = days.length;
+  let T = null;
+  for (let i = 0; i < N; i++) { const rest = days.slice(i).filter(r => r.mode); if (days[i].mode === 'exploit' && rest.length >= 2 && rest.filter(r => r.mode === 'exploit').length / rest.length >= 0.7) { T = +days[i].n; break; } }
+  const split = T ?? (N ? +days[Math.floor(N / 2)].n : 1);
+  const before = days.filter(r => +r.n < split), after = days.filter(r => +r.n >= split);
+  const pe = rs => rs.filter(r => num(r.expSold) != null && num(r.sold) != null).map(r => Math.abs(r.sold - r.expSold));
+  const res = days.filter(r => num(r.sold) != null);
+  const both = days.filter(r => num(r.reward) != null && num(r.rlReward) != null);
+  const pol = J.policy || [];
+  const polBefore = pol.filter(p => +p.since < split), polAfter = pol.filter(p => !p.retired);
+  const sur = res.filter(r => num(r.expSold) > 0).map(r => ({ r, s: Math.abs(r.sold - r.expSold) / r.expSold + (r.surprise === 'very' ? .5 : r.surprise === 'somewhat' ? .2 : 0) })).sort((a, b) => b.s - a.s).map(x => x.r);
+  const sitStats = rs => Object.fromEntries(SITS.map(s => { const m = rs.filter(r => sitOf(r) === s); return [s, { n: m.length, p: mean(m.map(r => +r.price)), cups: mean(m.filter(r => num(r.sold) != null).map(r => +r.sold)), rw: mean(m.filter(r => num(r.reward) != null).map(r => +r.reward)), rl: mean(m.filter(r => num(r.rlPrice) != null).map(r => +r.rlPrice)) }]; }));
+  let trigger = '';
+  if (T != null) {
+    const rule = pol.filter(p => +p.since <= T && +p.since >= T - 3).sort((a, b) => b.since - a.since)[0];
+    const s = res.filter(r => +r.n < T && +r.n >= T - 3 && (r.surprise === 'very' || r.surprise === 'somewhat')).pop();
+    trigger = rule ? `Writing the rule “${rule.text}” on day ${rule.since}` : s ? `The surprise on day ${s.n}${s.learned ? ': “' + s.learned + '”' : ''}` : 'Seeing the same situations repeat';
+  }
+  const dayRef = p => { const m = /day\s*(\d+)/i.exec(p.why || ''); return m ? +m[1] : null; };
+  const score = r => num(r.expSold) > 0 && num(r.sold) != null ? Math.abs(r.sold - r.expSold) / r.expSold + (r.surprise === 'very' ? .5 : 0) : -1;
+  const adopted = T != null ? pol.filter(p => Math.abs(+p.since - T) <= 1) : [];
+  let trig = null;
+  if (T != null) {
+    const refs = adopted.map(dayRef).filter(Boolean), pre = res.filter(r => +r.n < T);
+    trig = pre.filter(r => refs.includes(+r.n)).sort((a, b) => score(b) - score(a))[0] || pre.sort((a, b) => score(b) - score(a))[0] || null;
+  }
+  const expl = before.filter(r => r.mode === 'explore'), pr = (expl.length ? expl : before).map(r => +r.price);
+  return { days, N, T, split, adopted, trig, dayRef, before, after, peB: mean(pe(before)), peA: mean(pe(after)), both, pol, polBefore, polAfter, sur, sB: sitStats(before), sA: sitStats(after), trigger,
+    nExp: days.filter(r => r.mode === 'explore').length, expl, lo: pr.length ? Math.min(...pr) : null, hi: pr.length ? Math.max(...pr) : null, distinct: new Set(before.map(r => r.price)).size,
+    rwB: mean(before.filter(r => num(r.reward) != null).map(r => +r.reward)), rwA: mean(after.filter(r => num(r.reward) != null).map(r => +r.reward)) };
+}
+
+// ============================== tiny chart kit ==============================
+// every mark can carry data-tip; one delegated handler shows it
+const tipAttr = h => `data-tip="${esc(h)}"`;
+function wireTips(svg) {
+  svg.onmousemove = ev => { const t = ev.target.closest('[data-tip]'); t ? showTip(t.dataset.tip, ev) : hideTip(); };
+  svg.onmouseleave = hideTip;
+}
+const W = 800, H = 300;
+const txt = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.fs || 13}" fill="${o.fill || C.muted}" text-anchor="${o.a || 'start'}" font-weight="${o.fw || 400}"${o.mono ? ' font-family="ui-monospace,Menlo,monospace"' : ''}>${s}</text>`;
+const niceTicks = (lo, hi, n = 4) => { const st = Math.pow(10, Math.floor(Math.log10((hi - lo) / n))), k = [1, 2, 2.5, 5, 10].map(f => f * st).find(s => (hi - lo) / s <= n + 1); const out = []; for (let v = Math.ceil(lo / k) * k; v <= hi + 1e-9; v += k) out.push(+v.toFixed(6)); return out; };
+function yGrid(Y, ticks, l, r, fmt) { return ticks.map(v => `<line x1="${l}" x2="${r}" y1="${Y(v)}" y2="${Y(v)}" stroke="#eef0f3"/>` + txt(l - 8, Y(v) + 4, fmt(v), { a: 'end', fs: 12 })).join(''); }
+// a dashed horizontal reference line with a label at the right
+const refLine = (Y, v, l, r, label, col) => `<line x1="${l}" x2="${r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${col}" stroke-width="2" stroke-dasharray="6 4"/>` + txt(r + 6, Y(v) + 4, label, { fill: C.ink, fw: 600, fs: 12.5 });
+// dots joined by a line over categories, with reference lines (no zero baseline needed for dots)
+function dotLine(svg, { cats, vals, hl, refs, fmt, lo, hi, col = C.navy, tips, xTitle }) {
+  const m = { l: 62, r: 150, t: 16, b: 46 }, cw = (W - m.l - m.r) / cats.length;
+  const X = i => m.l + cw * (i + 0.5), Y = v => m.t + (H - m.t - m.b) * (1 - (v - lo) / (hi - lo));
+  let s = yGrid(Y, niceTicks(lo, hi), m.l, W - m.r, fmt);
+  refs.forEach(r => s += refLine(Y, r.v, m.l, W - m.r, r.label, r.col));
+  s += `<polyline points="${vals.map((v, i) => X(i) + ',' + Y(v)).join(' ')}" fill="none" stroke="${col}" stroke-width="2"/>`;
+  vals.forEach((v, i) => {
+    const on = hl.includes(i);
+    s += `<g ${tipAttr(tips[i])}><rect x="${X(i) - cw / 2}" y="${m.t}" width="${cw}" height="${H - m.t - m.b}" fill="transparent"/>`;
+    s += `<circle cx="${X(i)}" cy="${Y(v)}" r="${on ? 9 : 6}" fill="${on ? C.amber : col}" stroke="#fff" stroke-width="2"/>`;
+    const below = refs.some(r => Math.abs(Y(r.v) - (Y(v) - 18)) < 12); s += txt(X(i), below ? Y(v) + 24 : Y(v) - 14, fmt(v), { a: 'middle', fill: C.ink, fw: on ? 700 : 500, fs: 12.5, mono: 1 }) + '</g>';
+    s += txt(X(i), H - m.b + 20, cats[i], { a: 'middle', fill: on ? C.ink : C.muted, fw: on ? 700 : 400 });
+  });
+  if (xTitle) s += txt(m.l + (W - m.l - m.r) / 2, H - 6, xTitle, { a: 'middle', fill: C.ink, fw: 600 });
+  svg.innerHTML = s; wireTips(svg);
+}
+
+// ============================== explainer frame ==============================
+// a slide's explainer = tab row + one chart + one sentence; each view backs a point (v.point, default = its index)
+const VIEW = [0, 0];
+const viewsOf = si => si === 0 ? VIEWS1 : VIEWS2;
+const pointOf = (si, k) => viewsOf(si)[k].point ?? k;
+let PLAY = null;
+const stopPlayback = () => { clearInterval(PLAY); PLAY = null; };
+function renderExplainer(si) {
+  stopPlayback();
+  const views = viewsOf(si), k = VIEW[si], v = views[k], ex = $('#ex' + (si + 1)), sg = v.seg && v.seg(), sl = v.slider && v.slider();
+  const ctl = (sg ? `<div class="seg2">${sg.opts.map(([key, l]) => `<button data-k="${esc(key)}" class="${key === sg.cur ? 'on' : ''}">${l}</button>`).join('')}</div>` : '') +
+    (sl ? `<label class="sl">${sl.label}<input type="range" min="0" max="${sl.n - 1}" step="1" value="${sl.cur}"></label><b class="sllab">${sl.lab(sl.cur)}</b>${sl.play ? '<button class="play">▶ Play</button>' : ''}` : '');
+  ex.innerHTML = `<div class="exhead"><span class="tag">● INTERACTIVE EXPLAINER</span><div class="tabs">${views.map((w, i) => `<button data-v="${i}" class="${i === k ? 'on' : ''}">${i + 1} · ${w.tab}</button>`).join('')}</div></div>
+    <p class="vtitle">${v.title}</p>${v.sub ? `<p class="vsub">${v.sub}</p>` : ''}${ctl ? `<div class="ctl">${ctl}</div>` : ''}<div class="chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(v.title)}"></svg></div><p class="cap" data-edit="s${si + 1}c${k}"></p>`;
+  // captions follow the controls, so only the default state uses a saved edit
+  const capEl = $('.cap', ex), draw = (first) => { const h = v.draw($('svg', ex)); if (first) setText(`s${si + 1}c${k}`, h); else capEl.innerHTML = h; };
+  draw(true);
+  if (sg) $$('.seg2 button', ex).forEach(b => b.onclick = () => { sg.set(b.dataset.k); renderExplainer(si); });
+  if (sl) {
+    const inp = $('.sl input', ex), lab = $('.sllab', ex), pb = $('.play', ex);
+    const setI = i => { sl.set(i); inp.value = i; lab.textContent = sl.lab(i); draw(false); };
+    inp.oninput = () => { stopPlayback(); if (pb) pb.textContent = '▶ Play'; setI(+inp.value); };
+    if (pb) pb.onclick = () => {
+      if (PLAY) { stopPlayback(); pb.textContent = '▶ Play'; return; }
+      pb.textContent = '❚❚ Pause'; if (+inp.value >= sl.n - 1) setI(0); else setI(+inp.value + 1);
+      PLAY = setInterval(() => { const i = +inp.value + 1; if (i > sl.n - 1) { stopPlayback(); pb.textContent = '▶ Play'; return; } setI(i); }, 1100);
+    };
+  }
+  if (document.body.classList.contains('editing')) capEl.contentEditable = true;
+  $$('.tabs button', ex).forEach(b => b.onclick = () => selectView(si, +b.dataset.v));
+  $$('.points .point', slides[si]).forEach((p, i) => p.classList.toggle('on', i === pointOf(si, k)));
+}
+function selectView(si, k) {
+  VIEW[si] = k;
+  if (pbp && si === cur) { bi = Math.max(bi, k); applyBuild(false); }
+  renderExplainer(si);
+}
+function renderPoints(si, pts) {
+  const box = $(`#s${si + 1}points`);
+  box.innerHTML = pts.map((p, i) => `<div class="point">${icon(p[0])}<div><h3 data-edit="s${si + 1}p${i}h">${p[1]}</h3><p data-edit="s${si + 1}p${i}">${p[2]}</p></div></div>`).join('');
+  pts.forEach((p, i) => { setText(`s${si + 1}p${i}h`, p[1]); setText(`s${si + 1}p${i}`, p[2]); });
+  $$('.point', box).forEach((el, i) => el.onclick = () => { if (!document.body.classList.contains('editing')) selectView(si, viewsOf(si).findIndex((_, k) => pointOf(si, k) === i)); });
+}
+
+// ============================== slide 1: findings & key policy ==============================
+let A, SRC = '';
+const lastN = () => A.days.length ? +A.days[A.days.length - 1].n : 21;
+const predDays = () => A.days.filter(r => num(r.sold) != null && num(r.expSold) != null);
+const ST = { rule: 'all', day: null, sur: null, sit: 'all', rlMode: 'avg', rlDay: null, wk: 5, h: 1 };
+const dayStory = r => `<b>Day ${r.n} · ${esc(r.dow)}</b> (${esc(sitOf(r))}, ${esc(r.weather)}): ${r.mode === 'explore' ? '🔍 tried' : r.mode === 'exploit' ? '🎯 my rules said' : 'priced at'} <b>${m2(+r.price)}</b>, sold ${esc(r.sold || '?')} (predicted ${esc(r.expSold || '?')}).${r.learned ? ` “${esc(r.learned)}”` : ''}`;
+const VIEWS1 = [
+  { tab: 'Explore', title: 'My price each day', sub: 'Orange = a price I tried on purpose · blue = the price my rules picked',
+    slider: () => ({ label: 'Step through', n: A.days.length + 1, cur: ST.day ?? A.days.length, set: i => ST.day = i, lab: i => i === A.days.length ? 'All days' : `Day ${A.days[i].n}`, play: true }),
+    draw(svg) {
+      const k = ST.day ?? A.days.length, all = k === A.days.length;
+      const m = { l: 56, r: 24, t: 30, b: 34 }, nMax = Math.max(21, lastN()), ps = A.days.map(r => +r.price);
+      const lo = Math.floor(Math.min(...ps)) - 0.5, hi = Math.ceil(Math.max(...ps)) + 0.5;
+      const X = v => m.l + (v - 1) / (nMax - 1) * (W - m.l - m.r), Y = v => m.t + (H - m.t - m.b) * (1 - (v - lo) / (hi - lo));
+      let s = `<rect x="${X(0.5)}" y="${m.t - 24}" width="${X(A.split - 0.5) - X(0.5)}" height="${H - m.t - m.b + 24}" fill="#fbe9d0" rx="4"/>`;
+      s += yGrid(Y, niceTicks(lo, hi), m.l, W - m.r, v => '$' + v.toFixed(v % 1 ? 2 : 0));
+      s += txt(X(0.5) + 8, m.t - 8, 'EXPLORING', { fill: '#9a6b1e', fw: 700, fs: 12 }) + txt(X(A.split - 0.5) + 10, m.t - 8, A.T != null ? 'USING MY RULES' : 'SECOND HALF', { fill: C.navy, fw: 700, fs: 12 });
+      const shown = all ? A.days : A.days.slice(0, k + 1);
+      s += `<polyline points="${shown.map(r => X(+r.n) + ',' + Y(+r.price)).join(' ')}" fill="none" stroke="#c9ccd2" stroke-width="2"/>`;
+      if (!all) s += `<circle cx="${X(+A.days[k].n)}" cy="${Y(+A.days[k].price)}" r="14" fill="none" stroke="${C.ink}" stroke-width="2.5"/>`;
+      A.days.forEach((r, i) => s += `<circle ${tipAttr(`<b>Day ${r.n} · ${r.dow}</b><br>${sitOf(r)}, ${r.weather}<br>Price ${m2(+r.price)} · sold ${r.sold || '?'}`)} cx="${X(+r.n)}" cy="${Y(+r.price)}" r="8" fill="${r.mode === 'explore' ? C.s2 : r.mode === 'exploit' ? C.s1 : C.gray}" stroke="#fff" stroke-width="2" opacity="${all || i <= k ? 1 : .12}"/>`);
+      [1, 7, 14, 21].filter(v => v <= nMax).forEach(v => s += txt(X(v), H - 10, 'Day ' + v, { a: 'middle' }));
+      svg.innerHTML = s; wireTips(svg);
+      if (!all) return dayStory(A.days[k]);
+      return A.T != null ? `Days 1–${A.T - 1}: I tried <b>${A.distinct} prices</b> (${m2(A.lo)}–${m2(A.hi)}) to learn how customers react. From day ${A.T}, my written rules set the price.` : `I explored on ${A.nExp} of ${A.N} days, testing ${m2(A.lo)}–${m2(A.hi)}.`;
+    } },
+  { tab: 'Surprise', title: 'How far off my sales prediction was', sub: 'Cups: |sold − predicted|, each day · dashed = average before and after my rules',
+    slider: () => { const rs = predDays(); return { label: 'Pick a day', n: rs.length, cur: ST.sur ?? Math.max(0, rs.indexOf(A.sur[0])), set: i => ST.sur = i, lab: i => `Day ${rs[i].n}`, play: true }; },
+    draw(svg) {
+      const rs = predDays(), top = A.sur[0], sel = rs[ST.sur ?? Math.max(0, rs.indexOf(top))];
+      const m = { l: 56, r: 24, t: 30, b: 34 }, nMax = Math.max(21, lastN()), hi = Math.max(10, ...rs.map(r => Math.abs(r.sold - r.expSold))) * 1.15;
+      const bw = (W - m.l - m.r) / nMax, X = v => m.l + (v - 0.5) * bw, Y = v => m.t + (H - m.t - m.b) * (1 - v / hi);
+      let s = yGrid(Y, niceTicks(0, hi), m.l, W - m.r, v => v);
+      rs.forEach(r => { const d = Math.abs(r.sold - r.expSold), on = r === sel; s += `<rect ${tipAttr(`<b>Day ${r.n} · ${r.dow}</b><br>Predicted ${r.expSold}, sold ${r.sold}`)} x="${X(+r.n) - bw / 2 + 3}" y="${Y(d)}" width="${bw - 6}" height="${Math.max(1, Y(0) - Y(d))}" rx="4" fill="${on ? C.amber : +r.n < A.split ? '#c9ccd2' : '#9db8dc'}"/>`; });
+      const seg = (a, b, v, lab) => v == null ? '' : `<line x1="${X(a) - bw / 2}" x2="${X(b) + bw / 2}" y1="${Y(v)}" y2="${Y(v)}" stroke="${C.navy}" stroke-width="2.5" stroke-dasharray="6 4"/>` + txt(X(a) - bw / 2 + 4, Y(v) - 7, lab, { fill: C.navy, fw: 700, fs: 12.5 });
+      s += seg(1, A.split - 1, A.peB, `avg ${r0(A.peB)} cups off`) + seg(A.split, lastN(), A.peA, `avg ${r0(A.peA)} cups off`);
+      if (sel) s += txt(X(+sel.n), Y(Math.abs(sel.sold - sel.expSold)) - 8, `Day ${sel.n}`, { a: 'middle', fill: C.ink, fw: 700 });
+      [1, 7, 14, 21].filter(v => v <= nMax).forEach(v => s += txt(X(v), H - 10, 'Day ' + v, { a: 'middle' }));
+      svg.innerHTML = s; wireTips(svg);
+      if (!sel) return 'Log predictions to see your surprises.';
+      const d = sel.sold - sel.expSold;
+      return `<b>Day ${sel.n} (${(sel.dow || '').slice(0, 3)})</b>: predicted ${sel.expSold}, sold ${sel.sold}, <b>${Math.abs(d)} cups ${d > 0 ? 'more' : d < 0 ? 'fewer' : 'off'}</b>${sel === top ? ', my biggest miss' : ''}.${sel.learned ? ` “${esc(sel.learned)}”` : ''}`;
+    } },
+  { tab: 'Demand', title: 'What each situation can carry', sub: 'My average price, before vs after I wrote rules',
+    seg: () => ({ opts: [['all', 'All'], ...SITS.filter(s2 => A.sB[s2].n || A.sA[s2].n).map(s2 => [s2, s2])], cur: ST.sit, set: k => ST.sit = k }),
+    draw(svg) {
+      const rows = SITS.filter(s2 => A.sB[s2].n || A.sA[s2].n), m = { l: 150, r: 150, t: 30, b: 16 }, rh = (H - m.t - m.b) / rows.length;
+      const hi = Math.max(...rows.flatMap(s2 => [A.sB[s2].p || 0, A.sA[s2].p || 0])) * 1.05, X = v => m.l + v / hi * (W - m.l - m.r);
+      let s = `<rect x="${m.l}" y="4" width="12" height="12" rx="3" fill="#c9ccd2"/>` + txt(m.l + 18, 14, 'Before', { fill: C.ink }) + `<rect x="${m.l + 84}" y="4" width="12" height="12" rx="3" fill="${C.navy}"/>` + txt(m.l + 102, 14, 'After', { fill: C.ink });
+      rows.forEach((s2, i) => {
+        const y = m.t + i * rh, b = A.sB[s2], a = A.sA[s2], bh = Math.min(20, rh / 3.2), op = ST.sit === 'all' || ST.sit === s2 ? 1 : .18;
+        s += `<g opacity="${op}">` + txt(m.l - 12, y + rh / 2 + 5, s2, { a: 'end', fill: C.ink, fw: 600, fs: 14 });
+        if (b.p != null) s += `<rect ${tipAttr(`<b>${s2}, before</b><br>${b.n} days at ${m2(b.p)} avg`)} x="${m.l}" y="${y + rh / 2 - bh - 2}" width="${X(b.p) - m.l}" height="${bh}" rx="4" fill="#c9ccd2"/>` + txt(X(b.p) + 8, y + rh / 2 - 6, m2(b.p), { mono: 1, fs: 12.5 });
+        if (a.p != null) s += `<rect ${tipAttr(`<b>${s2}, after</b><br>${a.n} days at ${m2(a.p)} avg${a.cups != null ? `, ${r0(a.cups)} cups/day` : ''}`)} x="${m.l}" y="${y + rh / 2 + 2}" width="${X(a.p) - m.l}" height="${bh}" rx="4" fill="${C.navy}"/>` + txt(X(a.p) + 8, y + rh / 2 + bh - 3, m2(a.p) + (a.cups != null ? `  ·  ${r0(a.cups)} cups/day` : ''), { mono: 1, fs: 12.5, fill: C.ink, fw: 600 });
+        s += '</g>';
+      });
+      svg.innerHTML = s; wireTips(svg);
+      if (ST.sit !== 'all') {
+        const b = A.sB[ST.sit], a = A.sA[ST.sit], ph = (v, l) => v.n ? `${l} ${v.n} day${v.n > 1 ? 's' : ''} at <b>${m2(v.p)}</b>${v.cups != null ? `, ${r0(v.cups)} cups` : ''}${v.rw != null ? `, ${m0(v.rw)}/day` : ''}` : `${l}: no days`;
+        return `<b>${ST.sit}</b>: ${ph(b, 'before')} → ${ph(a, 'after')}.${a.rl != null ? ` RL charged ${m2(a.rl)}.` : ''}`;
+      }
+      const sa = A.sA, wk = sa['Weekday'].p, hiS = ['Weekend', 'Event day'].filter(s2 => sa[s2].n);
+      return wk != null && hiS.length ? `${hiS.join(' and ')} carry <b>${hiS.map(s2 => m2(sa[s2].p)).join(' / ')}</b> and still sell; weekdays hold at <b>${m2(wk)}</b>. Pick a situation above.` : 'Price by situation, not by habit.';
+    } },
+  { tab: 'vs RL', title: 'Reward: me vs the RL agent', sub: 'Same days, same customers',
+    seg: () => ({ opts: [['avg', 'Average per day'], ['run', 'Running total']], cur: ST.rlMode, set: k => ST.rlMode = k }),
+    slider: () => ST.rlMode === 'run' && A.both.length ? { label: 'Up to', n: A.both.length, cur: ST.rlDay ?? A.both.length - 1, set: i => ST.rlDay = i, lab: i => `Day ${A.both[i].n}`, play: true } : null,
+    draw(svg) {
+      const meT = A.both.reduce((t, r) => t + +r.reward, 0), rlT = A.both.reduce((t, r) => t + +r.rlReward, 0), wins = A.both.filter(r => +r.reward >= +r.rlReward).length;
+      if (ST.rlMode === 'run' && A.both.length) {
+        const k = ST.rlDay ?? A.both.length - 1, rs = A.both; let a = 0, b = 0; const cm = rs.map(r => (a += +r.reward)), cr = rs.map(r => (b += +r.rlReward));
+        const m = { l: 70, r: 90, t: 16, b: 34 }, nMax = Math.max(21, lastN()), hi = Math.max(a, b) * 1.08;
+        const X = v => m.l + (v - 1) / (nMax - 1) * (W - m.l - m.r), Y = v => m.t + (H - m.t - m.b) * (1 - v / hi);
+        let s = yGrid(Y, niceTicks(0, hi), m.l, W - m.r, v => '$' + v.toLocaleString('en-US'));
+        [[cm, C.navy, 'Me'], [cr, C.s2, 'RL']].forEach(([c, col, l]) => {
+          s += `<polyline points="${rs.slice(0, k + 1).map((r, i) => X(+r.n) + ',' + Y(c[i])).join(' ')}" fill="none" stroke="${col}" stroke-width="3"/>`;
+          s += `<circle cx="${X(+rs[k].n)}" cy="${Y(c[k])}" r="6" fill="${col}" stroke="#fff" stroke-width="2"/>` + txt(X(+rs[k].n) + 10, Y(c[k]) + (l === 'Me' ? 14 : -6), `${l} ${m0(c[k])}`, { fill: C.ink, fw: 700, fs: 12.5 });
+        });
+        rs.forEach((r, i) => s += `<rect ${tipAttr(`<b>Day ${r.n}</b><br>Me ${m0(+r.reward)} · RL ${m0(+r.rlReward)}<br>Totals: me ${m0(cm[i])}, RL ${m0(cr[i])}`)} x="${X(+r.n) - 12}" y="${m.t}" width="24" height="${H - m.t - m.b}" fill="transparent"/>`);
+        [1, 7, 14, 21].filter(v => v <= nMax).forEach(v => s += txt(X(v), H - 10, 'Day ' + v, { a: 'middle' }));
+        svg.innerHTML = s; wireTips(svg);
+        const r = rs[k], g = cm[k] - cr[k];
+        return `By day ${r.n}: <b>me ${m0(cm[k])} vs RL ${m0(cr[k])}</b> (${g >= 0 ? 'me ahead by ' + m0(g) : 'RL ahead by ' + m0(-g)}). That day: me ${m0(+r.reward)}, RL ${m0(+r.rlReward)}${+r.reward >= +r.rlReward ? ', I won it' : ''}.`;
+      }
+      const ph = [['Before', A.before], ['After', A.after]].map(([l, rs]) => { const b = rs.filter(r => num(r.reward) != null && num(r.rlReward) != null); return { l, me: mean(b.map(r => +r.reward)), rl: mean(b.map(r => +r.rlReward)) }; });
+      const hi = Math.max(...ph.flatMap(p => [p.me || 0, p.rl || 0])) * 1.18, m = { l: 62, r: 24, t: 30, b: 40 }, Y = v => m.t + (H - m.t - m.b) * (1 - v / hi), gw = (W - m.l - m.r) / 2, bw = 92;
+      let s = yGrid(Y, niceTicks(0, hi), m.l, W - m.r, v => '$' + v);
+      s += `<rect x="${W - 200}" y="4" width="12" height="12" rx="3" fill="${C.navy}"/>` + txt(W - 182, 14, 'Me', { fill: C.ink }) + `<rect x="${W - 130}" y="4" width="12" height="12" rx="3" fill="${C.s2}"/>` + txt(W - 112, 14, 'RL agent', { fill: C.ink });
+      ph.forEach((p, i) => {
+        const cx = m.l + gw * (i + 0.5);
+        [[p.me, C.navy, 'Me', -1], [p.rl, C.s2, 'RL', 1]].forEach(([v, col, who, sgn]) => { if (v == null) return; const x = cx + sgn * (bw / 2 + 2) - bw / 2; s += `<rect ${tipAttr(`<b>${who}, ${p.l.toLowerCase()}</b><br>${m0(v)} a day`)} x="${x}" y="${Y(v)}" width="${bw}" height="${Y(0) - Y(v)}" rx="4" fill="${col}"/>` + txt(x + bw / 2, Y(v) - 8, m0(v), { a: 'middle', fill: C.ink, fw: 700, mono: 1 }); });
+        s += txt(cx, H - 14, p.l === 'Before' ? 'Before (exploring)' : 'After (my rules)', { a: 'middle', fill: C.ink, fw: 600, fs: 14 });
+      });
+      svg.innerHTML = s; wireTips(svg);
+      return A.both.length ? `Over ${A.both.length} days: <b>me ${m0(meT)} vs RL ${m0(rlT)}</b>, and I won ${wins} days. Try “Running total” to watch the gap open.` : 'Log the RL reward to compare.';
+    } },
+  { tab: 'Policy', point: 4, title: 'My policy decision, and what triggered it', sub: 'Each bar = one written rule, from the day I wrote it · ◆ = the day that made me write it',
+    seg: () => ({ opts: [['all', 'The decision'], ...A.pol.map((p, i) => [String(i), `Rule ${i + 1}`])], cur: ST.rule, set: k => ST.rule = k }),
+    draw(svg) {
+      const pol = [...A.pol].map((p, i) => ({ ...p, i })).sort((a, b) => a.since - b.since), nMax = Math.max(21, lastN()), end = lastN() + 0.5;
+      const m = { l: 20, r: 20, t: 30, b: 30 }, X = v => m.l + (v - 0.5) / nMax * (W - m.l - m.r);
+      const lh = Math.min(56, (H - m.t - m.b) / Math.max(1, pol.length)), sel = ST.rule === 'all' ? null : +ST.rule;
+      let s = `<rect x="${X(0.5)}" y="${m.t - 22}" width="${X(A.split - 0.5) - X(0.5)}" height="${H - m.t - m.b + 22}" fill="#fbe9d0" rx="4"/>`;
+      s += txt(X(0.5) + 8, m.t - 8, 'EXPLORING', { fill: '#9a6b1e', fw: 700, fs: 12 });
+      if (A.T != null) s += `<line x1="${X(A.T - 0.5)}" x2="${X(A.T - 0.5)}" y1="${m.t - 22}" y2="${H - m.b}" stroke="${C.ink}" stroke-width="2.5"/>` + txt(X(A.T - 0.5) + 8, m.t - 8, `DECISION · DAY ${A.T}: STOP TESTING, FOLLOW THE RULES`, { fill: C.ink, fw: 800, fs: 12 });
+      pol.forEach((p, k) => {
+        const y = m.t + k * lh + lh * 0.5, x0 = X(+p.since - 0.5), x1 = p.retired ? X(+p.retired - 0.5) : X(end), ref = A.dayRef(p), on = sel == null || sel === p.i;
+        const isAdopted = A.adopted.includes(A.pol[p.i]), col = p.retired ? '#c9ccd2' : isAdopted ? C.navy : '#9db8dc';
+        s += `<g opacity="${on ? 1 : .15}" ${tipAttr(`<b>${esc(p.text)}</b><br>Written day ${p.since}${ref ? ` · from day ${ref}` : ''}${p.retired ? `<br>Retired day ${p.retired}: ${esc(p.retiredWhy || '')}` : ''}`)}>`;
+        s += txt(x0 + 4, y - 10, `${p.i + 1}. ${esc(p.text)}`, { fill: p.retired ? C.muted : C.ink, fw: 600, fs: 13 }).replace('<text ', '<text paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round" ');
+        s += `<rect x="${x0}" y="${y - 4}" width="${Math.max(4, x1 - x0)}" height="12" rx="6" fill="${col}"/>`;
+        if (ref && ref < +p.since) s += `<line x1="${X(ref)}" x2="${x0}" y1="${y + 2}" y2="${y + 2}" stroke="${C.amber}" stroke-width="2" stroke-dasharray="3 3"/>`;
+        if (ref) s += `<path d="M${X(ref)} ${y - 6} l8 8 -8 8 -8 -8z" fill="${C.amber}" stroke="#fff" stroke-width="1.5"/>`;
+        if (p.retired) s += txt(x1 + 6, y + 7, `✕ retired day ${p.retired}`, { fill: '#b93a3a', fw: 700, fs: 12 });
+        s += '</g>';
+      });
+      [1, 7, 14, 21].filter(v => v <= nMax).forEach(v => s += txt(X(v), H - 8, 'Day ' + v, { a: 'middle' }));
+      svg.innerHTML = s; wireTips(svg);
+      if (sel != null) {
+        const p = A.pol[sel], ref = A.dayRef(p), r = ref && A.days.find(d => +d.n === ref);
+        return `<b>“${esc(p.text)}”</b>: written day ${p.since}${ref ? `, triggered by <b>day ${ref}</b>${r && num(r.sold) != null ? ` (${m2(+r.price)}: predicted ${r.expSold}, sold ${r.sold})` : ''}` : p.why ? ` (${esc(p.why)})` : ''}. ${p.retired ? `<b>Retired day ${p.retired}</b>${p.retiredWhy ? `: ${esc(p.retiredWhy)}` : ''}.` : 'Still in my policy.'}`;
+      }
+      return decisionHtml();
+    } },
+];
+const trigShort = () => { const t = A.trig; return t ? `Day ${t.n} (${(t.dow || '').slice(0, 3)}${isEvent(t.traffic) ? ', event' : ''}): I priced ${m2(+t.price)}, predicted ${t.expSold}, sold ${t.sold}` : (A.trigger || 'Enough repeat situations to trust a rule'); };
+const decisionTxt = () => A.adopted.length ? A.adopted.map(p => p.text).join('; ') : SITS.filter(s2 => A.sA[s2].n).map(s2 => `${s2} ${m2(A.sA[s2].p)}`).join(' · ');
+const decisionHtml = () => A.T == null ? `No clear switch to exploiting yet. Current rules: ${esc(decisionTxt())}.` : `<b>Decision (day ${A.T}):</b> stop testing and price by situation: <b>${esc(decisionTxt())}</b>. <b>Trigger:</b> ${esc(trigShort())}${A.trig && A.trig.learned ? `, “${esc(A.trig.learned)}”` : ''}.`;
+function renderSlide1() {
+  const { J, src } = loadJournal(); A = analyse(J); SRC = src;
+  const ratio = A.peB && A.peA ? A.peB / A.peA : null;
+  setText('s1title', `I went from testing prices to a written policy${ratio && ratio > 1.15 ? `, and my sales predictions got ${ratio.toFixed(1)}× sharper` : ''}`);
+  const top = A.sur[0], sa = A.sA, hiS = ['Weekend', 'Event day'].filter(s2 => sa[s2].n);
+  const meT = A.both.reduce((t, r) => t + +r.reward, 0), rlT = A.both.reduce((t, r) => t + +r.rlReward, 0);
+  renderPoints(0, [
+    ['flask', 'How I explored', A.T != null ? `${A.distinct} prices in ${A.T - 1} days, on purpose.` : `Explored on ${A.nExp} of ${A.N} days.`],
+    ['bolt', 'What surprised me', top ? `Day ${top.n}: predicted ${top.expSold}, sold ${top.sold}.` : 'Log predictions to find it.'],
+    ['bulb', 'What I learned about demand', hiS.length && sa['Weekday'].p != null ? `${hiS.join(' & ')} carry a higher price; weekdays don’t.` : 'Price by situation.'],
+    ['target', 'Against the RL benchmark', A.both.length ? `Me ${m0(meT)} vs RL ${m0(rlT)}: close, not ahead.` : `Reward/day ${m0(A.rwB)} → ${m0(A.rwA)}.`],
+    ['compass', 'My policy decision', A.T != null ? `Day ${A.T}: stop testing, follow ${A.adopted.length || 'my'} written rule${A.adopted.length === 1 ? '' : 's'}${A.trig ? `, triggered by day ${A.trig.n}` : ''}.` : 'Still testing: no switch yet.'],
+  ]);
+  const ruleTxt = rs => rs.slice(0, 2).map(p => p.text).join('; ') + (rs.length > 2 ? ` (+${rs.length - 2} more)` : '');
+  const derived = st => SITS.filter(s2 => st[s2].n).map(s2 => `${s2} ${m2(st[s2].p)}`).join(' · ');
+  setText('kpBefore', `Test a different price most days (${m2(A.lo)}–${m2(A.hi)})${A.polBefore.length ? `; rules: ${esc(A.polBefore.map(p => p.text).join('; '))}` : ''}.`);
+  setText('kpDecision', esc(decisionTxt()));
+  setText('kpTrigger', `${esc(trigShort())}${A.trig && A.trig.learned ? `: “${esc(A.trig.learned)}”` : ''}`);
+  $('#kpDecH').textContent = A.T != null ? `My decision (day ${A.T})` : 'My rules now';
+  setText('foot1', `Roast &amp; Reward · AI-Powered Marketing, Session 6 · <i>data: ${esc(SRC)}</i>`);
+  renderExplainer(0);
+}
+
+// ============================== slide 2: why ML, not RL ==============================
+const S0 = 1.0;
+let xpi = 1;
+function gauss(r) { let u = 0; while (!u) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
+// a player's read of demand: every willingness-to-pay component is off by noise that shrinks with √(days practised)
+function errDraw(seed, s) { const r = M.rng(seed), g = () => gauss(r) * s; return { lvl: g(), wk: g(), ev: g(), comp: g(), w: { sunny: g(), cloudy: g(), rainy: g(), cold: g() }, b: gauss(r) * s * 0.15 }; }
+function demHat(day, p, e) { const u = M.utility(day) + e.lvl + (day.dow >= 5 ? e.wk : 0) + (day.event ? e.ev : 0) + e.w[day.weather], B = M.B * (1 + e.b); const a = Math.exp(u - B * p), c = day.comp ? Math.exp(u + e.comp - M.COMP_EDGE - B * day.cprice) : 0; return M.traffic(day) * a / (1 + a + c); }
+function trainAgent(n, alpha, gamma, epsMin, seed) { const ag = M.newAgent(), r = M.rng(seed), hp = { alpha, gamma, eps: 1, epsMin, decay: 1 }; for (let i = 0; i < n; i++) { hp.eps = Math.max(epsMin, 1 - (1 - epsMin) * i / (n * 0.7)); M.runEpisode(ag, 1e6 + seed * 1e5 + i * 7919, hp, r); } return ag; }
+let AGENT = null, RACE = null;
+const RACE_DAYS = M.scenario(900049, 7); // a week where ML leads until Thursday, then runs dry at the weekend
+const NLAB = ['7', '21', '100', '1,000', '10,000', '420,000'];
+const HLAB = ['today', '+1 day', '+2', '+3', '+4', '+5', 'week'];
+const ME = () => GRID.grid[1][6];
+function drawCurves(svg) {
+      const N = GRID.Ns[xpi], day = { dow: 5, weather: 'cloudy', event: null, comp: false, noise: 1 }, ps = [];
+      for (let p = 1.5; p <= 9.0001; p += 0.05) ps.push(+p.toFixed(2));
+      const trueP = p => (p - M.COST) * M.expDemand(day, p), best = f => ps.reduce((b, p) => f(p) > f(b) ? p : b, ps[0]);
+      const pT = best(trueP), vT = trueP(pT);
+      const guess = n => Array.from({ length: 16 }, (_, k) => errDraw(9100 + k * 13, S0 / Math.sqrt(n / 7))).map(e => { const f = p => (p - M.COST) * demHat(day, p, e); return { f, b: best(f) }; });
+      const G = guess(N), GR = guess(420000), loss = gs => mean(gs.map(g => vT - trueP(g.b)));
+      const m = { l: 62, r: 24, t: 14, b: 58 }, ymax = Math.max(vT, ...G.map(g => g.f(g.b))) * 1.08;
+      const X = p => m.l + (p - 1.5) / 7.5 * (W - m.l - m.r), Y = v => m.t + (H - m.t - m.b) * (1 - Math.max(0, v) / ymax);
+      let s = yGrid(Y, niceTicks(0, ymax), m.l, W - m.r, v => '$' + v);
+      for (let p = 2; p <= 9; p++) s += txt(X(p), H - m.b + 16, '$' + p, { a: 'middle', fs: 12 });
+      G.forEach(g => s += `<polyline points="${ps.filter((_, i) => i % 3 === 0).map(p => X(p) + ',' + Y(g.f(p))).join(' ')}" fill="none" stroke="${C.s1}" stroke-width="1.5" opacity=".35"/>`);
+      s += `<polyline points="${ps.map(p => X(p) + ',' + Y(trueP(p))).join(' ')}" fill="none" stroke="${C.ink}" stroke-width="3"/>`;
+      s += `<line x1="${X(pT)}" x2="${X(pT)}" y1="${m.t}" y2="${H - m.b}" stroke="${C.ink}" stroke-dasharray="4 3"/>` + txt(X(pT) + 6, m.t + 12, `real best ${m2(pT)}`, { fill: C.ink, fw: 700 });
+      const by = H - m.b + 38;
+      s += txt(m.l - 8, by + 4, 'guesses', { a: 'end', fs: 12 });
+      s += `<line x1="${X(Math.min(...G.map(g => g.b)))}" x2="${X(Math.max(...G.map(g => g.b)))}" y1="${by}" y2="${by}" stroke="${C.s1}" stroke-width="2" opacity=".4"/>`;
+      G.forEach((g, k) => s += `<circle ${tipAttr(`Guessed best price ${m2(g.b)}<br>loses ${m0(vT - trueP(g.b))} a day`)} cx="${X(g.b)}" cy="${by + (k % 2 ? 4 : -4)}" r="5" fill="${C.s1}" stroke="#fff" stroke-width="1.5"/>`);
+      svg.innerHTML = s; wireTips(svg);
+      const lo = Math.min(...G.map(g => g.b)), hi = Math.max(...G.map(g => g.b));
+      return xpi === 5 ? `With RL’s <b>420,000 days</b>, the guesses sit on the real curve (${lo === hi ? m2(lo) : m2(lo) + "–" + m2(hi)}, losing ${m0(loss(G))} a day). <b>That is RL’s edge: experience.</b>`
+        : `After <b>${N.toLocaleString('en-US')} days</b>, guesses for the best price spread <b>${m2(lo)}–${m2(hi)}</b> (real ${m2(pT)}), losing ~${m0(loss(G))} a day. RL’s guesses lose ${m0(loss(GR))}. <b>Drag to 420,000.</b>`;
+}
+const WDAY = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const PLAB = ['today only', '1 day ahead', '2 days ahead', '3 days ahead', '4 days ahead', '5 days ahead', 'the whole week'];
+const xpSlider = () => ({ label: 'Days of practice', n: 6, cur: xpi, set: i => xpi = i, lab: i => NLAB[i] + (i === 1 ? ' (me)' : i === 5 ? ' (RL)' : ''), play: true });
+const VIEWS2 = [
+  { tab: 'ML', title: 'Cups in stock each morning, one week', sub: 'Both cafés start Monday with 450 cups; no restock until next Monday',
+    slider: () => ({ label: 'Day', n: 7, cur: ST.wk, set: i => ST.wk = i, lab: i => WDAY[RACE_DAYS[i].dow], play: true }),
+    draw(svg) {
+      if (!AGENT) { svg.innerHTML = txt(20, 40, 'Training the RL agent (a second or two)…', { fs: 15 }); return 'Loading…'; }
+      RACE = RACE || { ml: M.playPolicy(RACE_DAYS, M.policies.ml()), rl: M.playPolicy(RACE_DAYS, M.policies.rl(AGENT)) };
+      const K = ST.wk, m = { l: 62, r: 110, t: 14, b: 50 }, cw = (W - m.l - m.r) / 7, X = i => m.l + cw * (i + 0.5), Y = v => m.t + (H - m.t - m.b) * (1 - (v + 40) / (M.RESTOCK + 40));
+      let s = `<rect x="${X(K) - cw / 2}" y="${m.t}" width="${cw}" height="${H - m.t - m.b + 40}" rx="6" fill="#fbe9d0"/>` + yGrid(Y, [0, 150, 300, 450], m.l, W - m.r, v => v);
+      RACE_DAYS.forEach((d, i) => { s += txt(X(i), H - m.b + 20, M.DAYS[d.dow], { a: 'middle', fill: i === K ? C.ink : C.muted, fw: i === K ? 700 : 400 }) + txt(X(i), H - m.b + 36, M.WEATHER[d.weather].icon + (d.event ? '🎪' : ''), { a: 'middle', fs: 12 }); });
+      [['ML', C.s3, RACE.ml], ['RL agent', C.s2, RACE.rl]].forEach(([name, col, run]) => {
+        const lg = run.log.slice(0, K + 1);
+        s += `<polyline points="${lg.map((r, i) => X(i) + ',' + Y(r.invStart)).join(' ')}" fill="none" stroke="${col}" stroke-width="3"/>`;
+        lg.forEach((r, i) => s += `<circle cx="${X(i)}" cy="${Y(r.invStart)}" r="6" fill="${col}" stroke="#fff" stroke-width="2"/>`);
+        s += txt(X(K) + 14, Y(lg[K].invStart) + (name === 'ML' ? 14 : -4), `${name} ${lg[K].invStart}`, { fill: C.ink, fw: 700, fs: 13.5 });
+      });
+      const r = RACE.ml.log[K];
+      if (r.lost) s += `<circle cx="${X(K)}" cy="${Y(r.invStart)}" r="16" fill="none" stroke="#b93a3a" stroke-width="2.5"/>` + txt(X(K) - 24, Y(r.invStart) + 5, `${r.lost} customers turned away`, { a: 'end', fill: '#b93a3a', fw: 700, fs: 13.5 });
+      RACE_DAYS.forEach((d, i) => { const a = RACE.ml.log[i], b = RACE.rl.log[i]; s += `<rect ${tipAttr(`<b>${M.DAYS[d.dow]}</b>${d.event ? ' · event' : ''}<br>ML: ${m2(a.price)}, sold ${a.sold}${a.lost ? `, <b>${a.lost} turned away</b>` : ''}<br>RL: ${m2(b.price)}, sold ${b.sold}${b.lost ? `, ${b.lost} turned away` : ''}`)} x="${X(i) - cw / 2}" y="${m.t}" width="${cw}" height="${H - m.t - m.b}" fill="transparent"/>`; });
+      svg.innerHTML = s; wireTips(svg);
+      const d = RACE_DAYS[K], a = RACE.ml.log[K], b = RACE.rl.log[K], tot = run => run.log.slice(0, K + 1).reduce((t, x) => t + x.reward, 0);
+      let why;
+      if (a.lost > b.lost + 10) why = `<b>ML ran dry:</b> ${a.invStart} cups left, ${a.lost} customers turned away. RL still had ${b.invStart}.`;
+      else if (a.sold > b.sold + 8) why = `<b>ML sells more today</b> (${a.sold} vs ${b.sold}) at ${m2(a.price)} vs ${m2(b.price)}. Every cheap cup now is one fewer for the weekend.`;
+      else if (b.price > a.price + 0.4) why = `<b>RL charges ${m2(b.price - a.price)} more</b> and sells fewer: it is saving stock for later.`;
+      else if (a.waste || b.waste) why = `Sunday close: leftover cups are thrown away (ML ${Math.round(a.waste / M.COST)}, RL ${Math.round(b.waste / M.COST)}).`;
+      else why = 'Similar choices today; the difference builds over the week.';
+      return `<b>${WDAY[d.dow]}${d.event ? ' (event)' : ''}:</b> ${why} So far: ML ${m0(tot(RACE.ml))}, RL ${m0(tot(RACE.rl))}.`;
+    } },
+  { tab: 'Foresight', title: 'My weekly reward if I plan further ahead', sub: 'With my 21 days of practice',
+    slider: () => ({ label: 'I plan', n: 7, cur: ST.h, set: i => ST.h = i, lab: i => PLAB[i], play: true }),
+    draw(svg) {
+      const g = GRID.grid[1], b = GRID.bench, v = g[ST.h];
+      dotLine(svg, { cats: HLAB, vals: g, hl: [ST.h], lo: 1200, hi: 1450, fmt: v => '$' + v.toLocaleString('en-US'), xTitle: 'how far ahead I plan →',
+        refs: [{ v: b.rl, label: `RL ${m0(b.rl)}`, col: C.s2 }, { v: b.ml, label: `ML ${m0(b.ml)}`, col: C.s3 }],
+        tips: g.map((v, i) => `<b>Plan ${HLAB[i]}</b><br>${m0(v)} a week<br>${sm0(v - b.ml)} vs ML · ${sm0(v - b.rl)} vs RL`) });
+      return `Planning <b>${PLAB[ST.h]}</b>: ${m0(v)} a week, <b>${sm0(v - b.ml)} vs ML</b> but ${sm0(v - b.rl)} vs RL.${ST.h >= 3 ? ' More foresight barely helps now: <b>foresight isn’t the gap</b>.' : ''}`;
+    } },
+  { tab: 'Experience', title: 'Weekly reward by days of practice', sub: 'Planning the whole week; more practice = a sharper read of demand',
+    slider: xpSlider,
+    draw(svg) {
+      const v = GRID.grid.map(r => r[6]), b = GRID.bench, x = v[xpi];
+      dotLine(svg, { cats: NLAB, vals: v, hl: [xpi], lo: 1150, hi: 1550, fmt: v => '$' + v.toLocaleString('en-US'), xTitle: 'days of practice →',
+        refs: [{ v: b.rl, label: `RL ${m0(b.rl)}`, col: C.s2 }, { v: b.ml, label: `ML ${m0(b.ml)}`, col: C.s3 }],
+        tips: v.map((x, i) => `<b>${NLAB[i]} days of practice</b>${i === 1 ? ' (me)' : ''}<br>${m0(x)} a week · ${sm0(x - b.rl)} vs RL`) });
+      return `With <b>${NLAB[xpi]} days</b> of practice${xpi === 1 ? ' (me)' : ''}: ${m0(x)} a week, ${x > b.rl ? `<b>${m0(x - b.rl)} above RL</b>` : `<b>${m0(b.rl - x)} short of RL</b>`}. ${xpi < 2 ? 'It takes ~100 days to pass RL.' : 'Practice, not planning, closed the gap.'}`;
+    } },
+  { tab: 'Why RL wins', point: 2, title: 'What players think a weekend coffee is worth', sub: 'Black = the real profit curve · blue = 16 players’ guesses after N days of practice',
+    slider: xpSlider,
+    draw(svg) { return drawCurves(svg); } },
+  { tab: 'Benchmark', title: 'Weekly reward: where everyone lands', sub: '“Me” plans the whole week; slide my practice to move it',
+    slider: xpSlider,
+    draw(svg) {
+      const b = GRID.bench, me = GRID.grid[xpi][6], pts = [['ML', b.ml, C.s3], ['Fixed $4.50', b.st, C.gray], [xpi === 1 ? 'Me' : `Me @ ${NLAB[xpi]} days`, me, C.navy], ['RL agent', b.rl, C.s2], ['Perfect hindsight', b.or, '#6b7280']].sort((p, q) => p[1] - q[1]);
+      const lo = 1150, hi = 1650, m = { l: 40, r: 40 }, X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r), y0 = 160;
+      let s = `<line x1="${m.l}" x2="${W - m.r}" y1="${y0}" y2="${y0}" stroke="#cbd0d8" stroke-width="2"/>`;
+      niceTicks(lo, hi).forEach(v => s += `<line x1="${X(v)}" x2="${X(v)}" y1="${y0 - 5}" y2="${y0 + 5}" stroke="#cbd0d8"/>` + txt(X(v), y0 + 70, '$' + v.toLocaleString('en-US'), { a: 'middle', fs: 12 }));
+      s += `<rect x="${X(Math.min(me, b.rl))}" y="${y0 - 3}" width="${Math.abs(X(b.rl) - X(me))}" height="6" fill="${C.amber}"/>`;
+      pts.forEach(([l, v, col], i) => {
+        const up = i % 2 === 0, ly = up ? y0 - 40 : y0 + 48, isMe = l.startsWith('Me');
+        s += `<g ${tipAttr(`<b>${l}</b><br>${m0(v)} a week`)}><line x1="${X(v)}" x2="${X(v)}" y1="${y0}" y2="${up ? ly + 8 : ly - 30}" stroke="#d1d5db"/><circle cx="${X(v)}" cy="${y0}" r="${isMe ? 11 : 9}" fill="${col}" stroke="#fff" stroke-width="2.5"/>`;
+        s += txt(X(v), ly - 14, l, { a: 'middle', fill: C.ink, fw: 700, fs: 14 }) + txt(X(v), ly + 2, m0(v), { a: 'middle', mono: 1, fs: 12.5 }) + '</g>';
+      });
+      svg.innerHTML = s; wireTips(svg);
+      return xpi === 1 ? `I land between ML and RL. Even RL is ${m0(b.or - b.rl)} below perfect hindsight, so I use it as a <b>benchmark</b>: its prices show where demand is.`
+        : `With ${NLAB[xpi]} days of practice, “me” would earn ${m0(me)}: ${me > b.rl ? '<b>past RL</b>' : `${m0(b.rl - me)} short of RL`}. The amber gap is what experience buys.`;
+    } },
+];
+function renderSlide2() {
+  const g = GRID.grid, b = GRID.bench, me = ME();
+  setText('s2title', 'Planning ahead beats ML; beating RL takes experience I can’t get in 21 days');
+  renderPoints(1, [
+    ['eye', 'ML only sees today', 'It runs out of stock before the weekend.'],
+    ['cal', 'Foresight is something I have', `Planning ahead: ${sm0(g[1][1] - b.ml)} a week over ML.`],
+    ['clock', 'Experience is something I don’t', `21 days vs 420,000: ${m0(b.rl - me)} a week short.`],
+    ['compass', 'So RL is a benchmark, not a rival', 'Its prices show me where demand is.'],
+  ]);
+  setText('dsML', `Planning ahead: <b>${sm0(g[1][1] - b.ml)}</b> to <b>${sm0(me - b.ml)}</b> a week.`);
+  setText('dsRL', `It has 420,000 days of practice; I have 21.`);
+  setText('dsDo', 'Plan the week, write the policy down, change one thing at a time.');
+  setText('foot2', 'Roast &amp; Reward · AI-Powered Marketing, Session 6 · <i>explainer figures are illustrative, from the class simulator</i>');
+  renderExplainer(1);
+}
+function renderAll() { renderSlide1(); renderSlide2(); if (document.body.classList.contains('editing')) $$('[data-edit]').forEach(el => el.contentEditable = true); applyBuild(false); }
+
+// ============================== one point at a time (default) ==============================
+// step k shows point k and its chart; the last step adds the strip
+let pbp = true, bi = 0;
+const nSteps = si => viewsOf(si).length + 1;
+function applyBuild(runAct = true) {
+  const slide = slides[cur], pts = $$('.points .point', slide), strip = $('.strip', slide), nv = viewsOf(cur).length;
+  slides.forEach(s => { $$('.b-hide, .b-focus', s).forEach(el => el.classList.remove('b-hide', 'b-focus')); });
+  if (pbp) {
+    bi = Math.max(0, Math.min(nSteps(cur) - 1, bi));
+    const upTo = bi < nv ? pointOf(cur, bi) : pts.length - 1;
+    pts.forEach((p, i) => p.classList.toggle('b-hide', i > upTo));
+    strip.classList.toggle('b-hide', bi < nv);
+    if (bi === nv) strip.classList.add('b-focus');
+    if (runAct && bi < nv && VIEW[cur] !== bi) { VIEW[cur] = bi; renderExplainer(cur); }
+  }
+  updateCount();
+}
+function updateCount() {
+  const n = nSteps(cur);
+  $('#count').textContent = `${cur + 1} / ${slides.length}${pbp ? ` · ${bi + 1}/${n}` : ''}`;
+  slides.forEach((s, k) => { const c = s.querySelector('.crumbs > span:last-child'); if (c) c.textContent = `Slide ${k + 1} of ${slides.length}${pbp && k === cur ? ` · step ${bi + 1} of ${n}` : ''}`; });
+}
+function nextStep() {
+  if (pbp && bi < nSteps(cur) - 1) { bi++; applyBuild(); }
+  else if (cur < slides.length - 1) { go(cur + 1); bi = 0; applyBuild(); }
+}
+function prevStep() {
+  if (pbp && bi > 0) { bi--; applyBuild(); }
+  else if (cur > 0) { go(cur - 1); bi = pbp ? nSteps(cur) - 1 : 0; applyBuild(); }
+}
+function setPbp(on) {
+  pbp = on; document.body.classList.toggle('pbp', on);
+  $('#pbpBtn').textContent = on ? '☰ Show all' : '☰ One at a time';
+  if (on) bi = Math.min(VIEW[cur], nSteps(cur) - 1);
+  applyBuild(false);
+  toast(on ? 'One point at a time: → or Space for the next, ← to go back.' : 'Showing all points. Click a point to see its chart.');
+}
+$('#pbpBtn').onclick = () => setPbp(!pbp);
+document.body.classList.add('pbp');
+
+renderAll();
+let start = 0; try { start = (parseInt(location.hash.slice(1)) || 1) - 1; } catch (e) { }
+go(Math.max(0, start)); applyBuild();
+setTimeout(() => { AGENT = trainAgent(20000, 0.05, 0.5, 0.02, 7); RACE = null; renderExplainer(1); }, 60);
+addEventListener('storage', e => { if (e.key === 'rr-journal-v2' || e.key === 'rr-deck-journal') renderAll(); });
+window.addEventListener('beforeprint', () => { slides.forEach(s => $$('.b-hide', s).forEach(el => el.classList.remove('b-hide'))); });
+window.addEventListener('afterprint', () => applyBuild(false));
+
+</script>
+</body>
+</html>

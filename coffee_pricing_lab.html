@@ -2440,7 +2440,7 @@ annotateGlossary();
     if (!deckText) deckText = draft(A, deckName);
     const T1 = deckText.s1, T2 = deckText.s2;
     el.innerHTML = `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-end">
-        <div><h3 style="margin:0">Generate your 2-slide presentation</h3><p class="muted" style="font-size:13.5px;margin:4px 0 0">Answers the exercise questions from your journal. <b>Click any text on the slides to edit it</b>, then download the PDF.</p></div>
+        <div><h3 style="margin:0">Generate your 2-slide presentation</h3><p class="muted" style="font-size:13.5px;margin:4px 0 0">Answers the exercise questions from your journal. <b>Click any text on the slides to edit it</b>, then download the PDF. For presenting live, open the <a href="rl_findings_deck.html" target="_blank" rel="noopener"><b>interactive 2-slide deck ↗</b></a> (it reads this journal automatically in the same browser).</p></div>
         <div class="row"><label class="btn small" style="cursor:pointer">⬆ Import exported JSON<input type="file" id="dkImport" accept="application/json,.json" hidden></label><button class="btn small" id="dkCurrent" ${deckSrc ? '' : 'disabled'}>Use my current journal</button></div></div>
       <div class="row" style="margin-top:10px"><span class="chip">Source: <b>${deckSrc ? esc(deckSrc._file || 'imported file') : 'current journal'}</b> · ${A.N} days</span>
         <div class="cf" style="width:220px"><input id="dkName" placeholder="Your name / group" value="${esc(deckName)}"></div>
